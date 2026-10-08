@@ -1,7 +1,8 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>AI Workspace - Trợ lý cục bộ</title>
     <link rel="icon" type="image/png" href="logo.png">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -207,7 +208,7 @@
             appendMessage('bot', 'Đang suy nghĩ...', loadingId, false);
 
             try {
-                const res = await fetch('http://localhost:5000/send', {
+                const res = await fetch('https://southeast-rapids-chose-transport.trycloudflare.com/send', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ message: userMsg })
