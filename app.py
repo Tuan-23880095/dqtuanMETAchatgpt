@@ -10,7 +10,6 @@ CORS(app)
 
 def call_antigravity(prompt):
     try:
-        # Gọi CLI của Antigravity (agy) để thực thi lệnh (dùng cờ --print)
         result = subprocess.check_output(['agy', '--print', prompt], text=True, encoding='utf-8')
         return f"🤖 [Ba Sáu / Antigravity đã thực thi]:\n{result}"
     except subprocess.CalledProcessError as e:
@@ -20,11 +19,8 @@ def call_antigravity(prompt):
 
 def call_metagpt(prompt):
     try:
-        # Gọi MetaGPT chạy ngầm để không bị treo giao diện web
         conda_python = r'C:\Users\Quoc_\miniconda3\envs\metagpt\python.exe'
         metagpt_dir = r'D:\GPU-work\Github_Research\MetaGPT'
-        
-        # Popen giúp chạy nền không chờ kết quả ngay (tránh timeout)
         subprocess.Popen([conda_python, '-m', 'metagpt.software_company', prompt], cwd=metagpt_dir)
         
         return (f"🏭 [MetaGPT - Công ty phần mềm ảo đã nhận dự án!]\n\n"
@@ -53,17 +49,18 @@ def get_ai_response(message):
 @app.route('/send', methods=['POST'])
 def send_message():
     data = request.json
-    user_message = data.get('message', '')
-    msg_lower = user_message.strip().lower()
+    user_message = data.get('message', '').strip()
+    msg_lower = user_message.lower()
     
-    # 1. Gọi Agent Ba Sáu
-    if msg_lower.startswith('@basau'):
-        task = user_message[6:].strip()
+    # 1. Gọi Agent Ba Sáu nếu có chứa @basau hoặc bắt đầu bằng dấu gạch chéo (/)
+    if '@basau' in msg_lower or user_message.startswith('/'):
+        # Lọc bỏ chữ @basau nếu có để lấy lệnh thật sự
+        task = user_message.replace('@basau', '').replace('@Basau', '').strip()
         ai_response = call_antigravity(task)
         
     # 2. Gọi Công ty ảo MetaGPT
-    elif msg_lower.startswith('@metagpt'):
-        task = user_message[8:].strip()
+    elif '@metagpt' in msg_lower:
+        task = user_message.replace('@metagpt', '').replace('@Metagpt', '').strip()
         ai_response = call_metagpt(task)
         
     # 3. Chat thường với Qwen3

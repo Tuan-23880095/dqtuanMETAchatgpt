@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <title>AI Workspace - Trợ lý cục bộ</title>
     <link rel="icon" type="image/png" href="logo.png">
-    <!-- Thư viện Marked.js để render Markdown -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         * { box-sizing: border-box; }
@@ -49,8 +48,6 @@
             background: white;
             padding: 2px;
         }
-        
-        /* Chỉnh sửa Chat Box để thêm hình nền Logo mờ */
         .chat-box { 
             flex: 1; 
             overflow-y: auto; 
@@ -58,10 +55,9 @@
             background: #fafafa;
             position: relative;
         }
-        /* Lớp phủ Logo mờ */
         .chat-box::before {
             content: "";
-            position: fixed; /* Giữ cố định khi cuộn */
+            position: fixed; 
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
@@ -71,11 +67,10 @@
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
-            opacity: 0.08; /* Độ mờ */
-            pointer-events: none; /* Không cản trở click */
+            opacity: 0.08; 
+            pointer-events: none; 
             z-index: 0;
         }
-
         .message { 
             margin: 10px 0; 
             padding: 12px 16px; 
@@ -84,7 +79,7 @@
             line-height: 1.6;
             word-wrap: break-word;
             position: relative;
-            z-index: 1; /* Hiển thị đè lên logo */
+            z-index: 1; 
         }
         .user { 
             background: #4db6ac; 
@@ -100,8 +95,6 @@
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             border: 1px solid #eee;
         }
-
-        /* Định dạng nội dung Markdown */
         .message p { margin: 0 0 10px 0; }
         .message p:last-child { margin-bottom: 0; }
         .message pre {
@@ -137,7 +130,6 @@
         .message th { background-color: #f2f2f2; }
         .user code { color: #ffeb3b; background: rgba(0,0,0,0.1); }
         .user a { color: #fff; text-decoration: underline; }
-
         .input-area { 
             display: flex; 
             padding: 15px; 
@@ -180,7 +172,19 @@
             <div class="message bot">Xin chào! Tôi là trợ lý AI (Qwen3) đang chạy trực tiếp trên GPU máy tính của bạn. Tôi có thể giúp gì cho bạn hôm nay?</div>
         </div>
         <div class="input-area">
-            <input type="text" id="user-input" placeholder="Nhập tin nhắn... (Dùng @basau /tên-skill để gọi trợ lý)" autocomplete="off">
+            <input type="text" id="user-input" list="skill-suggestions" placeholder="Nhập tin nhắn (Gõ / để hiện danh sách skill)..." autocomplete="off">
+            <datalist id="skill-suggestions">
+                <option value="/tuan-phan-tich-viec-moi ">Ghi nhanh task vào Hộp việc</option>
+                <option value="/tuan-md-to-a4-html ">Tạo tài liệu web/PDF A4</option>
+                <option value="/tuan-notebooklm ">Chat với NotebookLM</option>
+                <option value="/tuan-agent-team-dispatch ">Lập đội nhiều AI</option>
+                <option value="/tuan-ra-soat-viec-trong-ngay ">Kiểm tra các việc đã làm hôm nay</option>
+                <option value="/tuan-doc-mapinfo ">Chuyển đổi bản đồ MapInfo</option>
+                <option value="/tuan-danh-muc-skill ">Xem toàn bộ danh sách skill</option>
+                <option value="/engineering:debug ">Gỡ lỗi lập trình</option>
+                <option value="/data:analyze ">Phân tích dữ liệu</option>
+                <option value="@metagpt ">Gọi công ty ảo MetaGPT lập trình</option>
+            </datalist>
             <button onclick="sendMessage()">Gửi</button>
         </div>
     </div>
@@ -196,7 +200,6 @@
             const userMsg = userInput.value.trim();
             if (!userMsg) return;
 
-            // Tin nhắn của User không dùng markdown để tránh lỗi hiển thị nếu gõ các ký tự đặc biệt
             appendMessage('user', userMsg, null, false);
             userInput.value = '';
 
@@ -211,8 +214,6 @@
                 });
                 const data = await res.json();
                 document.getElementById(loadingId).remove();
-                
-                // Tin nhắn của Bot sẽ được render qua thư viện marked.js
                 appendMessage('bot', data.reply, null, true);
             } catch (err) {
                 document.getElementById(loadingId).remove();
@@ -220,20 +221,15 @@
             }
         }
 
-        // Cập nhật hàm appendMessage để hỗ trợ Markdown (cờ isMarkdown)
         function appendMessage(type, text, id = null, isMarkdown = false) {
             const msgDiv = document.createElement('div');
             msgDiv.className = `message ${type}`;
             if (id) msgDiv.id = id;
-            
             if (isMarkdown) {
-                // Parse markdown thành HTML
                 msgDiv.innerHTML = marked.parse(text);
             } else {
-                // Chỉ là text thông thường (tránh XSS cho user input)
                 msgDiv.textContent = text;
             }
-            
             chatBox.appendChild(msgDiv);
             chatBox.scrollTop = chatBox.scrollHeight;
         }
