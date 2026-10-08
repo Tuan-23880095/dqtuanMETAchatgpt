@@ -1,9 +1,11 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <title>AI Workspace - Trợ lý cục bộ</title>
     <link rel="icon" type="image/png" href="logo.png">
+    <!-- Thư viện Marked.js để render Markdown -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         * { box-sizing: border-box; }
         body { 
@@ -18,7 +20,7 @@
         }
         .chat-container { 
             width: 100%; 
-            max-width: 700px; 
+            max-width: 800px; 
             height: 90vh;
             background: #ffffff; 
             border-radius: 15px; 
@@ -26,6 +28,7 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            position: relative;
         }
         .header {
             background: #00796b;
@@ -36,6 +39,7 @@
             font-size: 1.2rem;
             font-weight: bold;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            z-index: 2;
         }
         .header img {
             width: 40px;
@@ -45,19 +49,42 @@
             background: white;
             padding: 2px;
         }
+        
+        /* Chỉnh sửa Chat Box để thêm hình nền Logo mờ */
         .chat-box { 
             flex: 1; 
             overflow-y: auto; 
             padding: 20px; 
             background: #fafafa;
+            position: relative;
         }
+        /* Lớp phủ Logo mờ */
+        .chat-box::before {
+            content: "";
+            position: fixed; /* Giữ cố định khi cuộn */
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 400px;
+            height: 400px;
+            background-image: url('logo.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            opacity: 0.08; /* Độ mờ */
+            pointer-events: none; /* Không cản trở click */
+            z-index: 0;
+        }
+
         .message { 
             margin: 10px 0; 
             padding: 12px 16px; 
             border-radius: 12px; 
-            max-width: 80%; 
-            line-height: 1.5;
+            max-width: 85%; 
+            line-height: 1.6;
             word-wrap: break-word;
+            position: relative;
+            z-index: 1; /* Hiển thị đè lên logo */
         }
         .user { 
             background: #4db6ac; 
@@ -66,16 +93,57 @@
             border-bottom-right-radius: 2px;
         }
         .bot { 
-            background: #e0e0e0; 
+            background: #ffffff; 
             color: #333; 
             margin-right: auto; 
             border-bottom-left-radius: 2px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #eee;
         }
+
+        /* Định dạng nội dung Markdown */
+        .message p { margin: 0 0 10px 0; }
+        .message p:last-child { margin-bottom: 0; }
+        .message pre {
+            background: #2d2d2d;
+            color: #ccc;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: Consolas, Monaco, monospace;
+        }
+        .message code {
+            background: rgba(0,0,0,0.05);
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: Consolas, Monaco, monospace;
+            color: #d32f2f;
+        }
+        .message pre code {
+            background: transparent;
+            color: inherit;
+            padding: 0;
+        }
+        .message table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        .message th, .message td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .message th { background-color: #f2f2f2; }
+        .user code { color: #ffeb3b; background: rgba(0,0,0,0.1); }
+        .user a { color: #fff; text-decoration: underline; }
+
         .input-area { 
             display: flex; 
             padding: 15px; 
             background: #ffffff;
             border-top: 1px solid #eee;
+            z-index: 2;
         }
         #user-input { 
             flex: 1; 
@@ -87,9 +155,7 @@
             outline: none;
             transition: border 0.3s;
         }
-        #user-input:focus {
-            border-color: #00796b;
-        }
+        #user-input:focus { border-color: #00796b; }
         button { 
             padding: 12px 24px; 
             border: none; 
@@ -101,15 +167,7 @@
             font-weight: bold;
             transition: background 0.3s;
         }
-        button:hover { 
-            background: #004d40; 
-        }
-        .typing {
-            font-style: italic;
-            color: #888;
-            font-size: 0.9rem;
-            margin-top: 5px;
-        }
+        button:hover { background: #004d40; }
     </style>
 </head>
 <body>
@@ -138,11 +196,12 @@
             const userMsg = userInput.value.trim();
             if (!userMsg) return;
 
-            appendMessage('user', userMsg);
+            // Tin nhắn của User không dùng markdown để tránh lỗi hiển thị nếu gõ các ký tự đặc biệt
+            appendMessage('user', userMsg, null, false);
             userInput.value = '';
 
             const loadingId = 'loading-' + Date.now();
-            appendMessage('bot', 'Đang suy nghĩ...', loadingId);
+            appendMessage('bot', 'Đang suy nghĩ...', loadingId, false);
 
             try {
                 const res = await fetch('http://localhost:5000/send', {
@@ -152,18 +211,29 @@
                 });
                 const data = await res.json();
                 document.getElementById(loadingId).remove();
-                appendMessage('bot', data.reply);
+                
+                // Tin nhắn của Bot sẽ được render qua thư viện marked.js
+                appendMessage('bot', data.reply, null, true);
             } catch (err) {
                 document.getElementById(loadingId).remove();
-                appendMessage('bot', "Lỗi kết nối tới AI cục bộ! Đảm bảo bạn đã chạy 'python app.py' nhé.");
+                appendMessage('bot', "Lỗi kết nối tới AI cục bộ! Đảm bảo bạn đã chạy 'python app.py' nhé.", null, false);
             }
         }
 
-        function appendMessage(type, text, id = null) {
+        // Cập nhật hàm appendMessage để hỗ trợ Markdown (cờ isMarkdown)
+        function appendMessage(type, text, id = null, isMarkdown = false) {
             const msgDiv = document.createElement('div');
             msgDiv.className = `message ${type}`;
-            msgDiv.textContent = text;
             if (id) msgDiv.id = id;
+            
+            if (isMarkdown) {
+                // Parse markdown thành HTML
+                msgDiv.innerHTML = marked.parse(text);
+            } else {
+                // Chỉ là text thông thường (tránh XSS cho user input)
+                msgDiv.textContent = text;
+            }
+            
             chatBox.appendChild(msgDiv);
             chatBox.scrollTop = chatBox.scrollHeight;
         }
