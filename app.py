@@ -1,4 +1,4 @@
-﻿from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 import urllib.request
 import json
@@ -9,9 +9,11 @@ CORS(app)
 
 def call_antigravity(prompt):
     try:
-        # Gọi CLI của Antigravity (agy) để thực thi lệnh
-        result = subprocess.check_output(['agy', 'run', prompt], text=True, encoding='utf-8')
+        # Gọi CLI của Antigravity (agy) để thực thi lệnh (dùng cờ --print thay vì run)
+        result = subprocess.check_output(['agy', '--print', prompt], text=True, encoding='utf-8')
         return f"🤖 [Ba Sáu / Antigravity đã thực thi]:\n{result}"
+    except subprocess.CalledProcessError as e:
+        return f"Lỗi gọi Ba Sáu (Exit code {e.returncode}):\nOutput: {e.output}"
     except Exception as e:
         return f"Lỗi khi gọi Ba Sáu: {str(e)}"
 
