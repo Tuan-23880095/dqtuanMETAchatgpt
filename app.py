@@ -2,9 +2,18 @@
 from flask_cors import CORS
 import urllib.request
 import json
+import subprocess
 
 app = Flask(__name__)
-CORS(app) # Allow cross-origin requests
+CORS(app)
+
+def call_antigravity(prompt):
+    try:
+        # Gọi CLI của Antigravity (agy) để thực thi lệnh
+        result = subprocess.check_output(['agy', 'run', prompt], text=True, encoding='utf-8')
+        return f"🤖 [Ba Sáu / Antigravity đã thực thi]:\n{result}"
+    except Exception as e:
+        return f"Lỗi khi gọi Ba Sáu: {str(e)}"
 
 def get_ai_response(message):
     try:
@@ -25,7 +34,15 @@ def get_ai_response(message):
 def send_message():
     data = request.json
     user_message = data.get('message', '')
-    ai_response = get_ai_response(user_message)
+    
+    # Nếu tin nhắn bắt đầu bằng @basau, chuyển lệnh cho Antigravity (Agent)
+    if user_message.strip().lower().startswith('@basau'):
+        task = user_message[6:].strip()
+        ai_response = call_antigravity(task)
+    else:
+        # Ngược lại, chỉ dùng Qwen3 để chat bình thường
+        ai_response = get_ai_response(user_message)
+        
     return jsonify({'reply': ai_response})
 
 if __name__ == '__main__':
