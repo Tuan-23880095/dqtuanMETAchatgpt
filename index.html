@@ -137,6 +137,7 @@
             background: #ffffff;
             border-top: 1px solid #eee;
             z-index: 2;
+            align-items: center;
         }
         #user-input { 
             flex: 1; 
@@ -159,6 +160,9 @@
             font-size: 1rem;
             font-weight: bold;
             transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         button:hover { background: #004d40; }
     </style>
@@ -186,12 +190,72 @@
                 <option value="/data:analyze ">Phân tích dữ liệu</option>
                 <option value="@metagpt ">Gọi công ty ảo MetaGPT lập trình</option>
             </datalist>
+            <button id="mic-btn" onclick="toggleVoice()" style="margin-right: 5px; background: #d32f2f; border-radius: 50%; width: 45px; height: 45px; padding: 0;">🎤</button>
             <button onclick="sendMessage()">Gửi</button>
         </div>
     </div>
     <script>
         const chatBox = document.getElementById('chat-box');
         const userInput = document.getElementById('user-input');
+        const micBtn = document.getElementById('mic-btn');
+
+        let recognition = null;
+        let isRecording = false;
+
+        // Initialize Speech Recognition
+        if ('webkitSpeechRecognition' in window) {
+            recognition = new webkitSpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'vi-VN';
+
+            recognition.onstart = function() {
+                isRecording = true;
+                micBtn.style.background = '#4CAF50'; 
+                userInput.placeholder = "Đang nghe...";
+            };
+
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                userInput.value = transcript;
+                sendMessage(); 
+            };
+
+            recognition.onerror = function(event) {
+                console.error("Speech error", event);
+            };
+
+            recognition.onend = function() {
+                isRecording = false;
+                micBtn.style.background = '#d32f2f'; 
+                userInput.placeholder = "Nhập tin nhắn (Gõ / để hiện danh sách skill)...";
+            };
+        }
+
+        function toggleVoice() {
+            if (!recognition) {
+                alert("Trình duyệt không hỗ trợ nhận diện giọng nói!");
+                return;
+            }
+            // Stop speaking if the bot is currently talking
+            if (window.speechSynthesis.speaking) {
+                window.speechSynthesis.cancel();
+            }
+            
+            if (isRecording) {
+                recognition.stop();
+            } else {
+                recognition.start();
+            }
+        }
+
+        function speakText(text) {
+            // Remove markdown syntax for better voice quality
+            let plainText = text.replace(/[#_*`~]/g, '');
+            const utterance = new SpeechSynthesisUtterance(plainText);
+            utterance.lang = 'vi-VN';
+            window.speechSynthesis.speak(utterance);
+        }
 
         userInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') sendMessage();
@@ -208,7 +272,7 @@
             appendMessage('bot', 'Đang suy nghĩ...', loadingId, false);
 
             try {
-                const res = await fetch('https://southeast-rapids-chose-transport.trycloudflare.com/send', {
+                const res = await fetch('https://directive-physiology-vegetation-out.trycloudflare.com/send', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ message: userMsg })
@@ -216,9 +280,10 @@
                 const data = await res.json();
                 document.getElementById(loadingId).remove();
                 appendMessage('bot', data.reply, null, true);
+                speakText(data.reply);
             } catch (err) {
                 document.getElementById(loadingId).remove();
-                appendMessage('bot', "Lỗi kết nối tới AI cục bộ! Đảm bảo bạn đã chạy 'python app.py' nhé.", null, false);
+                appendMessage('bot', "Lỗi kết nối tới AI cục bộ! Đảm bảo bạn đã chạy 'KhoiDong_WebChatbot.bat'.", null, false);
             }
         }
 

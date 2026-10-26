@@ -1,4 +1,4 @@
-﻿from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 import urllib.request
 import json
@@ -70,4 +70,5 @@ def send_message():
     return jsonify({'reply': ai_response})
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    # Đổi host thành 0.0.0.0 để điện thoại cùng mạng Wi-Fi có thể kết nối được
+    app.run(host='0.0.0.0', debug=True, port=5000)

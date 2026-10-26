@@ -1,0 +1,241 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Trợ lý ảo RTX</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #121212;
+            color: #ffffff;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+        }
+        .orb {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #00e676, #00b0ff);
+            box-shadow: 0 0 30px #00e676;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+        }
+        .orb.listening {
+            background: radial-gradient(circle, #ff1744, #d50000);
+            box-shadow: 0 0 50px #ff1744;
+            animation: pulse 1s infinite alternate;
+        }
+        .orb.speaking {
+            background: radial-gradient(circle, #2979ff, #2962ff);
+            box-shadow: 0 0 50px #2979ff;
+            animation: pulse 0.5s infinite alternate;
+        }
+        .orb.sleeping {
+            background: radial-gradient(circle, #757575, #424242);
+            box-shadow: none;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.1); }
+        }
+        #status { font-size: 1.2rem; color: #aaa; margin-bottom: 10px; }
+        #live-text { font-size: 1.5rem; color: #fff; max-width: 80%; min-height: 50px; word-wrap: break-word;}
+        #response-text { font-size: 1.2rem; color: #00e676; max-width: 80%; margin-top: 20px;}
+        .instruction { font-size: 0.9rem; color: #777; margin-top: 40px; }
+    </style>
+</head>
+<body>
+
+    <div id="orb" class="orb" onclick="initAudio()">BẬT</div>
+    <div id="status">Bấm vào khối cầu để bắt đầu...</div>
+    <div id="live-text"></div>
+    <div id="response-text"></div>
+    
+    <div class="instruction">
+        - Nói "RTX" (A-rờ Tê X) để gọi trợ lý<br>
+        - Trợ lý sẽ tự trả lời sau 5 giây im lặng (bạn yêu cầu 30s nhưng 5s sẽ giống đàm thoại thật hơn).<br>
+        - Nói "Bye RTX" để kết thúc. Nếu im lặng 1 phút, hệ thống tự tắt.
+    </div>
+
+    <script>
+        const orb = document.getElementById('orb');
+        const statusEl = document.getElementById('status');
+        const liveText = document.getElementById('live-text');
+        const responseText = document.getElementById('response-text');
+
+        let recognition = null;
+        let isListeningToCommand = false; 
+        let sessionActive = false;
+        let silenceTimer = null;
+        let sleepTimer = null;
+        let currentCommand = "";
+        let isBotSpeaking = false;
+
+        // Auto-fetch the current cloudflare URL from the original index.html
+        let CLOUDFLARE_URL = "";
+
+        // Tạm thời lấy động URL để test
+        fetch('index.html').then(res => res.text()).then(html => {
+            let match = html.match(/https:\/\/[a-zA-Z0-9-]+\.trycloudflare\.com/);
+            if(match) CLOUDFLARE_URL = match[0] + "/send";
+        });
+
+        function initAudio() {
+            if (!('webkitSpeechRecognition' in window)) {
+                alert("Trình duyệt không hỗ trợ. Vui lòng dùng Chrome.");
+                return;
+            }
+            if(sessionActive) return;
+
+            sessionActive = true;
+            orb.innerText = "RTX";
+            statusEl.innerText = "Đang ở chế độ chờ. Hãy gọi 'RTX'...";
+            
+            recognition = new webkitSpeechRecognition();
+            recognition.continuous = true;
+            recognition.interimResults = true;
+            recognition.lang = 'vi-VN';
+
+            recognition.onresult = handleSpeech;
+            recognition.onend = restartRecognition;
+            recognition.onerror = function(e) { console.error(e); };
+
+            resetSleepTimer();
+            recognition.start();
+        }
+
+        function restartRecognition() {
+            if (sessionActive && !isBotSpeaking) {
+                try { recognition.start(); } catch(e){}
+            }
+        }
+
+        function resetSleepTimer() {
+            clearTimeout(sleepTimer);
+            sleepTimer = setTimeout(() => {
+                goToSleep();
+            }, 60000); // 1 minute
+        }
+
+        function resetSilenceTimer() {
+            clearTimeout(silenceTimer);
+            silenceTimer = setTimeout(() => {
+                if (isListeningToCommand && currentCommand.trim().length > 2) {
+                    processCommand(currentCommand);
+                }
+            }, 5000); // 5 seconds of silence means user finished talking
+        }
+
+        function goToSleep() {
+            sessionActive = false;
+            isListeningToCommand = false;
+            orb.className = "orb sleeping";
+            orb.innerText = "NGỦ";
+            statusEl.innerText = "Đã ngắt. Bấm vào khối cầu để đánh thức.";
+            if(recognition) recognition.stop();
+        }
+
+        function handleSpeech(event) {
+            if (!sessionActive || isBotSpeaking) return;
+            resetSleepTimer();
+
+            let interim = '';
+            let final = '';
+
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+                if (event.results[i].isFinal) {
+                    final += event.results[i][0].transcript;
+                } else {
+                    interim += event.results[i][0].transcript;
+                }
+            }
+
+            let fullText = (final + " " + interim).toLowerCase();
+            
+            // Check exit command
+            if (fullText.includes("bye rtx") || fullText.includes("tạm biệt rtx") || fullText.includes("bai rtx") || fullText.includes("bai a rờ")) {
+                speakText("Tạm biệt bạn!");
+                goToSleep();
+                return;
+            }
+
+            if (!isListeningToCommand) {
+                // Standby: Wait for wake word
+                if (fullText.includes("rtx") || fullText.includes("a rờ") || fullText.includes("rờ tê")) {
+                    isListeningToCommand = true;
+                    orb.className = "orb listening";
+                    statusEl.innerText = "Đang nghe bạn nói...";
+                    speakText("Dạ!"); // Wake word acknowledgment
+                    
+                    let parts = fullText.split(/rtx|a rờ|rờ tê/);
+                    currentCommand = parts.length > 1 ? parts[1].trim() : "";
+                    liveText.innerText = currentCommand;
+                    resetSilenceTimer();
+                }
+            } else {
+                // Active: Accumulate command
+                if (event.results[event.results.length - 1].isFinal) {
+                    currentCommand += " " + final;
+                }
+                liveText.innerText = currentCommand + " " + interim;
+                resetSilenceTimer();
+            }
+        }
+
+        async function processCommand(cmd) {
+            isListeningToCommand = false;
+            orb.className = "orb speaking";
+            statusEl.innerText = "Đang suy nghĩ...";
+            if(recognition) recognition.stop();
+            
+            try {
+                const res = await fetch(CLOUDFLARE_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: cmd })
+                });
+                const data = await res.json();
+                responseText.innerText = data.reply;
+                speakText(data.reply);
+            } catch(e) {
+                responseText.innerText = "Lỗi kết nối!";
+                speakText("Xin lỗi, tôi không thể kết nối tới máy chủ.");
+            }
+        }
+
+        function speakText(text) {
+            isBotSpeaking = true;
+            if(recognition) recognition.stop();
+            
+            let plainText = text.replace(/[#_*`~]/g, '');
+            const utterance = new SpeechSynthesisUtterance(plainText);
+            utterance.lang = 'vi-VN';
+            
+            utterance.onend = function() {
+                isBotSpeaking = false;
+                currentCommand = "";
+                liveText.innerText = "";
+                responseText.innerText = "";
+                orb.className = "orb";
+                statusEl.innerText = "Đang ở chế độ chờ. Hãy gọi 'RTX'...";
+                restartRecognition();
+            };
+            
+            window.speechSynthesis.speak(utterance);
+        }
+    </script>
+</body>
+</html>
