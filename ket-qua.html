@@ -133,8 +133,28 @@
       </div>
     </div>
 
-    <!-- KHỐI ĐÁNH GIÁ SƯ PHẠM CỦA GEMINI AI -->
-    <div class="bg-white rounded-2xl p-6 sm:p-8 border-l-4 border-luc border-y border-r border-bac shadow-md card-shadow space-y-4">
+    <!-- KHỐI ĐÁNH GIÁ SƯ PHẠM CỦA GEMINI AI (CÓ CHẾ ĐỘ MỞ KHÓA HOẶC LÀM MỜ NẾU HẾT LƯỢT AI) -->
+    <div id="ai-block-container" class="relative bg-white rounded-2xl p-6 sm:p-8 border-l-4 border-luc border-y border-r border-bac shadow-md card-shadow space-y-4 overflow-hidden">
+      
+      <!-- Overlay khi chưa mở khóa AI nhận xét -->
+      <div id="ai-locked-overlay" class="hidden absolute inset-0 bg-white/85 backdrop-blur-[2px] z-10 flex flex-col items-center justify-center p-6 text-center space-y-3">
+        <div class="w-12 h-12 rounded-full bg-emerald-100 text-luc flex items-center justify-center text-xl shadow">
+          <i class="fas fa-lock text-son"></i>
+        </div>
+        <h3 class="text-base sm:text-lg font-bold text-lam title-serif">Mở Khóa Nhận Xét Phân Tích Tư Duy Từ Gemini AI</h3>
+        <p class="text-xs text-gray-700 max-w-lg leading-relaxed">
+          🌱 Em vẫn xem điểm số, số câu đúng/sai và phân tích thời gian <b>hoàn toàn miễn phí</b>. Để mở khóa phần chỉ ra chính xác lỗ hổng tư duy và mẹo giải nhanh từ Thầy Đinh Quốc Tuấn, em hãy ủng hộ Thầy một ly trà đá (5.000đ) qua MoMo để bù chi phí máy chủ AI nhé!
+        </p>
+        <div class="flex flex-wrap items-center justify-center gap-3 pt-1">
+          <a href="index.html" class="bg-gradient-to-r from-son to-orange-500 hover:from-red-600 hover:to-orange-600 text-white font-bold py-2.5 px-6 rounded-xl text-xs transition shadow flex items-center gap-2">
+            <i class="fas fa-heart"></i> Ủng Hộ MoMo (5.000đ) Mở Khóa Nhận Xét AI
+          </a>
+          <a href="mailto:dqtuanhcmus@gmail.com?subject=Xin%20Mien%20Phi%20Nhan%20Xet%20AI%20Cho%20Hoc%20Sinh%20Kho%20Khan" class="text-xs text-lam hover:underline font-semibold block sm:inline">
+            <i class="fas fa-envelope"></i> Học sinh khó khăn? Bấm để Thầy hỗ trợ miễn phí
+          </a>
+        </div>
+      </div>
+
       <div class="flex items-center gap-2 text-luc font-bold text-sm">
         <i class="fas fa-brain text-base"></i> <span>Phân Tích Sư Phạm & Nhận Xét Tư Duy Từ Thầy Đinh Quốc Tuấn (Gemini AI)</span>
       </div>
@@ -252,6 +272,14 @@
         `Đúng: ${data.correct_count}/${data.total_questions} câu · Thời gian làm: ${data.duration_seconds}s`;
 
       const ai = data.ai_evaluation;
+      const overlayEl = document.getElementById('ai-locked-overlay');
+
+      if (ai && ai.locked) {
+        if (overlayEl) overlayEl.classList.remove('hidden');
+      } else {
+        if (overlayEl) overlayEl.classList.add('hidden');
+      }
+
       if (ai) {
         document.getElementById('res-level').innerText = ai.level;
         document.getElementById('res-badge').innerText = ai.badge;

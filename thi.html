@@ -160,17 +160,6 @@
         const res = await fetch(`api.php?action=get_exam&exam_id=${examId}`);
         const data = await res.json();
 
-        if (data.status === 'auth_required') {
-          alert('Vui lòng đăng nhập hoặc tạo tài khoản khách trước khi vào thi!');
-          window.location.href = 'index.html';
-          return;
-        }
-
-        if (data.status === 'quota_exceeded') {
-          document.getElementById('modal-quota').classList.remove('hidden');
-          return;
-        }
-
         if (data.status === 'success') {
           examData = data.exam;
           renderExam();

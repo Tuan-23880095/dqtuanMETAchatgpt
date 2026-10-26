@@ -111,16 +111,19 @@
         </h3>
         <div id="trial-counter-box" class="space-y-3">
           <div class="bg-giay p-3 rounded-xl border border-bac flex justify-between items-center">
-            <span class="text-xs text-gray-600 font-medium">Lượt thi miễn phí:</span>
-            <span id="free-count" class="font-bold text-luc text-lg">2 lượt</span>
+            <span class="text-xs text-gray-600 font-medium">Làm bài & chấm điểm:</span>
+            <span class="font-bold text-luc text-sm">Miễn phí 100%</span>
           </div>
           <div class="bg-giay p-3 rounded-xl border border-bac flex justify-between items-center">
-            <span class="text-xs text-gray-600 font-medium">Lượt nạp MoMo:</span>
-            <span id="paid-count" class="font-bold text-lam text-lg">0 lượt</span>
+            <span class="text-xs text-gray-600 font-medium">Lượt nhận xét AI:</span>
+            <span id="free-count" class="font-bold text-lam text-base">2 lượt</span>
           </div>
           <button onclick="openBonusModal(5000)" class="w-full bg-gradient-to-r from-son to-orange-500 hover:from-red-600 hover:to-orange-600 text-white font-bold py-2.5 px-4 rounded-xl text-xs flex items-center justify-center gap-2 transition shadow">
-            <i class="fas fa-heart"></i> Ủng hộ Thầy 5.000đ (+5 lượt)
+            <i class="fas fa-heart"></i> Ủng hộ Thầy 5.000đ (+5 lượt AI)
           </button>
+          <p class="text-[10px] text-gray-500 text-center italic">
+            Học sinh khó khăn có thể gửi email về <a href="mailto:dqtuanhcmus@gmail.com" class="text-luc underline">dqtuanhcmus@gmail.com</a> để Thầy hỗ trợ miễn phí.
+          </p>
         </div>
       </div>
     </div>
@@ -387,15 +390,6 @@
     }
 
     function startExam(examId) {
-      if (!currentUser) {
-        openModal('modal-guest');
-        return;
-      }
-      const totalTrials = currentUser.free_trials_left + currentUser.paid_trials_left;
-      if (totalTrials <= 0) {
-        openBonusModal(5000);
-        return;
-      }
       window.location.href = `thi.html?exam_id=${examId}`;
     }
 

@@ -364,48 +364,29 @@ switch ($action) {
         json_out(['status' => 'success', 'exams' => $exams]);
         break;
 
-    // 5. Lấy đề thi vào phòng làm bài (kiểm tra hạn ngạch 2 lượt miễn phí)
+    // 5. Lấy đề thi vào phòng làm bài (MỌI HỌC SINH ĐỀU ĐƯỢC VÀO THI MIỄN PHÍ KHÔNG GIỚI HẠN)
     case 'get_exam':
         $examId = (int)($_GET['exam_id'] ?? $inputData['exam_id'] ?? 0);
         if ($examId <= 0) {
             json_out(['status' => 'error', 'message' => 'Mã đề thi không hợp lệ.'], 400);
         }
 
-        // Bắt buộc phải đăng nhập (hoặc tài khoản khách)
-        if (!isset($_SESSION['bdvh_user_id'])) {
-            json_out([
-                'status' => 'auth_required',
-                'message' => 'Em cần đăng nhập hoặc tạo tài khoản khách để bắt đầu làm bài.'
-            ], 401);
+        // Nếu chưa đăng nhập thì tự động xem như khách ẩn danh
+        $userTrials = ['free_trials_left' => 0, 'paid_trials_left' => 0];
+        if (isset($_SESSION['bdvh_user_id'])) {
+            $userId = (int)$_SESSION['bdvh_user_id'];
+            $stmt = $pdo->prepare("SELECT free_trials_left, paid_trials_left FROM bdvh_users WHERE user_id = ?");
+            $stmt->execute([$userId]);
+            $u = $stmt->fetch();
+            if ($u) {
+                $userTrials = [
+                    'free_trials_left' => (int)$u['free_trials_left'],
+                    'paid_trials_left' => (int)$u['paid_trials_left']
+                ];
+            }
         }
 
-        $userId = (int)$_SESSION['bdvh_user_id'];
-        $stmt = $pdo->prepare("SELECT free_trials_left, paid_trials_left, full_name, username FROM bdvh_users WHERE user_id = ?");
-        $stmt->execute([$userId]);
-        $user = $stmt->fetch();
-
-        if (!$user) {
-            json_out(['status' => 'error', 'message' => 'Không tìm thấy tài khoản.'], 404);
-        }
-
-        // Kiểm soát số lượt: Nếu hết cả 2 lượt miễn phí và không có lượt nạp
-        $totalTrials = (int)$user['free_trials_left'] + (int)$user['paid_trials_left'];
-        if ($totalTrials <= 0) {
-            json_out([
-                'status' => 'quota_exceeded',
-                'message' => 'Em đã dùng hết 2 lượt làm bài miễn phí!',
-                'upgrade_info' => [
-                    'title' => 'Mở khóa thêm lượt & Nhận xét tư duy từ AI',
-                    'detail' => 'Ủng hộ Thầy Tuấn 1 ly trà đá (5.000đ) qua MoMo để mở thêm 5 lượt thi thử tính giờ và nhận phân tích sai sót từ Gemini AI.',
-                    'momo_phone' => '0908.xxx.xxx (ThS. Đinh Quốc Tuấn)',
-                    'memo' => 'BDVH ' . $user['username'] . ' 5K',
-                    'amount' => 5000,
-                    'email' => 'dqtuanhcmus@gmail.com'
-                ]
-            ], 403);
-        }
-
-        // Lấy đề thi và giấu đáp án đúng
+        // Lấy đề thi và giấu đáp án đúng để học sinh làm bài
         $stmt = $pdo->prepare("SELECT exam_id, exam_code, grade, subject, title, description, time_minutes, questions_json FROM bdvh_exams WHERE exam_id = ?");
         $stmt->execute([$examId]);
         $exam = $stmt->fetch();
@@ -419,7 +400,10 @@ switch ($action) {
             $safeQuestions[] = [
                 'idx' => $idx,
                 'q' => $q['q'],
-                'opts' => $q['opts']
+                'type' => $q['type'] ?? 'choice',
+                'section' => $q['section'] ?? '',
+                'opts' => $q['opts'] ?? [],
+                'items' => $q['items'] ?? []
             ];
         }
 
@@ -432,53 +416,23 @@ switch ($action) {
                 'time_minutes' => $exam['time_minutes'],
                 'questions' => $safeQuestions
             ],
-            'user_trials' => [
-                'free_trials_left' => $user['free_trials_left'],
-                'paid_trials_left' => $user['paid_trials_left']
-            ]
+            'user_trials' => $userTrials
         ]);
         break;
 
-    // 6. Nộp bài, chấm điểm và gọi Gemini AI phân tích tư duy
+    // 6. Nộp bài, chấm điểm và gọi Gemini AI phân tích tư duy (Chấm bài miễn phí, AI nhận xét cần bonus khi hết lượt)
     case 'submit_exam':
-        if (!isset($_SESSION['bdvh_user_id'])) {
-            json_out(['status' => 'error', 'message' => 'Hết phiên đăng nhập.'], 401);
-        }
-        $userId = (int)$_SESSION['bdvh_user_id'];
         $examId = (int)($inputData['exam_id'] ?? 0);
-        $userAnswers = $inputData['answers'] ?? []; // mảng [0 => 1, 1 => 0, ...]
+        $userAnswers = $inputData['answers'] ?? []; // mảng đáp án
         $durationSeconds = (int)($inputData['duration_seconds'] ?? 0);
-
-        // Lấy thông tin user và trừ lượt
-        $stmt = $pdo->prepare("SELECT * FROM bdvh_users WHERE user_id = ?");
-        $stmt->execute([$userId]);
-        $user = $stmt->fetch();
-        if (!$user) {
-            json_out(['status' => 'error', 'message' => 'Người dùng không tồn tại.'], 404);
-        }
-
-        $freeLeft = (int)$user['free_trials_left'];
-        $paidLeft = (int)$user['paid_trials_left'];
-        $isFree = 1;
-
-        if ($freeLeft > 0) {
-            $freeLeft--;
-            $isFree = 1;
-        } elseif ($paidLeft > 0) {
-            $paidLeft--;
-            $isFree = 0;
-        } else {
-            json_out(['status' => 'quota_exceeded', 'message' => 'Hết lượt làm bài.'], 403);
-        }
-
-        // Cập nhật lại số lượt của user
-        $stmt = $pdo->prepare("UPDATE bdvh_users SET free_trials_left = ?, paid_trials_left = ? WHERE user_id = ?");
-        $stmt->execute([$freeLeft, $paidLeft, $userId]);
 
         // Lấy đề thi gốc để chấm điểm
         $stmt = $pdo->prepare("SELECT * FROM bdvh_exams WHERE exam_id = ?");
         $stmt->execute([$examId]);
         $exam = $stmt->fetch();
+        if (!$exam) {
+            json_out(['status' => 'error', 'message' => 'Không tìm thấy đề thi.'], 404);
+        }
         $questions = json_decode($exam['questions_json'], true);
 
         $correctCount = 0;
@@ -486,17 +440,42 @@ switch ($action) {
         $details = [];
 
         foreach ($questions as $idx => $q) {
-            $chosen = isset($userAnswers[$idx]) ? (int)$userAnswers[$idx] : -1;
-            $isCorrect = ($chosen === (int)$q['ans']);
+            $chosen = $userAnswers[$idx] ?? -1;
+            $isCorrect = false;
+            $qType = $q['type'] ?? 'choice';
+
+            if ($qType === 'choice') {
+                $isCorrect = ((int)$chosen === (int)$q['ans']);
+            } elseif ($qType === 'true_false') {
+                $allMatch = true;
+                if (is_array($chosen)) {
+                    foreach ($q['ans'] as $sIdx => $trueVal) {
+                        if (!isset($chosen[$sIdx]) || (int)$chosen[$sIdx] !== (int)$trueVal) {
+                            $allMatch = false;
+                            break;
+                        }
+                    }
+                } else {
+                    $allMatch = false;
+                }
+                $isCorrect = $allMatch;
+            } elseif ($qType === 'short') {
+                $strChosen = mb_strtolower(trim((string)$chosen));
+                $strAns = mb_strtolower(trim((string)$q['ans']));
+                $isCorrect = ($strChosen === $strAns);
+            }
+
             if ($isCorrect) {
                 $correctCount++;
             }
             $details[] = [
                 'idx' => $idx,
                 'q' => $q['q'],
-                'opts' => $q['opts'],
+                'type' => $qType,
+                'opts' => $q['opts'] ?? [],
+                'items' => $q['items'] ?? [],
                 'chosen' => $chosen,
-                'correct_ans' => (int)$q['ans'],
+                'correct_ans' => $q['ans'],
                 'is_correct' => $isCorrect,
                 'explanation' => $q['exp'] ?? ''
             ];
@@ -504,27 +483,87 @@ switch ($action) {
 
         $score = ($totalQuestions > 0) ? round(($correctCount / $totalQuestions) * 10, 2) : 0;
 
-        // Tích hợp Gemini AI Engine đánh giá năng lực học sinh kèm phân tích thời gian
-        $targetSeconds = ((int)$exam['time_minutes']) * 60;
-        $aiResult = evaluate_with_gemini($user['full_name'], $exam['title'], $score, $correctCount, $totalQuestions, $durationSeconds, $targetSeconds, $details);
+        // Xử lý quyền xem nhận xét Gemini AI
+        $userId = isset($_SESSION['bdvh_user_id']) ? (int)$_SESSION['bdvh_user_id'] : 0;
+        $hasAiAccess = false;
+        $freeLeft = 0;
+        $paidLeft = 0;
+        $studentName = 'Học sinh';
 
-        // Lưu vào bảng submissions
-        $stmt = $pdo->prepare("
-            INSERT INTO bdvh_submissions (user_id, exam_id, score, duration_seconds, answers_given, correct_count, total_questions, ai_evaluation, is_free_trial, created_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now','localtime'))
-        ");
-        $stmt->execute([
-            $userId,
-            $examId,
-            $score,
-            $durationSeconds,
-            json_encode($userAnswers),
-            $correctCount,
-            $totalQuestions,
-            json_encode($aiResult, JSON_UNESCAPED_UNICODE),
-            $isFree
-        ]);
-        $submissionId = (int)$pdo->lastInsertId();
+        if ($userId > 0) {
+            $stmt = $pdo->prepare("SELECT * FROM bdvh_users WHERE user_id = ?");
+            $stmt->execute([$userId]);
+            $user = $stmt->fetch();
+            if ($user) {
+                $studentName = $user['full_name'];
+                $freeLeft = (int)$user['free_trials_left'];
+                $paidLeft = (int)$user['paid_trials_left'];
+
+                if ($freeLeft > 0) {
+                    $freeLeft--;
+                    $hasAiAccess = true;
+                    $stmt = $pdo->prepare("UPDATE bdvh_users SET free_trials_left = ? WHERE user_id = ?");
+                    $stmt->execute([$freeLeft, $userId]);
+                } elseif ($paidLeft > 0) {
+                    $paidLeft--;
+                    $hasAiAccess = true;
+                    $stmt = $pdo->prepare("UPDATE bdvh_users SET paid_trials_left = ? WHERE user_id = ?");
+                    $stmt->execute([$paidLeft, $userId]);
+                }
+            }
+        }
+
+        $targetSeconds = ((int)$exam['time_minutes']) * 60;
+        $aiResult = null;
+        if ($hasAiAccess) {
+            $aiResult = evaluate_with_gemini($studentName, $exam['title'], $score, $correctCount, $totalQuestions, $durationSeconds, $targetSeconds, $details);
+        } else {
+            // Nhận xét thời gian cơ bản (luôn tặng học sinh)
+            $avgSec = ($totalQuestions > 0) ? round($durationSeconds / $totalQuestions, 1) : 0;
+            $stdMin = round($targetSeconds / 60, 1);
+            $aiResult = [
+                'locked' => true,
+                'level' => ($score >= 8.0) ? 'Giỏi' : (($score >= 5.0) ? 'Khá' : 'Cần củng cố'),
+                'badge' => ($score >= 8.0) ? '⭐ Xuất sắc' : '🌱 Cố gắng',
+                'teacher_remark' => "Thầy Đinh Quốc Tuấn chúc mừng em đã hoàn thành bài thi! Em đạt {$score}/10 điểm ({$correctCount}/{$totalQuestions} câu đúng).",
+                'time_analysis' => [
+                    'actual_seconds' => $durationSeconds,
+                    'actual_formatted' => sprintf('%02d:%02d', floor($durationSeconds / 60), $durationSeconds % 60),
+                    'recommended_minutes' => $stdMin,
+                    'is_overtime' => ($durationSeconds > $targetSeconds),
+                    'diff_minutes' => round(abs($durationSeconds - $targetSeconds) / 60, 1),
+                    'avg_seconds_per_question' => $avgSec,
+                    'pace_category' => ($durationSeconds <= $targetSeconds) ? 'Đúng tiến độ' : 'Cần tăng tốc',
+                    'time_strategy_advice' => 'Phân tích tư duy sâu và mẹo giải nhanh độc quyền đang được khóa. Hãy ủng hộ Thầy 5.000đ để mở khóa nhận xét AI nhé!'
+                ],
+                'root_causes' => [
+                    "Tính năng chỉ ra chính xác lỗ hổng tư duy từng câu của Gemini AI yêu cầu mở khóa bonus.",
+                    "Học sinh có hoàn cảnh khó khăn có thể gửi email về dqtuanhcmus@gmail.com để được Thầy mở miễn phí."
+                ],
+                'exclusive_tip' => "Mẹo giải nhanh của Thầy Tuấn đang được khóa. Ủng hộ 5.000đ để xem phân tích chi tiết."
+            ];
+        }
+
+        // Lưu vào submissions nếu có tài khoản
+        $submissionId = 0;
+        if ($userId > 0) {
+            $stmt = $pdo->prepare("
+                INSERT INTO bdvh_submissions (user_id, exam_id, score, duration_seconds, answers_given, correct_count, total_questions, ai_evaluation, is_free_trial, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now','localtime'))
+            ");
+            $stmt->execute([
+                $userId,
+                $examId,
+                $score,
+                $durationSeconds,
+                json_encode($userAnswers),
+                $correctCount,
+                $totalQuestions,
+                json_encode($aiResult, JSON_UNESCAPED_UNICODE),
+                $hasAiAccess ? 1 : 0
+            ]);
+            $submissionId = (int)$pdo->lastInsertId();
+        }
 
         json_out([
             'status' => 'success',
