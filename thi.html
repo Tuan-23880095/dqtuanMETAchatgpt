@@ -110,10 +110,10 @@
       <!-- NÚT NỘP BÀI -->
       <div class="pt-6 border-t border-bac flex flex-col sm:flex-row justify-between items-center gap-4">
         <p class="text-xs text-gray-500 italic">
-          <i class="fas fa-info-circle text-luc"></i> Sau khi nộp bài, Gemini AI sẽ tự động phân tích ma trận điểm và chỉ ra lỗi sai.
+          <i class="fas fa-info-circle text-luc"></i> Sau khi nộp bài, Hệ thống sẽ tự động tổng hợp ma trận điểm, phân tích tốc độ và chỉ ra lỗ hổng kiến thức.
         </p>
         <button type="submit" id="btn-submit" class="w-full sm:w-auto bg-luc hover:bg-emerald-800 text-white font-bold py-3.5 px-8 rounded-xl text-sm transition shadow-lg flex items-center justify-center gap-2">
-          <i class="fas fa-paper-plane"></i> <span>Nộp Bài & Nhận Đánh Giá AI</span>
+          <i class="fas fa-paper-plane"></i> <span>Nộp Bài & Xem Phân Tích Chuyên Sâu</span>
         </button>
       </div>
     </form>
@@ -127,7 +127,7 @@
       </div>
       <h3 class="font-bold text-lg text-lam title-serif mb-2">Đã Hết 2 Lượt Thi Miễn Phí!</h3>
       <p class="text-xs text-gray-600 leading-relaxed mb-6">
-        Em đã dùng hết 2 lượt làm bài miễn phí của tài khoản khách. Hãy ủng hộ Thầy một ly trà đá (5.000đ) để mở thêm 5 lượt thi thử tính giờ và nhận phân tích độc quyền từ Gemini AI nhé!
+        Em đã dùng hết 2 lượt làm bài miễn phí của tài khoản khách. Hãy ủng hộ Thầy một ly trà đá (5.000đ) để mở thêm 5 lượt thi thử tính giờ và nhận phân tích sư phạm chuyên sâu từ Hệ Thống nhé!
       </p>
       <div class="space-y-2">
         <a href="index.html" class="block w-full bg-luc text-white font-bold py-2.5 rounded-xl text-xs hover:bg-emerald-800 transition">
@@ -335,7 +335,7 @@
 
       const btn = document.getElementById('btn-submit');
       btn.disabled = true;
-      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Đang nộp bài & Gemini AI chấm...</span>';
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Đang nộp bài & Hệ Thống Khảo Thí chấm...</span>';
 
       try {
         const res = await fetch('api.php', {

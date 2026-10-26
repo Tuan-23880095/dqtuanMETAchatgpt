@@ -8,7 +8,7 @@ declare(strict_types=1);
  * Tính năng chính:
  * 1. Đăng ký & Đăng nhập tài khoản Khách (Guest Account) nhanh chóng.
  * 2. Kiểm soát giới hạn: Mỗi tài khoản khách được làm bài MIỄN PHÍ 2 LẦN.
- * 3. Tích hợp Gemini AI Engine đánh giá năng lực tư duy, bắt lỗi sai và gợi ý mẹo giải nhanh.
+ * 3. Tích hợp Hệ Thống Phân Tích Khảo Thí Chuyên Sâu đánh giá năng lực tư duy, bắt lỗi sai và gợi ý mẹo giải nhanh.
  * 4. Hệ thống Paywall & MoMo Bonus 5.000đ / Liên hệ nâng cấp email dqtuanhcmus@gmail.com.
  */
 
@@ -447,7 +447,7 @@ switch ($action) {
 
         json_out([
             'status' => 'success',
-            'message' => '🎉 CHÚC MỪNG EM ĐÃ VÀO ' . mb_strtoupper($check['label']) . '! Toàn bộ đề thi và nhận xét chuyên sâu từ Gemini AI đã được MỞ KHÓA KHÔNG GIỚI HẠN.',
+            'message' => '🎉 CHÚC MỪNG EM ĐÃ VÀO ' . mb_strtoupper($check['label']) . '! Toàn bộ đề thi và phân tích chuyên sâu từ Hệ Thống đã được MỞ KHÓA KHÔNG GIỚI HẠN.',
             'class_info' => [
                 'teacher' => $check['teacher'],
                 'label' => $check['label'],
@@ -734,7 +734,7 @@ switch ($action) {
         ]);
         break;
 
-    // 6. Nộp bài, chấm điểm và gọi Gemini AI phân tích tư duy (Chấm bài miễn phí, AI nhận xét cần bonus khi hết lượt)
+    // 6. Nộp bài, chấm điểm và gọi Hệ Thống Khảo Thí phân tích tư duy (Chấm bài miễn phí, AI nhận xét cần bonus khi hết lượt)
     case 'submit_exam':
         $examId = (int)($inputData['exam_id'] ?? 0);
         $userAnswers = $inputData['answers'] ?? []; // mảng đáp án
@@ -797,7 +797,7 @@ switch ($action) {
 
         $score = ($totalQuestions > 0) ? round(($correctCount / $totalQuestions) * 10, 2) : 0;
 
-        // Xử lý quyền xem nhận xét Gemini AI
+        // Xử lý quyền xem nhận xét Hệ Thống Khảo Thí
         $userId = isset($_SESSION['bdvh_user_id']) ? (int)$_SESSION['bdvh_user_id'] : 0;
         $hasAiAccess = false;
         $freeLeft = 0;
@@ -848,10 +848,10 @@ switch ($action) {
                     'diff_minutes' => round(abs($durationSeconds - $targetSeconds) / 60, 1),
                     'avg_seconds_per_question' => $avgSec,
                     'pace_category' => ($durationSeconds <= $targetSeconds) ? 'Đúng tiến độ' : 'Cần tăng tốc',
-                    'time_strategy_advice' => 'Phân tích tư duy sâu và mẹo giải nhanh độc quyền đang được khóa. Hãy ủng hộ Thầy 5.000đ để mở khóa nhận xét AI nhé!'
+                    'time_strategy_advice' => 'Phân tích tư duy sâu và mẹo giải nhanh độc quyền đang được khóa. Hãy ủng hộ Thầy 5.000đ để mở khóa phân tích sư phạm chuyên sâu nhé!'
                 ],
                 'root_causes' => [
-                    "Tính năng chỉ ra chính xác lỗ hổng tư duy từng câu của Gemini AI yêu cầu mở khóa bonus.",
+                    "Tính năng chỉ ra chính xác lỗ hổng tư duy từng câu của Hệ Thống Khảo Thí yêu cầu mở khóa bonus.",
                     "Học sinh có hoàn cảnh khó khăn có thể gửi email về dqtuanhcmus@gmail.com để được Thầy mở miễn phí."
                 ],
                 'exclusive_tip' => "Mẹo giải nhanh của Thầy Tuấn đang được khóa. Ủng hộ 5.000đ để xem phân tích chi tiết."
