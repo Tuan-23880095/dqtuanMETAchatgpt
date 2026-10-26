@@ -1,239 +1,441 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AI Workspace - Trợ lý cục bộ</title>
-    <link rel="icon" type="image/png" href="logo.png">
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <style>
-        * { box-sizing: border-box; }
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            margin: 0; 
-            padding: 0; 
-            background: linear-gradient(135deg, #e0f2f1, #b2dfdb); 
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Trung Tâm Bồi Dưỡng Văn Hóa & Khảo Thí ĐGNL · HCMUS</title>
+  
+  <link rel="icon" type="image/svg+xml" href="assets/logo-sen.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,600;0,8..60,700;1,8..60,400&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            luc: '#0F6B55',
+            'luc-non': '#46A385',
+            lam: '#1F4E79',
+            muc: '#10212B',
+            giay: '#F6F7F3',
+            son: '#D2492A',
+            tho: '#D6A130',
+            bac: '#D5DCE1'
+          },
+          fontFamily: {
+            serif: ['"Source Serif 4"', 'Georgia', 'serif'],
+            sans: ['"Be Vietnam Pro"', 'system-ui', 'sans-serif']
+          }
         }
-        .chat-container { 
-            width: 100%; 
-            max-width: 800px; 
-            height: 90vh;
-            background: #ffffff; 
-            border-radius: 15px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15); 
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            position: relative;
-        }
-        .header {
-            background: #00796b;
-            color: white;
-            padding: 15px 20px;
-            display: flex;
-            align-items: center;
-            font-size: 1.2rem;
-            font-weight: bold;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            z-index: 2;
-        }
-        .header img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            margin-right: 15px;
-            background: white;
-            padding: 2px;
-        }
-        .chat-box { 
-            flex: 1; 
-            overflow-y: auto; 
-            padding: 20px; 
-            background: #fafafa;
-            position: relative;
-        }
-        .chat-box::before {
-            content: "";
-            position: fixed; 
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 400px;
-            height: 400px;
-            background-image: url('logo.png');
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-            opacity: 0.08; 
-            pointer-events: none; 
-            z-index: 0;
-        }
-        .message { 
-            margin: 10px 0; 
-            padding: 12px 16px; 
-            border-radius: 12px; 
-            max-width: 85%; 
-            line-height: 1.6;
-            word-wrap: break-word;
-            position: relative;
-            z-index: 1; 
-        }
-        .user { 
-            background: #4db6ac; 
-            color: white; 
-            margin-left: auto; 
-            border-bottom-right-radius: 2px;
-        }
-        .bot { 
-            background: #ffffff; 
-            color: #333; 
-            margin-right: auto; 
-            border-bottom-left-radius: 2px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            border: 1px solid #eee;
-        }
-        .message p { margin: 0 0 10px 0; }
-        .message p:last-child { margin-bottom: 0; }
-        .message pre {
-            background: #2d2d2d;
-            color: #ccc;
-            padding: 10px;
-            border-radius: 5px;
-            overflow-x: auto;
-            font-family: Consolas, Monaco, monospace;
-        }
-        .message code {
-            background: rgba(0,0,0,0.05);
-            padding: 2px 4px;
-            border-radius: 3px;
-            font-family: Consolas, Monaco, monospace;
-            color: #d32f2f;
-        }
-        .message pre code {
-            background: transparent;
-            color: inherit;
-            padding: 0;
-        }
-        .message table {
-            border-collapse: collapse;
-            width: 100%;
-            margin-bottom: 10px;
-        }
-        .message th, .message td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-        .message th { background-color: #f2f2f2; }
-        .user code { color: #ffeb3b; background: rgba(0,0,0,0.1); }
-        .user a { color: #fff; text-decoration: underline; }
-        .input-area { 
-            display: flex; 
-            padding: 15px; 
-            background: #ffffff;
-            border-top: 1px solid #eee;
-            z-index: 2;
-        }
-        #user-input { 
-            flex: 1; 
-            padding: 12px; 
-            border: 1px solid #ccc; 
-            border-radius: 25px; 
-            margin-right: 10px; 
-            font-size: 1rem;
-            outline: none;
-            transition: border 0.3s;
-        }
-        #user-input:focus { border-color: #00796b; }
-        button { 
-            padding: 12px 24px; 
-            border: none; 
-            background: #00796b; 
-            color: white; 
-            border-radius: 25px; 
-            cursor: pointer; 
-            font-size: 1rem;
-            font-weight: bold;
-            transition: background 0.3s;
-        }
-        button:hover { background: #004d40; }
-    </style>
+      }
+    }
+  </script>
+
+  <style>
+    body { font-family: 'Be Vietnam Pro', sans-serif; background-color: #F6F7F3; color: #10212B; }
+    .title-serif { font-family: 'Source Serif 4', Georgia, serif; }
+    /* Ô trắng bảo vệ logo sen */
+    .dqt-logo-o {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #FFFFFF;
+      border-radius: 20%;
+      padding: 6px;
+      box-shadow: 0 2px 10px rgba(16, 33, 43, 0.08);
+      flex: none;
+    }
+  </style>
 </head>
-<body>
-    <div class="chat-container">
-        <div class="header">
-            <img src="logo.png" alt="Logo">
-            META ChatGPT - Cục Bộ
+<body class="min-h-screen flex flex-col">
+
+  <!-- HEADER GIAO DIỆN CHUẨN THƯƠNG HIỆU -->
+  <header class="bg-white border-b border-bac sticky top-0 z-40 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center gap-4">
+      <div class="flex items-center gap-3">
+        <img class="h-12 w-auto object-contain" src="https://firebasestorage.googleapis.com/v0/b/link-anh-web.firebasestorage.app/o/Logo-chinh-hcmus.png?alt=media&token=9cf3a1de-75f1-493b-8711-fd22c7b98738" alt="Logo HCMUS">
+        <div class="h-10 w-[1px] bg-bac hidden sm:block"></div>
+        <div class="dqt-logo-o w-11 h-11 hidden sm:inline-flex">
+          <img src="assets/logo-sen.svg" alt="Logo Sen" class="w-full h-full">
         </div>
-        <div id="chat-box" class="chat-box">
-            <div class="message bot">Xin chào! Tôi là trợ lý AI (Qwen3) đang chạy trực tiếp trên GPU máy tính của bạn. Tôi có thể giúp gì cho bạn hôm nay?</div>
+        <div>
+          <h1 class="text-base sm:text-lg font-bold text-lam uppercase tracking-wide leading-tight">Trung Tâm Bồi Dưỡng Văn Hóa</h1>
+          <p class="text-xs text-luc font-semibold">Trường ĐH Khoa học Tự nhiên · ThS. Đinh Quốc Tuấn</p>
         </div>
-        <div class="input-area">
-            <input type="text" id="user-input" list="skill-suggestions" placeholder="Nhập tin nhắn (Gõ / để hiện danh sách skill)..." autocomplete="off">
-            <datalist id="skill-suggestions">
-                <option value="/tuan-phan-tich-viec-moi ">Ghi nhanh task vào Hộp việc</option>
-                <option value="/tuan-md-to-a4-html ">Tạo tài liệu web/PDF A4</option>
-                <option value="/tuan-notebooklm ">Chat với NotebookLM</option>
-                <option value="/tuan-agent-team-dispatch ">Lập đội nhiều AI</option>
-                <option value="/tuan-ra-soat-viec-trong-ngay ">Kiểm tra các việc đã làm hôm nay</option>
-                <option value="/tuan-doc-mapinfo ">Chuyển đổi bản đồ MapInfo</option>
-                <option value="/tuan-danh-muc-skill ">Xem toàn bộ danh sách skill</option>
-                <option value="/engineering:debug ">Gỡ lỗi lập trình</option>
-                <option value="/data:analyze ">Phân tích dữ liệu</option>
-                <option value="@metagpt ">Gọi công ty ảo MetaGPT lập trình</option>
-            </datalist>
-            <button onclick="sendMessage()">Gửi</button>
-        </div>
+      </div>
+
+      <!-- Khung thông tin tài khoản / Đăng nhập -->
+      <div id="auth-box" class="flex items-center gap-3">
+        <button onclick="openModal('modal-guest')" class="bg-luc hover:bg-emerald-800 text-white px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center gap-2 shadow-sm">
+          <i class="fas fa-user-plus"></i> <span>Tạo Tài Khoản Khách</span>
+        </button>
+      </div>
     </div>
-    <script>
-        const chatBox = document.getElementById('chat-box');
-        const userInput = document.getElementById('user-input');
+  </header>
 
-        userInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') sendMessage();
+  <!-- BANNER GIỚI THIỆU & THÔNG ĐIỆP SƯ PHẠM -->
+  <section class="bg-gradient-to-r from-lam via-[#1A3D5E] to-luc text-white py-10 px-4">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
+      <div class="max-w-2xl space-y-4">
+        <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold text-emerald-200 border border-white/20">
+          <i class="fas fa-robot text-emerald-400"></i> Trợ lý Khảo thí Thông minh tích hợp Gemini AI
+        </div>
+        <h2 class="text-3xl md:text-4xl font-bold title-serif leading-tight">
+          Hệ Thống Luyện Thi & Đánh Giá Năng Lực Trực Tuyến
+        </h2>
+        <p class="text-white/80 text-sm md:text-base leading-relaxed">
+          Kho đề thi trắc nghiệm bấm giờ từ <b>Lớp 6 đến Lớp 12</b> và bộ đề thi thử <b>Đánh Giá Năng Lực ĐHQG-HCM</b>. Sau mỗi bài nộp, Gemini AI sẽ phân tích ngay lỗ hổng tư duy và gợi ý mẹo giải nhanh từ Thầy Đinh Quốc Tuấn.
+        </p>
+        <div class="flex flex-wrap gap-4 pt-2">
+          <div class="flex items-center gap-2 text-xs bg-white/15 px-3 py-1.5 rounded-lg border border-white/10">
+            <i class="fas fa-gift text-amber-300"></i> Miễn phí 2 lượt thi thử đầu tiên
+          </div>
+          <div class="flex items-center gap-2 text-xs bg-white/15 px-3 py-1.5 rounded-lg border border-white/10">
+            <i class="fas fa-coffee text-amber-300"></i> MoMo Bonus 5.000đ mở thêm 5 lượt
+          </div>
+          <div class="flex items-center gap-2 text-xs bg-white/15 px-3 py-1.5 rounded-lg border border-white/10">
+            <i class="fas fa-chalkboard-teacher text-amber-300"></i> Báo cáo chuẩn A4 gửi phụ huynh
+          </div>
+        </div>
+      </div>
+
+      <!-- Box Tra cứu nhanh tiến độ -->
+      <div class="bg-white text-muc p-6 rounded-2xl shadow-xl w-full md:w-80 border border-bac">
+        <h3 class="font-bold text-sm text-lam uppercase tracking-wide mb-3 flex items-center justify-between">
+          <span>Trạng thái của em</span>
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+        </h3>
+        <div id="trial-counter-box" class="space-y-3">
+          <div class="bg-giay p-3 rounded-xl border border-bac flex justify-between items-center">
+            <span class="text-xs text-gray-600 font-medium">Lượt thi miễn phí:</span>
+            <span id="free-count" class="font-bold text-luc text-lg">2 lượt</span>
+          </div>
+          <div class="bg-giay p-3 rounded-xl border border-bac flex justify-between items-center">
+            <span class="text-xs text-gray-600 font-medium">Lượt nạp MoMo:</span>
+            <span id="paid-count" class="font-bold text-lam text-lg">0 lượt</span>
+          </div>
+          <button onclick="openBonusModal(5000)" class="w-full bg-gradient-to-r from-son to-orange-500 hover:from-red-600 hover:to-orange-600 text-white font-bold py-2.5 px-4 rounded-xl text-xs flex items-center justify-center gap-2 transition shadow">
+            <i class="fas fa-heart"></i> Ủng hộ Thầy 5.000đ (+5 lượt)
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BỘ LỌC KHỐI LỚP & MÔN HỌC -->
+  <main class="flex-grow max-w-7xl w-full mx-auto px-4 py-8 space-y-6">
+    
+    <!-- Tab Khối Lớp -->
+    <div class="bg-white p-3 rounded-2xl border border-bac shadow-sm flex items-center gap-2 overflow-x-auto" id="grade-tabs">
+      <button onclick="selectGrade('ALL')" class="grade-btn active px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap bg-luc text-white">Tất cả Khối</button>
+      <button onclick="selectGrade('L06')" class="grade-btn px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap bg-giay text-gray-700 hover:bg-gray-200">Lớp 6</button>
+      <button onclick="selectGrade('L07')" class="grade-btn px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap bg-giay text-gray-700 hover:bg-gray-200">Lớp 7</button>
+      <button onclick="selectGrade('L08')" class="grade-btn px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap bg-giay text-gray-700 hover:bg-gray-200">Lớp 8</button>
+      <button onclick="selectGrade('L09')" class="grade-btn px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap bg-giay text-gray-700 hover:bg-gray-200">Lớp 9</button>
+      <button onclick="selectGrade('L10')" class="grade-btn px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap bg-giay text-gray-700 hover:bg-gray-200">Lớp 10</button>
+      <button onclick="selectGrade('L11')" class="grade-btn px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap bg-giay text-gray-700 hover:bg-gray-200">Lớp 11</button>
+      <button onclick="selectGrade('L12')" class="grade-btn px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap bg-giay text-gray-700 hover:bg-gray-200">Lớp 12</button>
+      <button onclick="selectGrade('DGNL')" class="grade-btn px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap bg-amber-100 text-amber-900 border border-amber-300 hover:bg-amber-200">⭐ Ôn thi ĐGNL ĐHQG</button>
+    </div>
+
+    <!-- Danh sách Đề thi -->
+    <div>
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-xl font-bold title-serif text-lam" id="exam-list-title">Danh sách đề thi & bài rèn luyện</h3>
+        <span class="text-xs text-gray-500 font-medium" id="exam-count-badge">Đang tải dữ liệu...</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="exams-container">
+        <!-- Render tự động từ API -->
+      </div>
+    </div>
+  </main>
+
+  <!-- MODAL ĐĂNG KÝ TÀI KHOẢN KHÁCH NHANH -->
+  <div id="modal-guest" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-bac animate-fadeIn">
+      <div class="flex justify-between items-center pb-3 border-b border-bac mb-4">
+        <h3 class="font-bold text-lg text-lam title-serif">Đăng Ký Tài Khoản Khách (Miễn Phí)</h3>
+        <button onclick="closeModal('modal-guest')" class="text-gray-400 hover:text-gray-700 text-xl"><i class="fas fa-times"></i></button>
+      </div>
+      <p class="text-xs text-gray-600 mb-4">
+        Mỗi học sinh/khách được cấp ngay <b>2 lượt làm bài thi tính giờ hoàn toàn miễn phí</b> có Gemini AI nhận xét bài làm!
+      </p>
+      <form onsubmit="handleGuestLogin(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1">Họ và Tên của em <span class="text-son">*</span></label>
+          <input type="text" id="guest-name" required placeholder="Ví dụ: Nguyễn Minh Triết" class="w-full px-3 py-2.5 border border-bac rounded-xl text-sm focus:outline-none focus:border-luc">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1">Số điện thoại (để lưu kết quả & nạp bonus)</label>
+          <input type="tel" id="guest-phone" placeholder="Ví dụ: 0912345678" class="w-full px-3 py-2.5 border border-bac rounded-xl text-sm focus:outline-none focus:border-luc">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1">Khối lớp đang theo học</label>
+          <select id="guest-grade" class="w-full px-3 py-2.5 border border-bac rounded-xl text-sm focus:outline-none focus:border-luc bg-white">
+            <option value="L06">Lớp 6</option>
+            <option value="L07">Lớp 7</option>
+            <option value="L08">Lớp 8</option>
+            <option value="L09">Lớp 9</option>
+            <option value="L10" selected>Lớp 10</option>
+            <option value="L11">Lớp 11</option>
+            <option value="L12">Lớp 12</option>
+            <option value="DGNL">Luyện thi Đánh Giá Năng Lực</option>
+          </select>
+        </div>
+        <button type="submit" class="w-full bg-luc hover:bg-emerald-800 text-white font-bold py-3 rounded-xl text-sm transition shadow-md flex items-center justify-center gap-2">
+          <i class="fas fa-check-circle"></i> Bắt đầu thi thử ngay (Nhận 2 lượt)
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL NẠP MOMO BONUS & NÂNG CẤP (TÂM LÝ SƯ PHẠM) -->
+  <div id="modal-bonus" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-bac animate-fadeIn">
+      <div class="flex justify-between items-center pb-3 border-b border-bac mb-4">
+        <h3 class="font-bold text-lg text-lam title-serif flex items-center gap-2">
+          <i class="fas fa-heart text-son"></i> Đồng Hành Cùng Thầy Đinh Quốc Tuấn
+        </h3>
+        <button onclick="closeModal('modal-bonus')" class="text-gray-400 hover:text-gray-700 text-xl"><i class="fas fa-times"></i></button>
+      </div>
+      
+      <div class="space-y-4 text-xs text-gray-700 leading-relaxed">
+        <p class="bg-emerald-50 text-luc p-3 rounded-xl border border-emerald-200">
+          🌱 <i>"Mỗi lượt chấm bài chi tiết và phân tích tư duy đều tiêu tốn chi phí điện toán máy chủ AI của Thầy. Em hãy ủng hộ Thầy một ly trà đá (5.000đ) để cùng Thầy duy trì nền tảng và mở thêm các lượt rèn luyện tiếp theo nhé!"</i>
+        </p>
+
+        <!-- Lựa chọn gói bonus -->
+        <div class="grid grid-cols-3 gap-2 text-center">
+          <div onclick="selectBonusAmount(5000)" class="bonus-opt border-2 border-luc bg-emerald-50/50 p-2.5 rounded-xl cursor-pointer">
+            <span class="block font-bold text-son text-sm">5.000đ</span>
+            <span class="text-[11px] text-gray-500">+5 lượt thi</span>
+          </div>
+          <div onclick="selectBonusAmount(10000)" class="bonus-opt border border-bac p-2.5 rounded-xl cursor-pointer hover:border-luc">
+            <span class="block font-bold text-son text-sm">10.000đ</span>
+            <span class="text-[11px] text-gray-500">+12 lượt thi</span>
+          </div>
+          <div onclick="selectBonusAmount(20000)" class="bonus-opt border border-bac p-2.5 rounded-xl cursor-pointer hover:border-luc">
+            <span class="block font-bold text-son text-sm">20.000đ</span>
+            <span class="text-[11px] text-gray-500">+30 lượt thi</span>
+          </div>
+        </div>
+
+        <!-- Mã QR & Thông tin MoMo -->
+        <div class="bg-giay p-4 rounded-xl border border-bac flex flex-col sm:flex-row items-center gap-4">
+          <img id="momo-qr" src="" alt="MoMo QR" class="w-32 h-32 rounded-lg border border-gray-300 shadow-sm bg-white p-1">
+          <div class="space-y-1.5 flex-1 w-full text-left">
+            <p><b>Người nhận:</b> <span class="text-lam font-semibold">ThS. Đinh Quốc Tuấn</span></p>
+            <p><b>Số tiền:</b> <span id="momo-amount" class="text-son font-bold">5.000 VNĐ</span></p>
+            <p><b>Nội dung CK:</b> <span id="momo-memo" class="font-mono bg-white px-2 py-0.5 rounded border border-gray-300 text-luc font-bold select-all">BDVH ...</span></p>
+            <p class="text-[11px] text-gray-500 italic">Quét bằng ứng dụng MoMo hoặc Ngân hàng bất kỳ.</p>
+          </div>
+        </div>
+
+        <div class="pt-2 border-t border-bac flex flex-col sm:flex-row justify-between items-center gap-3">
+          <a href="mailto:dqtuanhcmus@gmail.com?subject=Dang%20ky%20Hoc%20Kem%20VIP%20ThS%20Dinh%20Quoc%20Tuan" class="text-xs text-lam hover:underline flex items-center gap-1 font-semibold">
+            <i class="fas fa-envelope"></i> Thỏa thuận nâng cấp VIP / Kèm riêng
+          </a>
+          <button onclick="closeModal('modal-bonus')" class="bg-luc text-white px-4 py-2 rounded-xl text-xs font-semibold hover:bg-emerald-800 transition">
+            Đã chuyển khoản xong
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER CHUẨN THƯƠNG HIỆU -->
+  <footer class="bg-muc text-white/80 py-8 border-t border-gray-800 text-xs">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4">
+      <div class="text-center md:text-left space-y-1">
+        <p class="font-bold text-white text-sm">Trung Tâm Bồi Dưỡng Văn Hóa — Trường ĐH Khoa học Tự nhiên, ĐHQG-HCM</p>
+        <p class="text-white/60">Chịu trách nhiệm học thuật: ThS. Đinh Quốc Tuấn · Email: <a href="mailto:dqtuanhcmus@gmail.com" class="text-emerald-400 hover:underline">dqtuanhcmus@gmail.com</a></p>
+      </div>
+      <div class="flex items-center gap-4">
+        <span class="text-white/40">Nền tảng tích hợp Gemini AI</span>
+        <div class="dqt-logo-o w-8 h-8">
+          <img src="assets/logo-sen.svg" alt="Logo Sen" class="w-full h-full">
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- SCRIPT XỬ LÝ FRONTEND -->
+  <script>
+    let currentGrade = 'ALL';
+    let currentUser = null;
+    let selectedAmount = 5000;
+
+    async function init() {
+      await checkAuth();
+      await loadExams();
+    }
+
+    async function checkAuth() {
+      try {
+        const res = await fetch('api.php?action=check_auth');
+        const data = await res.json();
+        const authBox = document.getElementById('auth-box');
+        const freeCount = document.getElementById('free-count');
+        const paidCount = document.getElementById('paid-count');
+
+        if (data.status === 'logged_in') {
+          currentUser = data.user;
+          authBox.innerHTML = `
+            <div class="flex items-center gap-2">
+              <span class="text-xs text-gray-700 font-bold"><i class="fas fa-user-circle text-luc text-base"></i> ${esc(currentUser.full_name)}</span>
+              <button onclick="logout()" class="text-xs text-son hover:underline font-semibold ml-2">Đăng xuất</button>
+            </div>
+          `;
+          freeCount.innerText = currentUser.free_trials_left + ' lượt';
+          paidCount.innerText = currentUser.paid_trials_left + ' lượt';
+        } else {
+          currentUser = null;
+          authBox.innerHTML = `
+            <button onclick="openModal('modal-guest')" class="bg-luc hover:bg-emerald-800 text-white px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center gap-2 shadow-sm">
+              <i class="fas fa-user-plus"></i> <span>Tạo Tài Khoản Khách</span>
+            </button>
+          `;
+          freeCount.innerText = '2 lượt';
+          paidCount.innerText = '0 lượt';
+        }
+      } catch (err) {
+        console.error('Lỗi checkAuth:', err);
+      }
+    }
+
+    async function loadExams() {
+      const container = document.getElementById('exams-container');
+      const badge = document.getElementById('exam-count-badge');
+      let url = 'api.php?action=list_exams';
+      if (currentGrade !== 'ALL') {
+        url += '&grade=' + currentGrade;
+      }
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+        if (data.status === 'success') {
+          badge.innerText = data.exams.length + ' bộ đề sẵn sàng';
+          if (data.exams.length === 0) {
+            container.innerHTML = '<div class="col-span-3 text-center py-12 text-gray-500">Chưa có đề thi cho khối này. Thầy Tuấn đang cập nhật thêm!</div>';
+            return;
+          }
+          container.innerHTML = data.exams.map(ex => `
+            <div class="bg-white rounded-2xl p-5 border border-bac shadow-sm hover:shadow-md transition flex flex-col justify-between">
+              <div>
+                <div class="flex justify-between items-center gap-2 mb-2">
+                  <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold ${ex.grade === 'DGNL' ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-luc'}">
+                    ${ex.grade === 'DGNL' ? '⭐ ĐGNL ĐHQG' : 'Khối ' + ex.grade.replace('L', '')}
+                  </span>
+                  <span class="text-xs text-gray-400 font-semibold"><i class="fas fa-clock"></i> ${ex.time_minutes} phút</span>
+                </div>
+                <h4 class="font-bold text-base text-lam mb-2 leading-snug">${esc(ex.title)}</h4>
+                <p class="text-xs text-gray-600 line-clamp-2 mb-4 leading-relaxed">${esc(ex.description || 'Đề rèn luyện phản xạ tính toán và tư duy.')}</p>
+              </div>
+              <div class="pt-3 border-t border-bac flex justify-between items-center">
+                <span class="text-xs text-gray-500 font-medium"><i class="fas fa-brain text-luc"></i> Gemini AI chấm</span>
+                <button onclick="startExam(${ex.exam_id})" class="bg-lam hover:bg-blue-900 text-white px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+                  <span>Vào thi ngay</span> <i class="fas fa-arrow-right"></i>
+                </button>
+              </div>
+            </div>
+          `).join('');
+        }
+      } catch (err) {
+        container.innerHTML = '<div class="col-span-3 text-center py-12 text-son">Lỗi tải danh sách đề thi. Vui lòng thử lại sau!</div>';
+      }
+    }
+
+    function selectGrade(g) {
+      currentGrade = g;
+      document.querySelectorAll('.grade-btn').forEach(btn => {
+        btn.classList.remove('bg-luc', 'text-white');
+        btn.classList.add('bg-giay', 'text-gray-700');
+      });
+      event.target.classList.add('bg-luc', 'text-white');
+      event.target.classList.remove('bg-giay', 'text-gray-700');
+      loadExams();
+    }
+
+    async function handleGuestLogin(e) {
+      e.preventDefault();
+      const fullName = document.getElementById('guest-name').value;
+      const phone = document.getElementById('guest-phone').value;
+      const grade = document.getElementById('guest-grade').value;
+
+      try {
+        const res = await fetch('api.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'guest_login', full_name: fullName, phone: phone, grade: grade })
         });
-
-        async function sendMessage() {
-            const userMsg = userInput.value.trim();
-            if (!userMsg) return;
-
-            appendMessage('user', userMsg, null, false);
-            userInput.value = '';
-
-            const loadingId = 'loading-' + Date.now();
-            appendMessage('bot', 'Đang suy nghĩ...', loadingId, false);
-
-            try {
-                const res = await fetch('https://southeast-rapids-chose-transport.trycloudflare.com/send', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: userMsg })
-                });
-                const data = await res.json();
-                document.getElementById(loadingId).remove();
-                appendMessage('bot', data.reply, null, true);
-            } catch (err) {
-                document.getElementById(loadingId).remove();
-                appendMessage('bot', "Lỗi kết nối tới AI cục bộ! Đảm bảo bạn đã chạy 'python app.py' nhé.", null, false);
-            }
+        const data = await res.json();
+        if (data.status === 'success') {
+          closeModal('modal-guest');
+          await checkAuth();
+          alert(data.message);
+        } else {
+          alert(data.message || 'Lỗi tạo tài khoản');
         }
+      } catch (err) {
+        alert('Lỗi kết nối máy chủ!');
+      }
+    }
 
-        function appendMessage(type, text, id = null, isMarkdown = false) {
-            const msgDiv = document.createElement('div');
-            msgDiv.className = `message ${type}`;
-            if (id) msgDiv.id = id;
-            if (isMarkdown) {
-                msgDiv.innerHTML = marked.parse(text);
-            } else {
-                msgDiv.textContent = text;
-            }
-            chatBox.appendChild(msgDiv);
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
-    </script>
+    function startExam(examId) {
+      if (!currentUser) {
+        openModal('modal-guest');
+        return;
+      }
+      const totalTrials = currentUser.free_trials_left + currentUser.paid_trials_left;
+      if (totalTrials <= 0) {
+        openBonusModal(5000);
+        return;
+      }
+      window.location.href = `thi.html?exam_id=${examId}`;
+    }
+
+    function openBonusModal(amt = 5000) {
+      if (!currentUser) {
+        openModal('modal-guest');
+        return;
+      }
+      selectBonusAmount(amt);
+      openModal('modal-bonus');
+    }
+
+    function selectBonusAmount(amt) {
+      selectedAmount = amt;
+      const username = currentUser ? currentUser.username : 'khach';
+      const memo = `BDVH ${username} ${amt / 1000}K`;
+      document.getElementById('momo-amount').innerText = amt.toLocaleString('vi-VN') + ' VNĐ';
+      document.getElementById('momo-memo').innerText = memo;
+      
+      // QR Code
+      const qrData = `2|99|0908xxxxxx|Đinh Quốc Tuấn||0|0|${amt}|${memo}|transfer_myqr`;
+      document.getElementById('momo-qr').src = 'https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=' + encodeURIComponent(qrData);
+
+      document.querySelectorAll('.bonus-opt').forEach(el => {
+        el.classList.remove('border-2', 'border-luc', 'bg-emerald-50/50');
+        el.classList.add('border-bac');
+      });
+      event?.currentTarget?.classList?.add('border-2', 'border-luc', 'bg-emerald-50/50');
+    }
+
+    async function logout() {
+      await fetch('api.php?action=logout');
+      await checkAuth();
+    }
+
+    function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+    function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+    function esc(s) { return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
 </body>
 </html>
