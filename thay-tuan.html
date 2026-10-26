@@ -8,44 +8,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Source+Serif+4:ital,opsz,wght@0,8..60,600;0,8..60,700;1,8..60,600&family=JetBrains+Mono:wght@700;800&display=swap" rel="stylesheet">
-  <script src="https://cdn.tailwindcss.com">
-    async function loadBankSettings() {
-      try {
-        const res = await fetch('api.php?action=get_payment_settings');
-        const data = await res.json();
-        if (data.status === 'success' && data.settings) {
-          const s = data.settings;
-          if (s.bank_id) document.getElementById('setBankId').value = s.bank_id;
-          if (s.bank_account) document.getElementById('setBankAccount').value = s.bank_account;
-          if (s.account_name) document.getElementById('setAccountName').value = s.account_name;
-          if (s.momo_phone) document.getElementById('setMomoPhone').value = s.momo_phone;
-        }
-      } catch (e) {
-        console.error('Lỗi nạp settings:', e);
-      }
-    }
-
-    async function saveBankSettings() {
-      const bank_id = document.getElementById('setBankId').value;
-      const bank_account = document.getElementById('setBankAccount').value.trim();
-      const account_name = document.getElementById('setAccountName').value.trim();
-      const momo_phone = document.getElementById('setMomoPhone').value.trim();
-      if (!bank_account) return alert('Vui lòng nhập Số tài khoản ngân hàng của Thầy.');
-
-      try {
-        const res = await fetch('api.php?action=save_payment_settings', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ bank_id, bank_account, account_name, momo_phone })
-        });
-        const d = await res.json();
-        alert(d.message || d.status);
-      } catch (e) {
-        alert('Lỗi lưu: ' + e.message);
-      }
-    }
-
-  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -62,43 +26,6 @@
         }
       }
     }
-  
-    async function loadBankSettings() {
-      try {
-        const res = await fetch('api.php?action=get_payment_settings');
-        const data = await res.json();
-        if (data.status === 'success' && data.settings) {
-          const s = data.settings;
-          if (s.bank_id) document.getElementById('setBankId').value = s.bank_id;
-          if (s.bank_account) document.getElementById('setBankAccount').value = s.bank_account;
-          if (s.account_name) document.getElementById('setAccountName').value = s.account_name;
-          if (s.momo_phone) document.getElementById('setMomoPhone').value = s.momo_phone;
-        }
-      } catch (e) {
-        console.error('Lỗi nạp settings:', e);
-      }
-    }
-
-    async function saveBankSettings() {
-      const bank_id = document.getElementById('setBankId').value;
-      const bank_account = document.getElementById('setBankAccount').value.trim();
-      const account_name = document.getElementById('setAccountName').value.trim();
-      const momo_phone = document.getElementById('setMomoPhone').value.trim();
-      if (!bank_account) return alert('Vui lòng nhập Số tài khoản ngân hàng của Thầy.');
-
-      try {
-        const res = await fetch('api.php?action=save_payment_settings', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ bank_id, bank_account, account_name, momo_phone })
-        });
-        const d = await res.json();
-        alert(d.message || d.status);
-      } catch (e) {
-        alert('Lỗi lưu: ' + e.message);
-      }
-    }
-
   </script>
   <style>
     body { font-family: 'Be Vietnam Pro', sans-serif; background-color: #F6F7F3; color: #10212B; }
@@ -127,7 +54,16 @@
           <h1 class="text-base sm:text-lg font-bold text-muc title-serif">Bảng Điều Khiển Điểm Danh & Quản Lý Lớp Học</h1>
         </div>
       </div>
+
       <div class="flex items-center gap-2">
+        <div id="authHeaderActions" class="hidden flex items-center gap-2">
+          <button onclick="openChangePassModal()" class="px-3 py-1.5 rounded-lg border border-bac text-xs font-semibold hover:bg-slate-100 transition flex items-center gap-1.5 text-gray-700">
+            <i class="fas fa-key text-amber-500"></i> Đổi Mật Khẩu
+          </button>
+          <button onclick="logoutTeacher()" class="px-3 py-1.5 rounded-lg bg-red-50 text-son border border-red-200 text-xs font-bold hover:bg-red-100 transition flex items-center gap-1.5">
+            <i class="fas fa-sign-out-alt"></i> Thoát
+          </button>
+        </div>
         <a href="index.html" class="px-3 py-1.5 rounded-lg border border-bac text-xs font-semibold hover:bg-slate-100 transition">
           Trang Học Sinh
         </a>
@@ -135,7 +71,43 @@
     </div>
   </header>
 
-  <main class="flex-1 max-w-6xl w-full mx-auto p-4 sm:p-6 space-y-6">
+  <!-- MÀN HÌNH ĐĂNG NHẬP GIẢNG VIÊN (KHI CHƯA XÁC THỰC) -->
+  <section id="loginSection" class="flex-1 flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-8 shadow-xl border border-bac space-y-6 text-center">
+      <div class="w-16 h-16 rounded-2xl bg-emerald-50 border border-emerald-200 mx-auto flex items-center justify-center text-2xl text-luc shadow-sm">
+        <i class="fas fa-user-shield"></i>
+      </div>
+      <div>
+        <h2 class="text-xl font-bold title-serif text-muc">Xác Thực Quyền Giảng Viên</h2>
+        <p class="text-xs text-gray-500 mt-1">
+          Khu vực quản lý lớp, cấp mã học sinh và cấu hình tài khoản nhận ủng hộ của <b>ThS. Đinh Quốc Tuấn</b>.
+        </p>
+      </div>
+
+      <div class="space-y-4 text-left">
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1">Mật khẩu Quản Trị:</label>
+          <div class="relative">
+            <input type="password" id="teacherPasswordInput" placeholder="Nhập mật khẩu..." class="w-full px-4 py-2.5 pr-10 border border-bac rounded-xl text-sm outline-none focus:ring-2 focus:ring-luc">
+            <button type="button" onclick="togglePasswordView()" class="absolute right-3 top-2.5 text-gray-400 hover:text-muc text-sm">
+              <i id="eyeIcon" class="fas fa-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <button onclick="submitTeacherLogin()" class="w-full py-3 bg-luc hover:bg-emerald-800 text-white font-bold text-sm rounded-xl shadow-md transition flex items-center justify-center gap-2">
+          <i class="fas fa-lock-open"></i> Đăng Nhập An Toàn
+        </button>
+      </div>
+
+      <div class="text-[11px] text-gray-400 border-t border-bac pt-3">
+        Mọi hoạt động quản trị được ghi nhận nhật ký bảo mật hệ thống.
+      </div>
+    </div>
+  </section>
+
+  <!-- BẢNG ĐIỀU KHIỂN CHÍNH (CHỈ HIỂN THỊ KHI ĐÃ ĐĂNG NHẬP) -->
+  <main id="mainDashboard" class="hidden flex-1 max-w-6xl w-full mx-auto p-4 sm:p-6 space-y-6">
 
     <!-- KHU VỰC 1: MÃ LỚP 4 KÝ TỰ HIỆN TẠI (CHIẾU MÁY CHIẾU LÊN BẢNG) -->
     <div class="bg-gradient-to-br from-white via-white to-emerald-50/40 rounded-3xl p-6 sm:p-8 border border-emerald-200 shadow-md">
@@ -147,7 +119,7 @@
           </div>
           <h2 class="text-xl sm:text-2xl font-bold title-serif text-muc">Mã Lớp Học Thời Gian Thực</h2>
           <p class="text-xs sm:text-sm text-gray-600 max-w-xl">
-            Chiếu mã 4 ký tự này lên bảng. Học sinh chỉ cần mở web và gõ 4 ký tự này là được <b>mở khóa học tập vô hạn</b> và nhận đánh giá chuyên môn từ Hệ Thống. Mã tự xoay vòng sau mỗi 30 phút.
+            Chiếu mã 4 ký tự này lên bảng. Học sinh chỉ cần mở web và gõ 4 ký tự này là được <b>mở khóa học tập vô hạn</b> và nhận đánh giá từ hệ thống. Mã tự xoay vòng sau mỗi 30 phút.
           </p>
         </div>
 
@@ -163,8 +135,7 @@
             </div>
           </div>
           <button onclick="toggleProjectorMode()" class="px-4 py-2 rounded-xl bg-luc text-white text-xs font-bold shadow hover:bg-emerald-800 transition flex items-center gap-2">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
-            Bật Chế Độ Máy Chiếu Toàn Màn Hình
+            <i class="fas fa-expand"></i> Bật Chế Độ Máy Chiếu Toàn Màn Hình
           </button>
         </div>
       </div>
@@ -236,7 +207,7 @@
             </div>
           </div>
           <div class="flex items-center gap-2">
-            <input type="text" id="partnerClassCode" maxlength="6" placeholder="Mã lớp (tùy chọn, vd: LAN10)" class="flex-1 px-2.5 py-1.5 border border-bac rounded-lg text-xs uppercase code-font">
+            <input type="text" id="partnerClassCode" maxlength="6" placeholder="Mã lớp (vd: LAN10)" class="flex-1 px-2.5 py-1.5 border border-bac rounded-lg text-xs uppercase code-font">
             <button onclick="addPartnerTeacher()" class="px-4 py-2 bg-emerald-700 text-white text-xs font-bold rounded-lg hover:bg-emerald-800 transition">
               Cấp Mã & Kích Hoạt
             </button>
@@ -246,44 +217,7 @@
 
     </div>
 
-    <!-- KHU VỰC 3: BẢNG THEO DÕI HỌC SINH LÀM BÀI TRỰC TIẾP (LIVE ROSTER) -->
-    <div class="bg-white rounded-2xl p-6 border border-bac shadow-sm space-y-4">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-2">
-          <div class="w-8 h-8 rounded-lg bg-amber-50 text-vang font-bold flex items-center justify-center">📊</div>
-          <div>
-            <h3 class="font-bold text-base text-muc">Nhật Ký Học Sinh Nộp Bài Trực Tiếp</h3>
-            <p class="text-xs text-gray-500">Xem ngay điểm số, thời gian làm và mức độ hoàn thành của học sinh.</p>
-          </div>
-        </div>
-        <button onclick="loadDashboard()" class="px-3 py-1.5 border border-bac text-xs font-semibold rounded-lg hover:bg-slate-50 transition">
-          Làm mới ↻
-        </button>
-      </div>
-
-      <div class="overflow-x-auto">
-        <table class="w-full text-left text-xs border-collapse">
-          <thead>
-            <tr class="bg-slate-50 border-b border-bac text-gray-600 font-bold uppercase tracking-wider text-[11px]">
-              <th class="py-2.5 px-3">Học sinh</th>
-              <th class="py-2.5 px-3">Bài thi</th>
-              <th class="py-2.5 px-3 text-center">Điểm số</th>
-              <th class="py-2.5 px-3 text-center">Câu đúng</th>
-              <th class="py-2.5 px-3 text-center">Thời gian</th>
-              <th class="py-2.5 px-3 text-right">Lúc nộp</th>
-            </tr>
-          </thead>
-          <tbody id="submissionTableBody" class="divide-y divide-bac">
-            <tr>
-              <td colspan="6" class="text-center py-6 text-gray-400 italic">Đang tải nhật ký nộp bài...</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-  
-    <!-- KHU VỰC 4: CÀI ĐẶT TÀI KHOẢN NGÂN HÀNG & MOMO NHẬN BONUS -->
+    <!-- KHU VỰC 3: CÀI ĐẶT TÀI KHOẢN NGÂN HÀNG & MOMO NHẬN BONUS (BẢO VỆ NGHIÊM NGẶT) -->
     <div class="bg-white rounded-2xl p-6 border border-bac shadow-sm space-y-4">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2">
@@ -327,7 +261,66 @@
       </div>
     </div>
 
+    <!-- KHU VỰC 4: BẢNG THEO DÕI HỌC SINH LÀM BÀI TRỰC TIẾP (LIVE ROSTER) -->
+    <div class="bg-white rounded-2xl p-6 border border-bac shadow-sm space-y-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-amber-50 text-vang font-bold flex items-center justify-center">📊</div>
+          <div>
+            <h3 class="font-bold text-base text-muc">Nhật Ký Học Sinh Nộp Bài Trực Tiếp</h3>
+            <p class="text-xs text-gray-500">Xem ngay điểm số, thời gian làm và mức độ hoàn thành của học sinh.</p>
+          </div>
+        </div>
+        <button onclick="loadDashboard()" class="px-3 py-1.5 border border-bac text-xs font-semibold rounded-lg hover:bg-slate-50 transition">
+          Làm mới ↻
+        </button>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr class="bg-slate-50 border-b border-bac text-gray-600 font-bold uppercase tracking-wider text-[11px]">
+              <th class="py-2.5 px-3">Học sinh</th>
+              <th class="py-2.5 px-3">Bài thi</th>
+              <th class="py-2.5 px-3 text-center">Điểm số</th>
+              <th class="py-2.5 px-3 text-center">Câu đúng</th>
+              <th class="py-2.5 px-3 text-center">Thời gian</th>
+              <th class="py-2.5 px-3 text-right">Lúc nộp</th>
+            </tr>
+          </thead>
+          <tbody id="submissionTableBody" class="divide-y divide-bac">
+            <tr>
+              <td colspan="6" class="text-center py-6 text-gray-400 italic">Đang tải nhật ký nộp bài...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
   </main>
+
+  <!-- MODAL ĐỔI MẬT KHẨU QUẢN TRỊ -->
+  <div id="modalChangePass" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-bac space-y-4">
+      <div class="flex items-center justify-between border-b border-bac pb-2">
+        <h3 class="font-bold text-base text-muc">Đổi Mật Khẩu Giảng Viên</h3>
+        <button onclick="closeChangePassModal()" class="text-gray-400 hover:text-muc">✕</button>
+      </div>
+      <div class="space-y-3">
+        <div>
+          <label class="block text-xs font-semibold text-gray-700 mb-1">Mật khẩu hiện tại:</label>
+          <input type="password" id="oldPassInput" class="w-full px-3 py-2 border border-bac rounded-xl text-xs">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-700 mb-1">Mật khẩu mới (ít nhất 6 ký tự):</label>
+          <input type="password" id="newPassInput" class="w-full px-3 py-2 border border-bac rounded-xl text-xs">
+        </div>
+        <button onclick="submitChangePassword()" class="w-full py-2.5 bg-luc text-white font-bold text-xs rounded-xl shadow transition">
+          Lưu Mật Khẩu Mới
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- MODAL MÁY CHIẾU TOÀN MÀN HÌNH -->
   <div id="projectorModal" class="fixed inset-0 bg-slate-950/95 z-50 hidden flex flex-col items-center justify-center p-6 text-white text-center">
@@ -353,6 +346,110 @@
     let timerInterval = null;
     let secondsLeft = 0;
 
+    // 1. Kiểm tra trạng thái đăng nhập
+    async function checkAuth() {
+      try {
+        const res = await fetch('api.php?action=check_teacher_auth');
+        const data = await res.json();
+        if (data.status === 'success' && data.logged_in) {
+          showDashboard();
+        } else {
+          showLogin();
+        }
+      } catch (e) {
+        showLogin();
+      }
+    }
+
+    function showDashboard() {
+      document.getElementById('loginSection').classList.add('hidden');
+      document.getElementById('mainDashboard').classList.remove('hidden');
+      document.getElementById('authHeaderActions').classList.remove('hidden');
+      fetchTeacherCode();
+      loadDashboard();
+      loadBankSettings();
+    }
+
+    function showLogin() {
+      document.getElementById('loginSection').classList.remove('hidden');
+      document.getElementById('mainDashboard').classList.add('hidden');
+      document.getElementById('authHeaderActions').classList.add('hidden');
+    }
+
+    function togglePasswordView() {
+      const inp = document.getElementById('teacherPasswordInput');
+      const icon = document.getElementById('eyeIcon');
+      if (inp.type === 'password') {
+        inp.type = 'text';
+        icon.className = 'fas fa-eye-slash';
+      } else {
+        inp.type = 'password';
+        icon.className = 'fas fa-eye';
+      }
+    }
+
+    async function submitTeacherLogin() {
+      const pass = document.getElementById('teacherPasswordInput').value.trim();
+      if (!pass) return alert("Vui lòng nhập mật khẩu quản trị.");
+
+      try {
+        const res = await fetch('api.php?action=teacher_login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password: pass })
+        });
+        const d = await res.json();
+        if (d.status === 'success') {
+          document.getElementById('teacherPasswordInput').value = '';
+          showDashboard();
+        } else {
+          alert(d.message || "Đăng nhập thất bại.");
+        }
+      } catch (e) {
+        alert("Lỗi: " + e.message);
+      }
+    }
+
+    async function logoutTeacher() {
+      if (!confirm("Thầy có chắc chắn muốn đăng xuất khỏi trang quản trị?")) return;
+      try {
+        await fetch('api.php?action=teacher_logout');
+        location.reload();
+      } catch (e) {
+        location.reload();
+      }
+    }
+
+    function openChangePassModal() {
+      document.getElementById('modalChangePass').classList.remove('hidden');
+    }
+    function closeChangePassModal() {
+      document.getElementById('modalChangePass').classList.add('hidden');
+    }
+
+    async function submitChangePassword() {
+      const old_password = document.getElementById('oldPassInput').value.trim();
+      const new_password = document.getElementById('newPassInput').value.trim();
+      if (!new_password || new_password.length < 6) return alert("Mật khẩu mới phải có ít nhất 6 ký tự.");
+
+      try {
+        const res = await fetch('api.php?action=change_teacher_password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ old_password, new_password })
+        });
+        const d = await res.json();
+        alert(d.message || d.status);
+        if (d.status === 'success') {
+          closeChangePassModal();
+          document.getElementById('oldPassInput').value = '';
+          document.getElementById('newPassInput').value = '';
+        }
+      } catch (e) {
+        alert("Lỗi: " + e.message);
+      }
+    }
+
     async function fetchTeacherCode() {
       try {
         const res = await fetch('api.php?action=get_teacher_code');
@@ -362,6 +459,8 @@
           document.getElementById('projectorCode').textContent = data.rolling_code;
           secondsLeft = data.seconds_remaining;
           startCountdown();
+        } else if (res.status === 401) {
+          showLogin();
         }
       } catch (e) {
         console.error('Lỗi lấy mã:', e);
@@ -375,7 +474,7 @@
         secondsLeft--;
         if (secondsLeft <= 0) {
           clearInterval(timerInterval);
-          fetchTeacherCode(); // Lấy mã mới khi hết giờ
+          fetchTeacherCode();
         } else {
           updateCountdownDisplay();
         }
@@ -475,12 +574,6 @@
       }
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-      fetchTeacherCode();
-      loadDashboard();
-      loadBankSettings();
-    });
-  
     async function loadBankSettings() {
       try {
         const res = await fetch('api.php?action=get_payment_settings');
@@ -517,6 +610,12 @@
       }
     }
 
+    // Nhấn Enter để đăng nhập
+    document.getElementById('teacherPasswordInput').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') submitTeacherLogin();
+    });
+
+    document.addEventListener('DOMContentLoaded', checkAuth);
   </script>
 </body>
 </html>
