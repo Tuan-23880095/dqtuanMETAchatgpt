@@ -369,5 +369,57 @@
 
     document.addEventListener('DOMContentLoaded', init);
   </script>
+
+  <!-- MODAL NHẬP MÃ LỚP TRÊN PHÒNG THI -->
+  <div id="modal-class-thi" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-bac space-y-4 animate-scaleIn text-left">
+      <div class="flex items-start justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center text-lg font-bold">
+            <i class="fas fa-key"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-base text-muc title-serif">Nhập Mã Lớp 4 Ký Tự</h3>
+            <p class="text-xs text-gray-500">Mở khóa vô hạn & xem trọn bộ lời giải chi tiết</p>
+          </div>
+        </div>
+        <button onclick="closeThiClassModal()" class="text-gray-400 hover:text-muc text-lg">✕</button>
+      </div>
+
+      <div class="space-y-3 pt-1">
+        <input type="text" id="thiClassCodeInput" maxlength="6" placeholder="MÃ 4 KÝ TỰ" class="w-full px-4 py-3 border-2 border-amber-400 bg-amber-50/40 rounded-xl text-center text-2xl font-black uppercase tracking-widest text-slate-800 outline-none font-mono">
+        <button onclick="submitThiClassCode()" class="w-full py-2.5 bg-luc text-white font-bold text-xs rounded-xl shadow transition">
+          Xác Nhận Vào Lớp
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function openThiClassModal() {
+      document.getElementById('modal-class-thi').classList.remove('hidden');
+      setTimeout(() => document.getElementById('thiClassCodeInput').focus(), 100);
+    }
+    function closeThiClassModal() {
+      document.getElementById('modal-class-thi').classList.add('hidden');
+    }
+    async function submitThiClassCode() {
+      const code = document.getElementById('thiClassCodeInput').value.trim();
+      if (!code) return alert("Vui lòng nhập mã lớp.");
+      try {
+        const res = await fetch('api.php?action=verify_class_code', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code })
+        });
+        const d = await res.json();
+        alert(d.message || d.status);
+        if (d.status === 'success') closeThiClassModal();
+      } catch (e) {
+        alert("Lỗi: " + e.message);
+      }
+    }
+  </script>
+
 </body>
 </html>
