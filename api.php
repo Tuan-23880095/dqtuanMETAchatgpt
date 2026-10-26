@@ -405,6 +405,183 @@ function verify_class_code_check(PDO $pdo, string $code): array {
 // -------------------------------------------------------------
 
 switch ($action) {
+
+    // --- TÍNH NĂNG MÃ LỚP 4 KÝ TỰ & QUẢN LÝ GIÁO VIÊN ---
+
+    // A. Học sinh nhập mã lớp 4 ký tự để mở khóa vô hạn
+    case 'verify_class_code':
+        $code = trim((string)($inputData['code'] ?? $_POST['code'] ?? ''));
+        $studentName = trim((string)($inputData['student_name'] ?? $_POST['student_name'] ?? ''));
+        $phone = trim((string)($inputData['phone'] ?? $_POST['phone'] ?? ''));
+
+        $check = verify_class_code_check($pdo, $code);
+        if (!$check['valid']) {
+            json_out([
+                'status' => 'error',
+                'message' => 'Mã lớp "' . htmlspecialchars($code) . '" không hợp lệ hoặc đã hết hạn. Hãy xin Thầy/Cô mã 4 ký tự mới nhất nhé!'
+            ], 400);
+        }
+
+        // Nếu hợp lệ: Cập nhật tài khoản học sinh
+        $userId = $_SESSION['bdvh_user_id'] ?? 0;
+        if ($userId <= 0 && $studentName !== '') {
+            // Tự tạo tài khoản cho học sinh
+            $uname = 'hs_' . substr(md5($studentName . microtime()), 0, 8);
+            $stmt = $pdo->prepare("
+                INSERT INTO bdvh_users (username, full_name, phone, role, free_trials_left, paid_trials_left, created_at, last_login)
+                VALUES (?, ?, ?, 'CLASS_STUDENT', 9999, 9999, datetime('now','localtime'), datetime('now','localtime'))
+            ");
+            $stmt->execute([$uname, $studentName, $phone]);
+            $userId = (int)$pdo->lastInsertId();
+            $_SESSION['bdvh_user_id'] = $userId;
+        } elseif ($userId > 0) {
+            $stmt = $pdo->prepare("UPDATE bdvh_users SET role = 'CLASS_STUDENT', free_trials_left = 9999, paid_trials_left = 9999 WHERE user_id = ?");
+            $stmt->execute([$userId]);
+        }
+
+        $_SESSION['bdvh_class_code'] = strtoupper($code);
+        $_SESSION['bdvh_class_label'] = $check['label'];
+        $_SESSION['bdvh_teacher_name'] = $check['teacher'];
+        $_SESSION['bdvh_teacher_id'] = $check['teacher_id'];
+        $_SESSION['bdvh_is_class_student'] = true;
+
+        json_out([
+            'status' => 'success',
+            'message' => '🎉 CHÚC MỪNG EM ĐÃ VÀO ' . mb_strtoupper($check['label']) . '! Toàn bộ đề thi và nhận xét chuyên sâu từ Gemini AI đã được MỞ KHÓA KHÔNG GIỚI HẠN.',
+            'class_info' => [
+                'teacher' => $check['teacher'],
+                'label' => $check['label'],
+                'code' => strtoupper($code)
+            ]
+        ]);
+        break;
+
+    // B. Dành cho Thầy Đinh Quốc Tuấn / Giáo viên lấy mã 4 ký tự hiện tại để chiếu lên bảng
+    case 'get_teacher_code':
+        $slotMinutes = 30;
+        $now = time();
+        $secondsRemaining = ($slotMinutes * 60) - ($now % ($slotMinutes * 60));
+        $currentCode = get_rolling_class_code(0);
+        $prevCode = get_rolling_class_code(-1);
+
+        // Lấy thêm danh sách mã tùy chỉnh đang hoạt động
+        $customCodes = [];
+        try {
+            $stmt = $pdo->query("SELECT * FROM bdvh_class_codes WHERE is_active = 1 ORDER BY code_id DESC LIMIT 10");
+            $customCodes = $stmt->fetchAll();
+        } catch (Throwable $e) {}
+
+        json_out([
+            'status' => 'success',
+            'rolling_code' => $currentCode,
+            'prev_code' => $prevCode,
+            'seconds_remaining' => $secondsRemaining,
+            'slot_minutes' => $slotMinutes,
+            'custom_codes' => $customCodes
+        ]);
+        break;
+
+    // C. Thầy Tuấn / Giáo viên tạo mã lớp tĩnh mới (ví dụ: MATH, 2026, LAN6)
+    case 'create_custom_code':
+        $code = strtoupper(trim((string)($inputData['code'] ?? $_POST['code'] ?? '')));
+        $label = trim((string)($inputData['label'] ?? $_POST['label'] ?? 'Lớp Toán'));
+        $teacherId = (int)($inputData['teacher_id'] ?? 1);
+        $hoursValid = (int)($inputData['hours_valid'] ?? 4);
+
+        if (strlen($code) < 3 || strlen($code) > 8) {
+            json_out(['status' => 'error', 'message' => 'Mã lớp nên từ 3 đến 6 ký tự.'], 400);
+        }
+
+        $expiresAt = date('Y-m-d H:i:s', time() + ($hoursValid * 3600));
+        try {
+            $stmt = $pdo->prepare("
+                INSERT OR REPLACE INTO bdvh_class_codes (code, teacher_id, label, expires_at, is_active, used_count)
+                VALUES (?, ?, ?, ?, 1, 0)
+            ");
+            $stmt->execute([$code, $teacherId, $label, $expiresAt]);
+            json_out([
+                'status' => 'success',
+                'message' => "Đã tạo mã lớp "{$code}" thành công! Có hiệu lực trong {$hoursValid} giờ.",
+                'code' => $code,
+                'expires_at' => $expiresAt
+            ]);
+        } catch (Throwable $e) {
+            json_out(['status' => 'error', 'message' => 'Không thể tạo mã: ' . $e->getMessage()], 500);
+        }
+        break;
+
+    // D. Bảng điều khiển Giáo viên: Xem kết quả học sinh lớp mình nộp bài
+    case 'teacher_dashboard':
+        $teacherId = (int)($_GET['teacher_id'] ?? 1);
+        // Lấy danh sách bài nộp gần nhất của học sinh thuộc lớp này
+        $submissions = [];
+        try {
+            $stmt = $pdo->prepare("
+                SELECT s.submission_id, s.user_id, s.score, s.duration_seconds, s.correct_count, s.total_questions, s.created_at,
+                       u.full_name, u.phone, e.title as exam_title
+                FROM bdvh_submissions s
+                JOIN bdvh_users u ON s.user_id = u.user_id
+                JOIN bdvh_exams e ON s.exam_id = e.exam_id
+                ORDER BY s.submission_id DESC LIMIT 50
+            ");
+            $stmt->execute();
+            $submissions = $stmt->fetchAll();
+        } catch (Throwable $e) {}
+
+        json_out([
+            'status' => 'success',
+            'submissions' => $submissions
+        ]);
+        break;
+
+    // E. Thầy Tuấn thêm Giáo viên đối tác mới (Thỏa thuận hợp tác)
+    case 'add_partner_teacher':
+        $email = trim((string)($inputData['email'] ?? ''));
+        $name = trim((string)($inputData['full_name'] ?? ''));
+        $phone = trim((string)($inputData['phone'] ?? ''));
+        $school = trim((string)($inputData['school_name'] ?? ''));
+        $className = trim((string)($inputData['class_name'] ?? ''));
+        $customCode = strtoupper(trim((string)($inputData['class_code'] ?? '')));
+
+        if ($email === '' || $name === '') {
+            json_out(['status' => 'error', 'message' => 'Vui lòng nhập Email và Họ tên giáo viên.'], 400);
+        }
+
+        if ($customCode === '') {
+            $customCode = strtoupper(substr(md5($email . microtime()), 0, 4));
+        }
+
+        try {
+            $stmt = $pdo->prepare("
+                INSERT INTO bdvh_teachers (email, full_name, phone, school_name, class_name, class_code, is_active)
+                VALUES (?, ?, ?, ?, ?, ?, 1)
+            ");
+            $stmt->execute([$email, $name, $phone, $school, $className, $customCode]);
+            $newTId = (int)$pdo->lastInsertId();
+
+            // Tạo luôn mã lớp tương ứng
+            $stmt = $pdo->prepare("
+                INSERT INTO bdvh_class_codes (code, teacher_id, label, is_active)
+                VALUES (?, ?, ?, 1)
+            ");
+            $stmt->execute([$customCode, $newTId, "Lớp {$className} - Thầy/Cô {$name}"]);
+
+            json_out([
+                'status' => 'success',
+                'message' => "Đã tạo tài khoản đối tác cho Thầy/Cô {$name}! Mã lớp cung cấp cho học sinh là: {$customCode}",
+                'teacher' => [
+                    'teacher_id' => $newTId,
+                    'full_name' => $name,
+                    'email' => $email,
+                    'class_code' => $customCode,
+                    'class_name' => $className
+                ]
+            ]);
+        } catch (Throwable $e) {
+            json_out(['status' => 'error', 'message' => 'Lỗi: ' . $e->getMessage()], 500);
+        }
+        break;
+
     // 1. Kiểm tra trạng thái đăng nhập
     case 'check_auth':
         if (!isset($_SESSION['bdvh_user_id'])) {
