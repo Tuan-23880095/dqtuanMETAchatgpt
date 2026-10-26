@@ -501,7 +501,7 @@ switch ($action) {
             $stmt->execute([$code, $teacherId, $label, $expiresAt]);
             json_out([
                 'status' => 'success',
-                'message' => "Đã tạo mã lớp "{$code}" thành công! Có hiệu lực trong {$hoursValid} giờ.",
+                'message' => "Đã tạo mã lớp \"{$code}\" thành công! Có hiệu lực trong {$hoursValid} giờ.",
                 'code' => $code,
                 'expires_at' => $expiresAt
             ]);
