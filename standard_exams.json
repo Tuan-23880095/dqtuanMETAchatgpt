@@ -138,15 +138,15 @@
     "time_minutes": 30,
     "questions": [
       {
-        "q": "Mệnh đề phủ định của mệnh đề $P$: \"$\\forall x \\in \\mathbb{R}, x^2 > 0$\" là:",
+        "q": "Mệnh đề phủ định của mệnh đề P: \"Với mọi số thực x, x² > 0\" là:",
         "opts": [
-          "$\\exists x \\in \\mathbb{R}, x^2 \\le 0$",
-          "$\\exists x \\in \\mathbb{R}, x^2 < 0$",
-          "$\\forall x \\in \\mathbb{R}, x^2 \\le 0$",
-          "$\\exists x \\notin \\mathbb{R}, x^2 \\le 0$"
+          "Tồn tại số thực x sao cho x² ≤ 0",
+          "Tồn tại số thực x sao cho x² < 0",
+          "Với mọi số thực x, x² ≤ 0",
+          "Tồn tại số thực x không thuộc R sao cho x² ≤ 0"
         ],
         "ans": 0,
-        "exp": "<b>Quy tắc phủ định mệnh đề chứa lượng từ:</b><br>- Phủ định của lượng từ 'với mọi' $\\forall$ là lượng từ 'tồn tại' $\\exists$.<br>- Phủ định của bất đẳng thức lớn hơn $>$ là nhỏ hơn hoặc bằng $\\le$.<br><br><b>Lời giải chi tiết:</b><br>Cho mệnh đề $P$: \"$\\forall x \\in X, A(x)$\".<br>Mệnh đề phủ định là $\\overline{P}$: \"$\\exists x \\in X, \\overline{A(x)}$\".<br>Ở đây $A(x): x^2 > 0 \\Rightarrow \\overline{A(x)}: x^2 \\le 0$.<br>Do đó: $\\overline{P}: \"\\exists x \\in \\mathbb{R}, x^2 \\le 0\"$.<br><i>(Thực tế với $x = 0 \\in \\mathbb{R}$, ta có $0^2 = 0 \\le 0$ nên mệnh đề phủ định này là mệnh đề đúng).</i><br><br><b>Kết luận:</b> Chọn đáp án <b>A</b>."
+        "exp": "<b>Quy tắc phủ định mệnh đề chứa lượng từ:</b><br>• Phủ định của lượng từ \"với mọi\" (∀) là lượng từ \"tồn tại\" (∃).<br>• Phủ định của bất đẳng thức lớn hơn (&gt;) là nhỏ hơn hoặc bằng (≤).<br><br><b>Lời giải chi tiết:</b><br>Cho mệnh đề: P = \"∀ x ∈ ℝ, x² &gt; 0\".<br>Mệnh đề phủ định là:<br>$$\\overline{P}: \\exists x \\in \\mathbb{R}, x^2 \\le 0$$<br>• <i>Giải thích thêm: Với x = 0 thì 0² = 0 ≤ 0 (thỏa mãn), do đó mệnh đề phủ định này là một mệnh đề đúng.</i><br><br><b>Kết luận:</b> Mệnh đề phủ định đúng là: \"Tồn tại số thực x sao cho x² ≤ 0\". Chọn đáp án <b>A</b>."
       },
       {
         "q": "Cho hai tập hợp số $A = [-2; 3)$ và $B = (1; 5]$. Giao của hai tập hợp $A \\cap B$ là:",
@@ -160,15 +160,15 @@
         "exp": "<b>Định nghĩa giao của hai tập hợp:</b><br>$$A \\cap B = \\{x \\in \\mathbb{R} \\mid x \\in A \\text{ và } x \\in B\\}$$<br><b>Lời giải chi tiết:</b><br>- Tập $A = [-2; 3) = \\{x \\in \\mathbb{R} \\mid -2 \\le x < 3\\}$.<br>- Tập $B = (1; 5] = \\{x \\in \\mathbb{R} \\mid 1 < x \\le 5\\}$.<br>Giao của hai khoảng là các giá trị đồng thời thỏa mãn $-2 \\le x < 3$ và $1 < x \\le 5$:<br>$$\\max(-2, 1) < x < \\min(3, 5) \\iff 1 < x < 3$$<br>Biểu diễn dưới dạng khoảng: $A \\cap B = (1; 3)$.<br><br><b>Kết luận:</b> Giao của hai tập hợp là khoảng $(1; 3)$. Chọn đáp án <b>B</b>."
       },
       {
-        "q": "Điểm nào sau đây thuộc miền nghiệm của bất phương trình bậc nhất hai ẩn $2x - y + 1 > 0$?",
+        "q": "Điểm nào sau đây thuộc miền nghiệm của bất phương trình: 2x - y + 1 > 0?",
         "opts": [
-          "$(0; 2)$",
-          "$(1; 4)$",
-          "$(2; 1)$",
-          "$(-1; 0)$"
+          "(0; 2)",
+          "(1; 4)",
+          "(2; 1)",
+          "(-1; 0)"
         ],
         "ans": 2,
-        "exp": "<b>Phương pháp kiểm tra điểm thuộc miền nghiệm:</b><br>Thay tọa độ $(x_0; y_0)$ của từng điểm vào vế trái $f(x, y) = 2x - y + 1$. Nếu $f(x_0, y_0) > 0$ thì điểm đó thuộc miền nghiệm.<br><br><b>Thử lần lượt từng phương án:</b><br>- Với điểm $(0; 2)$: $f(0, 2) = 2(0) - 2 + 1 = -1 < 0$ (Loại).<br>- Với điểm $(1; 4)$: $f(1, 4) = 2(1) - 4 + 1 = -1 < 0$ (Loại).<br>- Với điểm $(2; 1)$: $f(2, 1) = 2(2) - 1 + 1 = 4 > 0$ (Thỏa mãn bất phương trình).<br>- Với điểm $(-1; 0)$: $f(-1, 0) = 2(-1) - 0 + 1 = -1 < 0$ (Loại).<br><br><b>Kết luận:</b> Điểm $(2; 1)$ thuộc miền nghiệm. Chọn đáp án <b>C</b>."
+        "exp": "<b>Phương pháp kiểm tra điểm thuộc miền nghiệm:</b><br>Thay tọa độ (x₀; y₀) của từng điểm vào vế trái f(x, y) = 2x - y + 1.<br>Nếu f(x₀, y₀) &gt; 0 thì điểm đó thuộc miền nghiệm.<br><br><b>Kiểm tra từng phương án:</b><br>• Với điểm (0; 2): f(0, 2) = 2(0) - 2 + 1 = -1 &lt; 0 (Loại).<br>• Với điểm (1; 4): f(1, 4) = 2(1) - 4 + 1 = -1 &lt; 0 (Loại).<br>• Với điểm (2; 1): f(2, 1) = 2(2) - 1 + 1 = 4 &gt; 0 (Thỏa mãn bất phương trình).<br>• Với điểm (-1; 0): f(-1, 0) = 2(-1) - 0 + 1 = -1 &lt; 0 (Loại).<br><br><b>Kết luận:</b> Điểm (2; 1) thuộc miền nghiệm. Chọn đáp án <b>C</b>."
       },
       {
         "q": "Trong tam giác $ABC$ bất kỳ với các cạnh $a = BC, b = CA, c = AB$, công thức định lý Cosin nào sau đây là ĐÚNG?",

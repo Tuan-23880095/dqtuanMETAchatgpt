@@ -883,6 +883,18 @@ switch ($action) {
             }
         }
 
+        
+        // Khóa hướng dẫn giải chi tiết nếu chưa đăng nhập hoặc hết lượt miễn phí
+        foreach ($details as &$d) {
+            if (!$hasAiAccess) {
+                $d['explanation'] = '';
+                $d['is_explanation_locked'] = true;
+            } else {
+                $d['is_explanation_locked'] = false;
+            }
+        }
+        unset($d);
+
         $targetSeconds = ((int)$exam['time_minutes']) * 60;
         $aiResult = null;
         if ($hasAiAccess) {

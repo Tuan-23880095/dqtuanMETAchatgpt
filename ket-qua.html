@@ -356,14 +356,26 @@
               <p><b>Lựa chọn của em:</b> <span class="${isRight ? 'text-luc font-bold' : 'text-son font-bold'}">${d.chosen >= 0 ? ['A', 'B', 'C', 'D'][d.chosen] + '. ' + esc(d.opts[d.chosen]) : 'Chưa chọn'}</span></p>
               ${!isRight ? `<p><b>Đáp án đúng:</b> <span class="text-luc font-bold">${['A', 'B', 'C', 'D'][d.correct_ans]}. ${esc(d.opts[d.correct_ans])}</span></p>` : ''}
               ${d.explanation ? `
-              <div class="bg-emerald-50/50 p-4 rounded-2xl border border-emerald-200/80 text-slate-800 mt-3 text-xs leading-relaxed shadow-sm">
-                <div class="font-bold text-luc uppercase tracking-wider text-[11px] mb-2 flex items-center gap-1.5 border-b border-emerald-200/60 pb-1.5">
-                  <i class="fas fa-graduation-cap text-sm"></i> Hướng Dẫn Giải Chi Tiết Chuẩn Sư Phạm:
+${d.is_explanation_locked ? `
+                <div class="bg-amber-50/80 p-3.5 rounded-xl border border-amber-200 text-gray-700 mt-3 text-xs flex items-center justify-between gap-3 shadow-sm">
+                  <div class="flex items-center gap-2">
+                    <i class="fas fa-lock text-amber-600 text-sm"></i>
+                    <span><b>Hướng dẫn giải chi tiết & mẹo giải nhanh:</b> Đang bị khóa đối với tài khoản khách/hết lượt.</span>
+                  </div>
+                  <button onclick="promptClassCode()" class="px-3 py-1.5 bg-luc text-white rounded-lg font-bold text-[11px] hover:bg-emerald-800 transition flex-none shadow-sm">
+                    🔑 Mở Khóa Ngay
+                  </button>
                 </div>
-                <div class="explanation-content space-y-1.5">
-                  ${d.explanation}
+              ` : (d.explanation ? `
+                <div class="bg-emerald-50/50 p-4 rounded-2xl border border-emerald-200/80 text-slate-800 mt-3 text-xs leading-relaxed shadow-sm">
+                  <div class="font-bold text-luc uppercase tracking-wider text-[11px] mb-2 flex items-center gap-1.5 border-b border-emerald-200/60 pb-1.5">
+                    <i class="fas fa-graduation-cap text-sm"></i> Hướng Dẫn Giải Chi Tiết Chuẩn Sư Phạm:
+                  </div>
+                  <div class="explanation-content space-y-1.5">
+                    ${d.explanation}
+                  </div>
                 </div>
-              </div>
+              ` : '')}
             ` : ''}
             </div>
           </div>
