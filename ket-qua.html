@@ -35,13 +35,22 @@
     }
   </script>
 
-  <script>
+    <script>
     window.MathJax = {
       tex: {
-        inlineMath: [['$', '$'], ['\\(', '\\)']],
-        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+        inlineMath: [['$', '$'], ['\(', '\)']],
+        displayMath: [['$$', '$$'], ['\[', '\]']],
+        processEscapes: true
       },
-      startup: { typeset: false }
+      startup: {
+        typeset: true,
+        ready: () => {
+          MathJax.startup.defaultReady();
+          if (window.MathJax && window.MathJax.typesetPromise) {
+            window.MathJax.typesetPromise().catch(e => console.warn(e));
+          }
+        }
+      }
     };
   </script>
   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -359,6 +368,26 @@
     }
 
     function esc(s) { return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+    
+    async function promptClassCode() {
+      const code = prompt("Nhập Mã Lớp (4 ký tự) do Thầy Đinh Quốc Tuấn hoặc Thầy/Cô bộ môn cung cấp:");
+      if (!code) return;
+      try {
+        const res = await fetch('api.php?action=verify_class_code', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code: code.trim() })
+        });
+        const data = await res.json();
+        alert(data.message || data.status);
+        if (data.status === 'success') {
+          location.reload();
+        }
+      } catch (e) {
+        alert("Lỗi xác thực: " + e.message);
+      }
+    }
 
     document.addEventListener('DOMContentLoaded', init);
   </script>

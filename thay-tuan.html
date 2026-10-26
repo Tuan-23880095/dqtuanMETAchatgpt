@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bảng Điều Khiển Giảng Viên · ThS. Đinh Quốc Tuấn · BDVH HCMUS</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%230F6B55'/><text x='50' y='62' font-size='36' font-family='sans-serif' text-anchor='middle' fill='white' font-weight='bold'>T</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Source+Serif+4:ital,opsz,wght@0,8..60,600;0,8..60,700;1,8..60,600&family=JetBrains+Mono:wght@700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            luc: '#0F6B55',
+            lam: '#1F4E79',
+            son: '#C0392B',
+            muc: '#10212B',
+            nen: '#F6F7F3',
+            bac: '#E3E5E0',
+            vang: '#D4AC0D'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Be Vietnam Pro', sans-serif; background-color: #F6F7F3; color: #10212B; }
+    .title-serif { font-family: 'Source Serif 4', Georgia, serif; }
+    .code-font { font-family: 'JetBrains Mono', monospace; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- HEADER -->
+  <header class="bg-white border-b border-bac sticky top-0 z-40 shadow-sm">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-white border border-bac p-1 shadow-sm flex items-center justify-center">
+          <svg class="w-7 h-7 text-luc" viewBox="0 0 100 100" fill="currentColor">
+            <path d="M50 15 C45 35, 20 45, 20 65 C20 80, 35 90, 50 90 C65 90, 80 80, 80 65 C80 45, 55 35, 50 15 Z" fill-opacity="0.2"/>
+            <path d="M50 25 C46 42, 28 50, 28 68 C28 80, 38 88, 50 88 C62 88, 72 80, 72 68 C72 50, 54 42, 50 25 Z"/>
+          </svg>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold uppercase tracking-wider text-luc bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">Góc Giảng Viên</span>
+            <span class="text-xs text-gray-400">·</span>
+            <span class="text-xs font-semibold text-lam">ThS. Đinh Quốc Tuấn</span>
+          </div>
+          <h1 class="text-base sm:text-lg font-bold text-muc title-serif">Bảng Điều Khiển Điểm Danh & Quản Lý Lớp Học</h1>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <a href="index.html" class="px-3 py-1.5 rounded-lg border border-bac text-xs font-semibold hover:bg-slate-100 transition">
+          Trang Học Sinh
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-1 max-w-6xl w-full mx-auto p-4 sm:p-6 space-y-6">
+
+    <!-- KHU VỰC 1: MÃ LỚP 4 KÝ TỰ HIỆN TẠI (CHIẾU MÁY CHIẾU LÊN BẢNG) -->
+    <div class="bg-gradient-to-br from-white via-white to-emerald-50/40 rounded-3xl p-6 sm:p-8 border border-emerald-200 shadow-md">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+        <div class="space-y-2 text-center md:text-left">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100 text-luc text-xs font-bold">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            MÃ ĐIỂM DANH ĐỘNG (ROLLING PASSCODE)
+          </div>
+          <h2 class="text-xl sm:text-2xl font-bold title-serif text-muc">Mã Lớp Học Thời Gian Thực</h2>
+          <p class="text-xs sm:text-sm text-gray-600 max-w-xl">
+            Chiếu mã 4 ký tự này lên bảng. Học sinh chỉ cần mở web và gõ 4 ký tự này là được <b>mở khóa học tập vô hạn</b> và nhận đánh giá từ Gemini AI. Mã tự xoay vòng sau mỗi 30 phút.
+          </p>
+        </div>
+
+        <div class="flex flex-col items-center gap-3">
+          <div class="bg-slate-900 text-white rounded-2xl px-8 py-5 border-2 border-emerald-400 shadow-xl text-center relative group">
+            <div class="text-[11px] font-bold text-emerald-400 uppercase tracking-widest mb-1">Mã Lớp Đang Mở</div>
+            <div id="liveRollingCode" class="text-5xl sm:text-6xl font-black code-font tracking-widest text-emerald-300">
+              ----
+            </div>
+            <div class="text-xs text-slate-400 mt-2 flex items-center justify-center gap-2">
+              <svg class="w-3.5 h-3.5 text-amber-400 animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10" stroke-width="4" class="opacity-25"></circle><path fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
+              Đổi mã sau: <span id="countdownSec" class="font-bold text-white">--:--</span>
+            </div>
+          </div>
+          <button onclick="toggleProjectorMode()" class="px-4 py-2 rounded-xl bg-luc text-white text-xs font-bold shadow hover:bg-emerald-800 transition flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
+            Bật Chế Độ Máy Chiếu Toàn Màn Hình
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- KHU VỰC 2: TÙY CHỌN MÃ CỐ ĐỊNH & HỢP TÁC GIÁO VIÊN -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+      <!-- THẺ 1: TẠO MÃ LỚP CỐ ĐỊNH CHO THẦY TUẤN -->
+      <div class="bg-white rounded-2xl p-6 border border-bac shadow-sm space-y-4">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-emerald-50 text-luc font-bold flex items-center justify-center">🔑</div>
+          <h3 class="font-bold text-base text-muc">Tạo Mã Lớp Cố Định Cho Buổi Học</h3>
+        </div>
+        <p class="text-xs text-gray-500">
+          Nếu Thầy muốn dùng 1 mã dễ nhớ cho cả buổi dạy (ví dụ: <code class="bg-slate-100 px-1 py-0.5 rounded text-luc font-bold">TOAN</code>, <code class="bg-slate-100 px-1 py-0.5 rounded text-luc font-bold">L10A</code>), hãy nhập mã vào đây:
+        </p>
+        <div class="space-y-3">
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 mb-1">Mã lớp tùy chỉnh (3 - 6 ký tự):</label>
+            <input type="text" id="customCodeInput" maxlength="6" placeholder="Ví dụ: TOAN6" class="w-full px-3 py-2 border border-bac rounded-xl text-sm uppercase code-font font-bold">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 mb-1">Tên lớp / Ca học:</label>
+            <input type="text" id="customCodeLabel" placeholder="Ví dụ: Lớp Toán 10 Chiều Thứ 3" class="w-full px-3 py-2 border border-bac rounded-xl text-sm">
+          </div>
+          <div class="flex items-center gap-3">
+            <select id="customCodeHours" class="px-3 py-2 border border-bac rounded-xl text-xs bg-slate-50">
+              <option value="4">Hiệu lực: 4 giờ</option>
+              <option value="8">Hiệu lực: 8 giờ (cả ngày)</option>
+              <option value="24">Hiệu lực: 24 giờ</option>
+              <option value="168">Hiệu lực: 1 tuần</option>
+            </select>
+            <button onclick="createCustomCode()" class="flex-1 px-4 py-2 bg-lam text-white text-xs font-bold rounded-xl hover:bg-blue-900 transition">
+              Kích Hoạt Mã Này
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- THẺ 2: THỎA THUẬN VỚI GIÁO VIÊN ĐỐI TÁC -->
+      <div class="bg-white rounded-2xl p-6 border border-bac shadow-sm space-y-4">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-blue-50 text-lam font-bold flex items-center justify-center">🤝</div>
+          <h3 class="font-bold text-base text-muc">Thêm Giáo Viên Khác Muốn Sử Dụng</h3>
+        </div>
+        <p class="text-xs text-gray-500">
+          Khi có Thầy/Cô trường khác muốn dùng hệ thống cho lớp của họ: Thầy nhập thông tin vào đây. Hệ thống tự cấp <b>Mã Lớp Riêng</b> và <b>báo cáo gửi về Email</b> của họ.
+        </p>
+        <div class="space-y-3">
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block text-[11px] font-semibold text-gray-700 mb-1">Họ tên Thầy/Cô:</label>
+              <input type="text" id="partnerName" placeholder="Cô Nguyễn Thị Lan" class="w-full px-2.5 py-1.5 border border-bac rounded-lg text-xs">
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-gray-700 mb-1">Email nhận kết quả:</label>
+              <input type="email" id="partnerEmail" placeholder="lan.toan@gmail.com" class="w-full px-2.5 py-1.5 border border-bac rounded-lg text-xs">
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block text-[11px] font-semibold text-gray-700 mb-1">Trường THPT / THCS:</label>
+              <input type="text" id="partnerSchool" placeholder="THPT Chuyên..." class="w-full px-2.5 py-1.5 border border-bac rounded-lg text-xs">
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-gray-700 mb-1">Tên lớp dạy:</label>
+              <input type="text" id="partnerClass" placeholder="10A1" class="w-full px-2.5 py-1.5 border border-bac rounded-lg text-xs">
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <input type="text" id="partnerClassCode" maxlength="6" placeholder="Mã lớp (tùy chọn, vd: LAN10)" class="flex-1 px-2.5 py-1.5 border border-bac rounded-lg text-xs uppercase code-font">
+            <button onclick="addPartnerTeacher()" class="px-4 py-2 bg-emerald-700 text-white text-xs font-bold rounded-lg hover:bg-emerald-800 transition">
+              Cấp Mã & Kích Hoạt
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- KHU VỰC 3: BẢNG THEO DÕI HỌC SINH LÀM BÀI TRỰC TIẾP (LIVE ROSTER) -->
+    <div class="bg-white rounded-2xl p-6 border border-bac shadow-sm space-y-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-amber-50 text-vang font-bold flex items-center justify-center">📊</div>
+          <div>
+            <h3 class="font-bold text-base text-muc">Nhật Ký Học Sinh Nộp Bài Trực Tiếp</h3>
+            <p class="text-xs text-gray-500">Xem ngay điểm số, thời gian làm và mức độ hoàn thành của học sinh.</p>
+          </div>
+        </div>
+        <button onclick="loadDashboard()" class="px-3 py-1.5 border border-bac text-xs font-semibold rounded-lg hover:bg-slate-50 transition">
+          Làm mới ↻
+        </button>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr class="bg-slate-50 border-b border-bac text-gray-600 font-bold uppercase tracking-wider text-[11px]">
+              <th class="py-2.5 px-3">Học sinh</th>
+              <th class="py-2.5 px-3">Bài thi</th>
+              <th class="py-2.5 px-3 text-center">Điểm số</th>
+              <th class="py-2.5 px-3 text-center">Câu đúng</th>
+              <th class="py-2.5 px-3 text-center">Thời gian</th>
+              <th class="py-2.5 px-3 text-right">Lúc nộp</th>
+            </tr>
+          </thead>
+          <tbody id="submissionTableBody" class="divide-y divide-bac">
+            <tr>
+              <td colspan="6" class="text-center py-6 text-gray-400 italic">Đang tải nhật ký nộp bài...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- MODAL MÁY CHIẾU TOÀN MÀN HÌNH -->
+  <div id="projectorModal" class="fixed inset-0 bg-slate-950/95 z-50 hidden flex flex-col items-center justify-center p-6 text-white text-center">
+    <button onclick="toggleProjectorMode()" class="absolute top-6 right-6 px-4 py-2 rounded-xl bg-slate-800 text-slate-300 hover:text-white font-bold text-sm">
+      Đóng [ESC] ✕
+    </button>
+    <div class="max-w-2xl space-y-6">
+      <div class="text-emerald-400 font-bold tracking-widest text-sm uppercase">Trung Tâm Bồi Dưỡng Văn Hóa · ThS. Đinh Quốc Tuấn</div>
+      <h2 class="text-3xl sm:text-4xl font-bold title-serif text-white">VÀO PHÒNG LÀM BÀI TRỰC TUYẾN</h2>
+      <p class="text-slate-300 text-sm">Các em mở trình duyệt truy cập: <b class="text-emerald-300 underline">bdvh.diemdanhsv.com</b> và nhập mã:</p>
+      <div class="p-8 rounded-3xl bg-slate-900 border-4 border-emerald-400 shadow-2xl inline-block my-4">
+        <div id="projectorCode" class="text-7xl sm:text-8xl font-black code-font tracking-widest text-emerald-300">
+          ----
+        </div>
+      </div>
+      <div class="text-sm text-slate-400">
+        Mã còn hiệu lực: <span id="projectorCountdown" class="font-bold text-white">--:--</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let timerInterval = null;
+    let secondsLeft = 0;
+
+    async function fetchTeacherCode() {
+      try {
+        const res = await fetch('api.php?action=get_teacher_code');
+        const data = await res.json();
+        if (data.status === 'success') {
+          document.getElementById('liveRollingCode').textContent = data.rolling_code;
+          document.getElementById('projectorCode').textContent = data.rolling_code;
+          secondsLeft = data.seconds_remaining;
+          startCountdown();
+        }
+      } catch (e) {
+        console.error('Lỗi lấy mã:', e);
+      }
+    }
+
+    function startCountdown() {
+      if (timerInterval) clearInterval(timerInterval);
+      updateCountdownDisplay();
+      timerInterval = setInterval(() => {
+        secondsLeft--;
+        if (secondsLeft <= 0) {
+          clearInterval(timerInterval);
+          fetchTeacherCode(); // Lấy mã mới khi hết giờ
+        } else {
+          updateCountdownDisplay();
+        }
+      }, 1000);
+    }
+
+    function updateCountdownDisplay() {
+      const min = Math.floor(secondsLeft / 60);
+      const sec = secondsLeft % 60;
+      const fmt = `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+      document.getElementById('countdownSec').textContent = fmt;
+      document.getElementById('projectorCountdown').textContent = fmt;
+    }
+
+    function toggleProjectorMode() {
+      const m = document.getElementById('projectorModal');
+      m.classList.toggle('hidden');
+    }
+
+    async function createCustomCode() {
+      const code = document.getElementById('customCodeInput').value.trim();
+      const label = document.getElementById('customCodeLabel').value.trim();
+      const hours = document.getElementById('customCodeHours').value;
+      if (!code) return alert('Vui lòng nhập mã lớp.');
+
+      try {
+        const res = await fetch('api.php?action=create_custom_code', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code, label, hours_valid: hours })
+        });
+        const d = await res.json();
+        alert(d.message || d.status);
+        if (d.status === 'success') {
+          document.getElementById('customCodeInput').value = '';
+          document.getElementById('customCodeLabel').value = '';
+          fetchTeacherCode();
+        }
+      } catch (e) {
+        alert('Lỗi: ' + e.message);
+      }
+    }
+
+    async function addPartnerTeacher() {
+      const name = document.getElementById('partnerName').value.trim();
+      const email = document.getElementById('partnerEmail').value.trim();
+      const school = document.getElementById('partnerSchool').value.trim();
+      const className = document.getElementById('partnerClass').value.trim();
+      const code = document.getElementById('partnerClassCode').value.trim();
+      if (!name || !email) return alert('Vui lòng điền Họ tên và Email của Thầy/Cô.');
+
+      try {
+        const res = await fetch('api.php?action=add_partner_teacher', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ full_name: name, email, school_name: school, class_name: className, class_code: code })
+        });
+        const d = await res.json();
+        alert(d.message);
+        if (d.status === 'success') {
+          document.getElementById('partnerName').value = '';
+          document.getElementById('partnerEmail').value = '';
+          document.getElementById('partnerSchool').value = '';
+          document.getElementById('partnerClass').value = '';
+          document.getElementById('partnerClassCode').value = '';
+        }
+      } catch (e) {
+        alert('Lỗi: ' + e.message);
+      }
+    }
+
+    async function loadDashboard() {
+      const tb = document.getElementById('submissionTableBody');
+      try {
+        const res = await fetch('api.php?action=teacher_dashboard');
+        const data = await res.json();
+        if (data.status === 'success' && data.submissions.length > 0) {
+          tb.innerHTML = data.submissions.map(s => {
+            const min = Math.floor(s.duration_seconds / 60);
+            const sec = s.duration_seconds % 60;
+            return `
+              <tr class="hover:bg-slate-50 transition">
+                <td class="py-2.5 px-3 font-semibold text-muc">${s.full_name || 'Học sinh'}</td>
+                <td class="py-2.5 px-3 text-gray-700">${s.exam_title || 'Bài thi'}</td>
+                <td class="py-2.5 px-3 text-center font-bold ${s.score >= 8 ? 'text-luc' : (s.score >= 5 ? 'text-amber-600' : 'text-son')}">${s.score}/10</td>
+                <td class="py-2.5 px-3 text-center">${s.correct_count}/${s.total_questions}</td>
+                <td class="py-2.5 px-3 text-center text-gray-500">${min}p ${sec}s</td>
+                <td class="py-2.5 px-3 text-right text-gray-400 text-[11px]">${s.created_at || ''}</td>
+              </tr>
+            `;
+          }).join('');
+        } else {
+          tb.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-gray-400 italic">Chưa có lượt nộp bài nào.</td></tr>`;
+        }
+      } catch (e) {
+        tb.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-red-400">Lỗi nạp nhật ký: ${e.message}</td></tr>`;
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      fetchTeacherCode();
+      loadDashboard();
+    });
+  </script>
+</body>
+</html>

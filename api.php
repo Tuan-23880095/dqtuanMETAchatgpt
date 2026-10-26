@@ -98,6 +98,28 @@ function ensure_bdvh_tables(PDO $db): void {
                 is_free_trial INTEGER DEFAULT 1,
                 created_at TEXT DEFAULT CURRENT_TIMESTAMP
             );
+            
+            CREATE TABLE IF NOT EXISTS bdvh_teachers (
+                teacher_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                email TEXT UNIQUE NOT NULL,
+                full_name TEXT NOT NULL,
+                phone TEXT,
+                school_name TEXT,
+                class_name TEXT,
+                class_code TEXT UNIQUE,
+                is_active INTEGER DEFAULT 1,
+                created_at TEXT DEFAULT CURRENT_TIMESTAMP
+            );
+            CREATE TABLE IF NOT EXISTS bdvh_class_codes (
+                code_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                code TEXT UNIQUE NOT NULL,
+                teacher_id INTEGER DEFAULT 1,
+                label TEXT DEFAULT 'Lớp Thầy Đinh Quốc Tuấn',
+                created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                expires_at TEXT,
+                is_active INTEGER DEFAULT 1,
+                used_count INTEGER DEFAULT 0
+            );
             CREATE TABLE IF NOT EXISTS bdvh_transactions (
                 trans_id INTEGER PRIMARY KEY AUTOINCREMENT,
                 user_id INTEGER NOT NULL,
@@ -115,6 +137,14 @@ function ensure_bdvh_tables(PDO $db): void {
         $st = $db->query("SELECT COUNT(*) as c FROM bdvh_exams");
         if ((int)$st->fetch()['c'] === 0) {
             seed_default_exams($db);
+
+        // Tự động sửa lỗi mất $a trong SQLite nếu có dữ liệu cũ
+        try {
+            $db->exec("UPDATE bdvh_exams SET questions_json = REPLACE(questions_json, '^m \\cdot a^n = a^{m+n}', '$a^m \\cdot a^n = a^{m+n}') WHERE questions_json LIKE '%^m \\cdot a^n%'");
+            $db->exec("UPDATE bdvh_exams SET questions_json = REPLACE(questions_json, 'Mọi số nguyên  đều viết được thành /1', 'Mọi số nguyên $a$ đều viết được thành $a/1$') WHERE questions_json LIKE '%Mọi số nguyên  đều viết được thành /1%'");
+            $db->exec("UPDATE bdvh_exams SET questions_json = REPLACE(questions_json, ' = (C_{25}^1', '$P = (C_{25}^1') WHERE questions_json LIKE '% = (C_{25}^1%'");
+        } catch (Throwable $e) {}
+
         }
     } else {
         // MySQL MariaDB trên Hostinger
@@ -163,6 +193,28 @@ function ensure_bdvh_tables(PDO $db): void {
                 created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+            
+            CREATE TABLE IF NOT EXISTS bdvh_teachers (
+                teacher_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                email TEXT UNIQUE NOT NULL,
+                full_name TEXT NOT NULL,
+                phone TEXT,
+                school_name TEXT,
+                class_name TEXT,
+                class_code TEXT UNIQUE,
+                is_active INTEGER DEFAULT 1,
+                created_at TEXT DEFAULT CURRENT_TIMESTAMP
+            );
+            CREATE TABLE IF NOT EXISTS bdvh_class_codes (
+                code_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                code TEXT UNIQUE NOT NULL,
+                teacher_id INTEGER DEFAULT 1,
+                label TEXT DEFAULT 'Lớp Thầy Đinh Quốc Tuấn',
+                created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                expires_at TEXT,
+                is_active INTEGER DEFAULT 1,
+                used_count INTEGER DEFAULT 0
+            );
             CREATE TABLE IF NOT EXISTS bdvh_transactions (
                 trans_id INT AUTO_INCREMENT PRIMARY KEY,
                 user_id INT NOT NULL,
@@ -178,6 +230,14 @@ function ensure_bdvh_tables(PDO $db): void {
         $st = $db->query("SELECT COUNT(*) as c FROM bdvh_exams");
         if ((int)$st->fetch()['c'] === 0) {
             seed_default_exams($db);
+
+        // Tự động sửa lỗi mất $a trong SQLite nếu có dữ liệu cũ
+        try {
+            $db->exec("UPDATE bdvh_exams SET questions_json = REPLACE(questions_json, '^m \\cdot a^n = a^{m+n}', '$a^m \\cdot a^n = a^{m+n}') WHERE questions_json LIKE '%^m \\cdot a^n%'");
+            $db->exec("UPDATE bdvh_exams SET questions_json = REPLACE(questions_json, 'Mọi số nguyên  đều viết được thành /1', 'Mọi số nguyên $a$ đều viết được thành $a/1$') WHERE questions_json LIKE '%Mọi số nguyên  đều viết được thành /1%'");
+            $db->exec("UPDATE bdvh_exams SET questions_json = REPLACE(questions_json, ' = (C_{25}^1', '$P = (C_{25}^1') WHERE questions_json LIKE '% = (C_{25}^1%'");
+        } catch (Throwable $e) {}
+
         }
     }
 }
@@ -190,7 +250,7 @@ function seed_default_exams(PDO $db): void {
             'Đề rèn luyện phản xạ tính toán nhanh, củng cố quy tắc nhân chia lũy thừa và ngoặc số học.',
             20,
             json_encode([
-                ["q" => "Kết quả của phép tính $2^3 \\cdot 2^2$ bằng bao nhiêu?", "opts" => ['$2^5 = 32$', '$2^6 = 64$', '$4^5$', '$4^6$'], "ans" => 0, "exp" => "Quy tắc nhân lũy thừa cùng cơ số: $a^m \\cdot a^n = a^{m+n} \\Rightarrow 2^3 \\cdot 2^2 = 2^5 = 32$."],
+                ["q" => 'Kết quả của phép tính $2^3 \cdot 2^2$ bằng bao nhiêu?', "opts" => ['$2^5 = 32$', '$2^6 = 64$', '$4^5$', '$4^6$'], "ans" => 0, "exp" => 'Quy tắc nhân lũy thừa cùng cơ số: $a^m \cdot a^n = a^{m+n} \Rightarrow 2^3 \cdot 2^2 = 2^5 = 32$.'],
                 ["q" => "Giá trị của biểu thức $15 + 5 \\cdot 2^2$ là:", "opts" => ["40", "35", "80", "25"], "ans" => 1, "exp" => "Lũy thừa trước: $2^2 = 4$. Nhân: $5 \\cdot 4 = 20$. Cộng: $15 + 20 = 35$."],
                 ["q" => "Tìm $x$ biết $3^x = 27$?", "opts" => ['$x=2$', '$x=3$', '$x=4$', '$x=9$'], "ans" => 1, "exp" => "Vì $27 = 3^3$ nên $3^x = 3^3 \\Rightarrow x = 3$."],
                 ["q" => "Số nào sau đây chia hết cho cả 2 và 5?", "opts" => ["124", "235", "450", "502"], "ans" => 2, "exp" => "Số có chữ số tận cùng là 0 thì chia hết cho cả 2 và 5."],
@@ -233,7 +293,7 @@ function seed_default_exams(PDO $db): void {
                 ["q" => "Nếu An đi xe đạp 12 km/h thì muộn 5 phút, đi 15 km/h thì sớm 5 phút. Quãng đường từ nhà An đến trường là:", "opts" => ["10 km", "12 km", "15 km", "8 km"], "ans" => 0, "exp" => "Hiệu thời gian $s/12 - s/15 = 10/60 = 1/6 \\Rightarrow s = 10$ km."],
                 ["q" => "Khảo sát 100 học sinh: 65 bạn thích Toán, 50 bạn thích Văn, 25 bạn thích cả hai. Số bạn không thích môn nào là:", "opts" => ["10 bạn", "15 bạn", "20 bạn", "5 bạn"], "ans" => 0, "exp" => "$100 - (65 + 50 - 25) = 10$ bạn."],
                 ["q" => "Cho mệnh đề: \"Nếu trời mưa thì đường trơn\". Mệnh đề tương đương là:", "opts" => ["Nếu đường không trơn thì trời không mưa", "Nếu trời không mưa thì đường không trơn", "Nếu đường trơn thì trời mưa", "Trời mưa và đường không trơn"], "ans" => 0, "exp" => "Mệnh đề phản đảo $\\neg B \\Rightarrow \\neg A$ có cùng giá trị logic."],
-                ["q" => "Một lớp có 25 nam và 15 nữ. Chọn ngẫu nhiên 2 học sinh. Xác suất chọn 1 nam và 1 nữ là:", "opts" => ["25/52", "1/2", "375/780", "25/40"], "ans" => 0, "exp" => "$P = (C_{25}^1 \\cdot C_{15}^1)/C_{40}^2 = 375/780 = 25/52$."]
+                ["q" => 'Một lớp có 25 nam và 15 nữ. Chọn ngẫu nhiên 2 học sinh. Xác suất chọn 1 nam và 1 nữ là:', "opts" => ['25/52', '1/2', '375/780', '25/40'], "ans" => 0, "exp" => '$P = (C_{25}^1 \cdot C_{15}^1)/C_{40}^2 = 375/780 = 25/52$.']
             ], JSON_UNESCAPED_UNICODE)
         ]
     ];
@@ -264,6 +324,83 @@ if ($rawInput) {
 }
 
 // -------------------------------------------------------------
+
+// Sinh mã 4 ký tự động theo ca thời gian (mặc định mỗi 30 phút đổi 1 lần)
+function get_rolling_class_code(int $offsetSlots = 0, string $secretSalt = 'DQTUAN_HCMUS_MATH_2026'): string {
+    $slotMinutes = 30; // 30 phút một mã
+    $currentSlot = (int)floor(time() / ($slotMinutes * 60)) + $offsetSlots;
+    $rawHash = hash_hmac('sha256', (string)$currentSlot, $secretSalt);
+    // 32 ký tự không gây nhầm lẫn (bỏ 0, O, 1, I)
+    $chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+    $code = '';
+    for ($i = 0; $i < 4; $i++) {
+        $idx = hexdec(substr($rawHash, $i * 4, 4)) % strlen($chars);
+        $code .= $chars[$idx];
+    }
+    return $code;
+}
+
+// Kiểm tra mã 4 ký tự: khớp mã rolling hoặc khớp mã giáo viên trong DB
+function verify_class_code_check(PDO $pdo, string $code): array {
+    $cleanCode = strtoupper(trim($code));
+    if (strlen($cleanCode) < 3 || strlen($cleanCode) > 8) {
+        return ['valid' => false, 'teacher' => null, 'label' => ''];
+    }
+
+    // 1. Kiểm tra Rolling Code của Thầy Đinh Quốc Tuấn (chấp nhận slot hiện tại và slot trước để tránh trễ)
+    for ($off = -1; $off <= 1; $off++) {
+        if (get_rolling_class_code($off) === $cleanCode) {
+            return [
+                'valid' => true,
+                'teacher' => 'ThS. Đinh Quốc Tuấn (HCMUS)',
+                'teacher_id' => 1,
+                'label' => 'Lớp Toán Thầy Đinh Quốc Tuấn',
+                'is_tuan' => true
+            ];
+        }
+    }
+
+    // 2. Kiểm tra trong bảng bdvh_class_codes hoặc bdvh_teachers
+    try {
+        $stmt = $pdo->prepare("
+            SELECT c.*, t.full_name as teacher_name, t.email as teacher_email, t.class_name 
+            FROM bdvh_class_codes c
+            LEFT JOIN bdvh_teachers t ON c.teacher_id = t.teacher_id
+            WHERE UPPER(c.code) = ? AND c.is_active = 1
+            LIMIT 1
+        ");
+        $stmt->execute([$cleanCode]);
+        $row = $stmt->fetch();
+        if ($row) {
+            // Tăng số lượt dùng
+            $pdo->prepare("UPDATE bdvh_class_codes SET used_count = used_count + 1 WHERE code_id = ?")->execute([$row['code_id']]);
+            return [
+                'valid' => true,
+                'teacher' => $row['teacher_name'] ?? 'Giáo viên đối tác',
+                'teacher_id' => (int)($row['teacher_id'] ?? 0),
+                'label' => $row['label'] ?? ($row['class_name'] ?? 'Lớp học đối tác'),
+                'is_tuan' => false
+            ];
+        }
+
+        // Kiểm tra mã gắn trực tiếp trên bảng bdvh_teachers
+        $stmt = $pdo->prepare("SELECT * FROM bdvh_teachers WHERE UPPER(class_code) = ? AND is_active = 1 LIMIT 1");
+        $stmt->execute([$cleanCode]);
+        $t = $stmt->fetch();
+        if ($t) {
+            return [
+                'valid' => true,
+                'teacher' => $t['full_name'],
+                'teacher_id' => (int)$t['teacher_id'],
+                'label' => $t['class_name'] . ' (' . $t['school_name'] . ')',
+                'is_tuan' => false
+            ];
+        }
+    } catch (Throwable $e) {}
+
+    return ['valid' => false, 'teacher' => null, 'label' => ''];
+}
+
 // ROUTER CÁC CHỨC NĂNG
 // -------------------------------------------------------------
 

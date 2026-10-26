@@ -70,6 +70,11 @@
 
       <!-- Khung thông tin tài khoản / Đăng nhập -->
       <div id="auth-box" class="flex items-center gap-3">
+
+        <button onclick="openClassModal()" class="bg-amber-500 hover:bg-amber-600 text-white px-3.5 py-2 rounded-lg text-sm font-bold transition flex items-center gap-2 shadow-sm">
+          <i class="fas fa-key"></i> <span>Mã Lớp Học (4 ký tự)</span>
+        </button>
+
         <button onclick="openModal('modal-guest')" class="bg-luc hover:bg-emerald-800 text-white px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center gap-2 shadow-sm">
           <i class="fas fa-user-plus"></i> <span>Tạo Tài Khoản Khách</span>
         </button>
@@ -431,5 +436,75 @@
 
     document.addEventListener('DOMContentLoaded', init);
   </script>
+
+  <!-- MODAL NHẬP MÃ LỚP 4 KÝ TỰ -->
+  <div id="modal-class" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-bac space-y-5 animate-scaleIn">
+      <div class="flex items-start justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center text-lg font-bold">
+            <i class="fas fa-key"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-lg text-muc title-serif">Mã Lớp Học 4 Ký Tự</h3>
+            <p class="text-xs text-gray-500">Dành riêng cho học sinh của Thầy Tuấn & GV Đối Tác</p>
+          </div>
+        </div>
+        <button onclick="closeClassModal()" class="text-gray-400 hover:text-muc text-lg">✕</button>
+      </div>
+
+      <p class="text-xs text-gray-600 leading-relaxed">
+        Nhập mã 4 ký tự do Thầy Tuấn hoặc Thầy/Cô phụ trách lớp chiếu trên bảng hoặc cung cấp để <b>mở khóa học tập & nhận xét Gemini AI không giới hạn</b>:
+      </p>
+
+      <div class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1">Họ và tên của em:</label>
+          <input type="text" id="classStudentName" placeholder="Ví dụ: Nguyễn Văn An" class="w-full px-3.5 py-2 border border-bac rounded-xl text-sm focus:ring-2 focus:ring-amber-500 outline-none">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1">Mã 4 ký tự:</label>
+          <input type="text" id="classCodeInput" maxlength="6" placeholder="VD: 7K8B" class="w-full px-4 py-3 border-2 border-amber-400 bg-amber-50/40 rounded-xl text-center text-2xl font-black uppercase tracking-widest text-slate-800 outline-none focus:border-amber-600 font-mono">
+        </div>
+
+        <button onclick="submitClassCode()" class="w-full py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold text-sm rounded-xl shadow-lg transition flex items-center justify-center gap-2">
+          <i class="fas fa-unlock"></i> Xác Nhận Vào Lớp
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <script>
+    function openClassModal() {
+      document.getElementById('modal-class').classList.remove('hidden');
+      setTimeout(() => document.getElementById('classCodeInput').focus(), 100);
+    }
+    function closeClassModal() {
+      document.getElementById('modal-class').classList.add('hidden');
+    }
+    async function submitClassCode() {
+      const code = document.getElementById('classCodeInput').value.trim();
+      const name = document.getElementById('classStudentName').value.trim();
+      if (!code) return alert("Vui lòng nhập mã lớp.");
+      try {
+        const res = await fetch('api.php?action=verify_class_code', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code, student_name: name })
+        });
+        const data = await res.json();
+        alert(data.message || data.status);
+        if (data.status === 'success') {
+          closeClassModal();
+          location.reload();
+        }
+      } catch (e) {
+        alert("Lỗi: " + e.message);
+      }
+    }
+  </script>
+
 </body>
 </html>
