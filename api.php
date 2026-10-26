@@ -99,6 +99,11 @@ function ensure_bdvh_tables(PDO $db): void {
                 created_at TEXT DEFAULT CURRENT_TIMESTAMP
             );
             
+            
+            CREATE TABLE IF NOT EXISTS bdvh_settings (
+                setting_key TEXT PRIMARY KEY,
+                setting_value TEXT
+            );
             CREATE TABLE IF NOT EXISTS bdvh_teachers (
                 teacher_id INTEGER PRIMARY KEY AUTOINCREMENT,
                 email TEXT UNIQUE NOT NULL,
@@ -194,6 +199,11 @@ function ensure_bdvh_tables(PDO $db): void {
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
             
+            
+            CREATE TABLE IF NOT EXISTS bdvh_settings (
+                setting_key TEXT PRIMARY KEY,
+                setting_value TEXT
+            );
             CREATE TABLE IF NOT EXISTS bdvh_teachers (
                 teacher_id INTEGER PRIMARY KEY AUTOINCREMENT,
                 email TEXT UNIQUE NOT NULL,
@@ -243,67 +253,285 @@ function ensure_bdvh_tables(PDO $db): void {
 }
 
 function seed_default_exams(PDO $db): void {
-    $exams = [
-        [
-            'TOAN06_01', 'L06', 'TOAN',
-            'Đấu Trường Toán 6: Lũy thừa và Thứ tự phép tính',
-            'Đề rèn luyện phản xạ tính toán nhanh, củng cố quy tắc nhân chia lũy thừa và ngoặc số học.',
-            20,
-            json_encode([
-                ["q" => 'Kết quả của phép tính $2^3 \cdot 2^2$ bằng bao nhiêu?', "opts" => ['$2^5 = 32$', '$2^6 = 64$', '$4^5$', '$4^6$'], "ans" => 0, "exp" => 'Quy tắc nhân lũy thừa cùng cơ số: $a^m \cdot a^n = a^{m+n} \Rightarrow 2^3 \cdot 2^2 = 2^5 = 32$.'],
-                ["q" => "Giá trị của biểu thức $15 + 5 \\cdot 2^2$ là:", "opts" => ["40", "35", "80", "25"], "ans" => 1, "exp" => "Lũy thừa trước: $2^2 = 4$. Nhân: $5 \\cdot 4 = 20$. Cộng: $15 + 20 = 35$."],
-                ["q" => "Tìm $x$ biết $3^x = 27$?", "opts" => ['$x=2$', '$x=3$', '$x=4$', '$x=9$'], "ans" => 1, "exp" => "Vì $27 = 3^3$ nên $3^x = 3^3 \\Rightarrow x = 3$."],
-                ["q" => "Số nào sau đây chia hết cho cả 2 và 5?", "opts" => ["124", "235", "450", "502"], "ans" => 2, "exp" => "Số có chữ số tận cùng là 0 thì chia hết cho cả 2 và 5."],
-                ["q" => "Thứ tự thực hiện đúng các dấu ngoặc trong biểu thức là:", "opts" => ["( ) $\\rightarrow$ [ ] $\\rightarrow$ { }", "{ } $\\rightarrow$ [ ] $\\rightarrow$ ( )", "[ ] $\\rightarrow$ ( ) $\\rightarrow$ { }", "( ) $\\rightarrow$ { } $\\rightarrow$ [ ]"], "ans" => 0, "exp" => "Thực hiện ngoặc tròn ( ) trước, sau đó ngoặc vuông [ ], sau cùng là ngoặc nhọn { }."]
-            ], JSON_UNESCAPED_UNICODE)
+    $jsonText = '[
+  {
+    "exam_code": "TOAN06_01",
+    "grade": "L06",
+    "subject": "TOAN",
+    "title": "Đấu Trường Toán 6: Lũy thừa và Thứ tự thực hiện phép tính",
+    "description": "Rèn luyện tư duy tính toán nhanh, quy tắc lũy thừa cơ số tự nhiên và thứ tự ưu tiên các phép tính chuẩn chương trình KNTT.",
+    "time_minutes": 20,
+    "questions": [
+      {
+        "q": "Kết quả của phép tính $2^3 \\cdot 2^2$ bằng bao nhiêu?",
+        "opts": [
+          "$2^5 = 32$",
+          "$2^6 = 64$",
+          "$4^5 = 1024$",
+          "$4^6 = 4096$"
         ],
-        [
-            'TOAN07_01', 'L07', 'TOAN',
-            'Đấu Trường Toán 7: Tập hợp số hữu tỉ & Lũy thừa',
-            'Kiểm tra định nghĩa số hữu tỉ, quy tắc cộng trừ nhân chia và giá trị tuyệt đối.',
-            25,
-            json_encode([
-                ["q" => "Khẳng định nào sau đây là ĐÚNG về số hữu tỉ?", "opts" => ["Mọi số nguyên đều là số hữu tỉ", "Số hữu tỉ chỉ gồm phân số dương", "Số 0 không phải là số hữu tỉ", "$\\pi$ là một số hữu tỉ"], "ans" => 0, "exp" => "Mọi số nguyên $a$ đều viết được thành $a/1$ nên là số hữu tỉ."],
-                ["q" => "Kết quả của phép tính $(-\\frac{2}{3})^2$ là:", "opts" => ["$-\\frac{4}{9}$", "$\\frac{4}{9}$", "$-\\frac{4}{6}$", "$\\frac{4}{6}$"], "ans" => 1, "exp" => "Bình phương số âm ra số dương: $(-2/3)^2 = 4/9$."],
-                ["q" => "Giá trị của biểu thức $\\frac{1}{2} - \\frac{3}{4} + \\frac{5}{2}$ bằng:", "opts" => ["$\\frac{9}{4}$", "$\\frac{7}{4}$", "$\\frac{5}{4}$", "2"], "ans" => 0, "exp" => "Quy đồng mẫu 4: $(2 - 3 + 10)/4 = 9/4$."],
-                ["q" => "Nếu $|x| = 2,5$ thì giá trị của $x$ là:", "opts" => ["$x = 2,5$", "$x = -2,5$", "$x = 2,5$ hoặc $x = -2,5$", "$x = 5$"], "ans" => 2, "exp" => "Giá trị tuyệt đối bằng 2,5 thì $x$ nhận cả hai giá trị đối nhau $\\pm 2,5$."],
-                ["q" => "Cho $\\frac{x}{3} = \\frac{8}{12}$. Giá trị của $x$ là:", "opts" => ["1", "2", "3", "4"], "ans" => 1, "exp" => "$x = (3 \\cdot 8)/12 = 2$."]
-            ], JSON_UNESCAPED_UNICODE)
+        "ans": 0,
+        "exp": "<b>Phương pháp giải:</b> Áp dụng quy tắc nhân hai lũy thừa cùng cơ số:<br>$$a^m \\cdot a^n = a^{m+n} \\quad (a \\in \\mathbb{N}^*; m, n \\in \\mathbb{N})$$<br><b>Lời giải chi tiết:</b><br>Với $a = 2, m = 3, n = 2$, ta có:<br>$$2^3 \\cdot 2^2 = 2^{3+2} = 2^5 = 32$$<br><b>Kết luận:</b> Kết quả của phép tính là $2^5 = 32$. Chọn đáp án <b>A</b>."
+      },
+      {
+        "q": "Giá trị của biểu thức $15 + 5 \\cdot 2^2$ là:",
+        "opts": [
+          "$40$",
+          "$35$",
+          "$80$",
+          "$25$"
         ],
-        [
-            'TOAN10_01', 'L10', 'TOAN',
-            'Toán 10: Mệnh đề, Tập hợp & Bất phương trình',
-            'Rèn luyện tư duy logic mệnh đề, các phép toán tập hợp và bất phương trình bậc nhất hai ẩn.',
-            30,
-            json_encode([
-                ["q" => "Mệnh đề phủ định của $P$: \"$\\forall x \\in \\mathbb{R}, x^2 > 0$\" là:", "opts" => ["$\\exists x \\in \\mathbb{R}, x^2 \\le 0$", "$\\exists x \\in \\mathbb{R}, x^2 < 0$", "$\\forall x \\in \\mathbb{R}, x^2 \\le 0$", "$\\exists x \\notin \\mathbb{R}, x^2 \\le 0$"], "ans" => 0, "exp" => "Phủ định của $\\forall$ là $\\exists$, phủ định của $>$ là $\\le$."],
-                ["q" => "Cho tập hợp $A = [-2; 3)$ và $B = (1; 5]$. Giao $A \\cap B$ là:", "opts" => ["$[-2; 5]$", "$(1; 3)$", "$[1; 3)$", "$(1; 3]$"], "ans" => 1, "exp" => "Giao của hai khoảng là $(1; 3)$."],
-                ["q" => "Điểm nào thuộc miền nghiệm của bất phương trình $2x - y + 1 > 0$?", "opts" => ["(0; 2)", "(1; 4)", "(2; 1)", "(-1; 0)"], "ans" => 2, "exp" => "Thay (2; 1): $2(2) - 1 + 1 = 4 > 0$ (Đúng)."],
-                ["q" => "Trong tam giác $ABC$, định lý Cosin phát biểu đúng là:", "opts" => ["$a^2 = b^2 + c^2 - 2bc \\cos A$", "$a^2 = b^2 + c^2 + 2bc \\cos A$", "$a^2 = b^2 + c^2 - 2bc \\sin A$", "$a^2 = b^2 + c^2 - bc \\cos A$"], "ans" => 0, "exp" => "Công thức chuẩn: $a^2 = b^2 + c^2 - 2bc \\cos A$."],
-                ["q" => "Vectơ có điểm đầu $A$ và điểm cuối $B$ ký hiệu là:", "opts" => ["$AB$", "$|\\vec{AB}|$", "$\\vec{AB}$", "$\\vec{BA}$"], "ans" => 2, "exp" => "Ký hiệu chuẩn là $\\vec{AB}$."]
-            ], JSON_UNESCAPED_UNICODE)
+        "ans": 1,
+        "exp": "<b>Quy tắc thứ tự thực hiện phép tính:</b><br>1. Tính lũy thừa trước.<br>2. Thực hiện phép nhân và phép chia.<br>3. Cuối cùng thực hiện phép cộng và phép trừ.<br><br><b>Lời giải từng bước:</b><br>Bước 1 (Tính lũy thừa): $2^2 = 4$.<br>Bước 2 (Thực hiện phép nhân): $5 \\cdot 4 = 20$.<br>Bước 3 (Thực hiện phép cộng): $15 + 20 = 35$.<br><br><b>Kết luận:</b> Giá trị biểu thức bằng $35$. Chọn đáp án <b>B</b>."
+      },
+      {
+        "q": "Tìm số tự nhiên $x$ thỏa mãn đẳng thức: $3^x = 27$?",
+        "opts": [
+          "$x = 2$",
+          "$x = 3$",
+          "$x = 4$",
+          "$x = 9$"
         ],
-        [
-            'DGNL_2026_01', 'DGNL', 'DGNL_TONGHOP',
-            'ĐGNL ĐHQG-HCM: Tư duy Định lượng & Suy luận Logic (Đề số 01)',
-            'Đề luyện thi năng lực chuẩn cấu trúc Đại học Quốc gia TP.HCM: Giải toán ứng dụng, phân tích bảng số liệu, logic suy luận.',
-            35,
-            json_encode([
-                ["q" => "Một món hàng giảm giá 20%, sau đó giảm tiếp 10% trên giá đã giảm. Tổng phần trăm được giảm so với ban đầu là:", "opts" => ["28%", "30%", "72%", "32%"], "ans" => 0, "exp" => "Giá còn lại là $80% \\cdot 90% = 72%$. Mức giảm tổng cộng là $100% - 72% = 28%$."],
-                ["q" => "Nếu An đi xe đạp 12 km/h thì muộn 5 phút, đi 15 km/h thì sớm 5 phút. Quãng đường từ nhà An đến trường là:", "opts" => ["10 km", "12 km", "15 km", "8 km"], "ans" => 0, "exp" => "Hiệu thời gian $s/12 - s/15 = 10/60 = 1/6 \\Rightarrow s = 10$ km."],
-                ["q" => "Khảo sát 100 học sinh: 65 bạn thích Toán, 50 bạn thích Văn, 25 bạn thích cả hai. Số bạn không thích môn nào là:", "opts" => ["10 bạn", "15 bạn", "20 bạn", "5 bạn"], "ans" => 0, "exp" => "$100 - (65 + 50 - 25) = 10$ bạn."],
-                ["q" => "Cho mệnh đề: \"Nếu trời mưa thì đường trơn\". Mệnh đề tương đương là:", "opts" => ["Nếu đường không trơn thì trời không mưa", "Nếu trời không mưa thì đường không trơn", "Nếu đường trơn thì trời mưa", "Trời mưa và đường không trơn"], "ans" => 0, "exp" => "Mệnh đề phản đảo $\\neg B \\Rightarrow \\neg A$ có cùng giá trị logic."],
-                ["q" => 'Một lớp có 25 nam và 15 nữ. Chọn ngẫu nhiên 2 học sinh. Xác suất chọn 1 nam và 1 nữ là:', "opts" => ['25/52', '1/2', '375/780', '25/40'], "ans" => 0, "exp" => '$P = (C_{25}^1 \cdot C_{15}^1)/C_{40}^2 = 375/780 = 25/52$.']
-            ], JSON_UNESCAPED_UNICODE)
-        ]
-    ];
+        "ans": 1,
+        "exp": "<b>Phương pháp giải:</b> Đưa hai vế về cùng cơ số $a$ dạng $a^x = a^n \\Rightarrow x = n$.<br><br><b>Lời giải chi tiết:</b><br>Ta phân tích số $27$ ra thừa số nguyên tố: $27 = 3 \\cdot 3 \\cdot 3 = 3^3$.<br>Khi đó phương trình trở thành:<br>$$3^x = 3^3 \\Rightarrow x = 3$$<br><b>Kết luận:</b> Số tự nhiên cần tìm là $x = 3$. Chọn đáp án <b>B</b>."
+      },
+      {
+        "q": "Trong các số sau, số nào chia hết cho cả $2$ và $5$?",
+        "opts": [
+          "$124$",
+          "$235$",
+          "$450$",
+          "$502$"
+        ],
+        "ans": 2,
+        "exp": "<b>Dấu hiệu chia hết:</b><br>- Số có chữ số tận cùng là $0, 2, 4, 6, 8$ thì chia hết cho $2$.<br>- Số có chữ số tận cùng là $0$ hoặc $5$ thì chia hết cho $5$.<br>$\\Rightarrow$ Số chia hết cho cả $2$ và $5$ phải có <b>chữ số tận cùng là chữ số $0$</b>.<br><br><b>Xét các phương án:</b><br>- Số $124$ tận cùng là $4$ (chỉ chia hết cho $2$).<br>- Số $235$ tận cùng là $5$ (chỉ chia hết cho $5$).<br>- Số $450$ tận cùng là $0$ (chia hết cho cả $2$ và $5$).<br>- Số $502$ tận cùng là $2$ (chỉ chia hết cho $2$).<br><br><b>Kết luận:</b> Số $450$ thỏa mãn yêu cầu bài toán. Chọn đáp án <b>C</b>."
+      },
+      {
+        "q": "Thứ tự thực hiện đúng các dấu ngoặc trong một biểu thức toán học là:",
+        "opts": [
+          "Ngoặc tròn $( )$ $\\rightarrow$ Ngoặc vuông $[ ]$ $\\rightarrow$ Ngoặc nhọn $\\{ \\}$",
+          "Ngoặc nhọn $\\{ \\}$ $\\rightarrow$ Ngoặc vuông $[ ]$ $\\rightarrow$ Ngoặc tròn $( )$",
+          "Ngoặc vuông $[ ]$ $\\rightarrow$ Ngoặc tròn $( )$ $\\rightarrow$ Ngoặc nhọn $\\{ \\}$",
+          "Ngoặc tròn $( )$ $\\rightarrow$ Ngoặc nhọn $\\{ \\}$ $\\rightarrow$ Ngoặc vuông $[ ]$"
+        ],
+        "ans": 0,
+        "exp": "<b>Quy ước sư phạm chuẩn:</b><br>Khi thực hiện các phép tính trong biểu thức có nhiều dấu ngoặc, ta tính toán theo thứ tự ưu tiên từ trong ra ngoài:<br>$$\\text{Ngoặc tròn } ( ) \\longrightarrow \\text{Ngoặc vuông } [ ] \\longrightarrow \\text{Ngoặc nhọn } \\{ \\}$$<br><b>Kết luận:</b> Thứ tự đúng là $( ) \\rightarrow [ ] \\rightarrow \\{ \\}$. Chọn đáp án <b>A</b>."
+      }
+    ]
+  },
+  {
+    "exam_code": "TOAN07_01",
+    "grade": "L07",
+    "subject": "TOAN",
+    "title": "Đấu Trường Toán 7: Tập hợp số hữu tỉ & Lũy thừa số hữu tỉ",
+    "description": "Kiểm tra định nghĩa tập hợp số hữu tỉ Q, các phép toán cộng trừ nhân chia và giá trị tuyệt đối của số hữu tỉ.",
+    "time_minutes": 25,
+    "questions": [
+      {
+        "q": "Khẳng định nào sau đây là ĐÚNG về tập hợp số hữu tỉ $\\mathbb{Q}$?",
+        "opts": [
+          "Mọi số nguyên đều là số hữu tỉ",
+          "Số hữu tỉ chỉ bao gồm các phân số dương",
+          "Số $0$ không phải là số hữu tỉ",
+          "Số $\\pi$ là một số hữu tỉ"
+        ],
+        "ans": 0,
+        "exp": "<b>Định nghĩa số hữu tỉ:</b> Số hữu tỉ là số viết được dưới dạng phân số $\\frac{a}{b}$ với $a, b \\in \\mathbb{Z}, b \\ne 0$.<br><br><b>Chứng minh chi tiết:</b><br>Với mọi số nguyên $x \\in \\mathbb{Z}$, ta luôn viết được thành $x = \\frac{x}{1}$ (trong đó tử số $x \\in \\mathbb{Z}$, mẫu số $1 \\in \\mathbb{Z}^*$). Do đó mọi số nguyên đều là số hữu tỉ, hay $\\mathbb{Z} \\subset \\mathbb{Q}$.<br><br><b>Xét các phương án còn lại:</b><br>- Số hữu tỉ gồm cả số âm, số dương và số $0$.<br>- Số $0 = \\frac{0}{1} \\in \\mathbb{Q}$ nên khẳng định \'Số 0 không là số hữu tỉ\' là sai.<br>- Số $\\pi \\approx 3{,}14159...$ là số vô tỉ $(\\pi \\notin \\mathbb{Q})$.<br><br><b>Kết luận:</b> Khẳng định đúng là \'Mọi số nguyên đều là số hữu tỉ\'. Chọn đáp án <b>A</b>."
+      },
+      {
+        "q": "Kết quả của phép tính $\\left(-\\frac{2}{3}\\right)^2$ là:",
+        "opts": [
+          "$-\\frac{4}{9}$",
+          "$\\frac{4}{9}$",
+          "$-\\frac{4}{6}$",
+          "$\\frac{4}{6}$"
+        ],
+        "ans": 1,
+        "exp": "<b>Quy tắc lũy thừa với số mũ chẵn:</b><br>Với số hữu tỉ $x$ và số tự nhiên $n$ chẵn, ta luôn có $(-x)^{2n} = x^{2n} \\ge 0$.<br><br><b>Lời giải chi tiết:</b><br>$$\\left(-\\frac{2}{3}\\right)^2 = \\left(-\\frac{2}{3}\\right) \\cdot \\left(-\\frac{2}{3}\\right) = \\frac{(-2)^2}{3^2} = \\frac{4}{9}$$<br><b>Kết luận:</b> Bình phương của một số âm luôn là một số dương: $\\frac{4}{9}$. Chọn đáp án <b>B</b>."
+      },
+      {
+        "q": "Giá trị của biểu thức $A = \\frac{1}{2} - \\frac{3}{4} + \\frac{5}{2}$ bằng:",
+        "opts": [
+          "$\\frac{9}{4}$",
+          "$\\frac{7}{4}$",
+          "$\\frac{5}{4}$",
+          "$2$"
+        ],
+        "ans": 0,
+        "exp": "<b>Phương pháp giải:</b> Quy đồng mẫu số các phân số về mẫu số chung nhỏ nhất $\\text{MSCNN} = 4$.<br><br><b>Lời giải chi tiết:</b><br>$$A = \\frac{1 \\cdot 2}{2 \\cdot 2} - \\frac{3}{4} + \\frac{5 \\cdot 2}{2 \\cdot 2} = \\frac{2}{4} - \\frac{3}{4} + \\frac{10}{4}$$<br>$$A = \\frac{2 - 3 + 10}{4} = \\frac{9}{4}$$<br><b>Kết luận:</b> Giá trị biểu thức $A = \\frac{9}{4}$. Chọn đáp án <b>A</b>."
+      },
+      {
+        "q": "Tìm tất cả các giá trị của $x$ thỏa mãn đẳng thức: $|x| = 2{,}5$?",
+        "opts": [
+          "$x = 2{,}5$",
+          "$x = -2{,}5$",
+          "$x = 2{,}5$ hoặc $x = -2{,}5$",
+          "$x = 5$"
+        ],
+        "ans": 2,
+        "exp": "<b>Định nghĩa giá trị tuyệt đối:</b><br>Với số thực $a > 0$, phương trình $|x| = a$ luôn có hai nghiệm đối nhau là $x = a$ hoặc $x = -a$.<br><br><b>Lời giải:</b><br>$$|x| = 2{,}5 \\iff \\left[\\begin{array}{l} x = 2{,}5 \\\\ x = -2{,}5 \\end{array}\\right.$$<br><b>Kết luận:</b> Giá trị của $x$ là $x = 2{,}5$ hoặc $x = -2{,}5$. Chọn đáp án <b>C</b>."
+      },
+      {
+        "q": "Cho tỉ lệ thức $\\frac{x}{3} = \\frac{8}{12}$. Giá trị của $x$ là:",
+        "opts": [
+          "$1$",
+          "$2$",
+          "$3$",
+          "$4$"
+        ],
+        "ans": 1,
+        "exp": "<b>Tính chất cơ bản của tỉ lệ thức:</b><br>Nếu $\\frac{a}{b} = \\frac{c}{d}$ thì $a \\cdot d = b \\cdot c \\Rightarrow a = \\frac{b \\cdot c}{d}$.<br><br><b>Lời giải chi tiết:</b><br>$$\\frac{x}{3} = \\frac{8}{12} \\iff x \\cdot 12 = 3 \\cdot 8 \\iff 12x = 24 \\iff x = \\frac{24}{12} = 2$$<br><b>Kết luận:</b> Giá trị cần tìm là $x = 2$. Chọn đáp án <b>B</b>."
+      }
+    ]
+  },
+  {
+    "exam_code": "TOAN10_01",
+    "grade": "L10",
+    "subject": "TOAN",
+    "title": "Toán 10: Mệnh đề, Tập hợp & Bất phương trình bậc nhất hai ẩn",
+    "description": "Rèn luyện tư duy logic mệnh đề toán học, các phép toán giao, hợp, hiệu của tập hợp và biểu diễn miền nghiệm hình học.",
+    "time_minutes": 30,
+    "questions": [
+      {
+        "q": "Mệnh đề phủ định của mệnh đề $P$: \"$\\forall x \\in \\mathbb{R}, x^2 > 0$\" là:",
+        "opts": [
+          "$\\exists x \\in \\mathbb{R}, x^2 \\le 0$",
+          "$\\exists x \\in \\mathbb{R}, x^2 < 0$",
+          "$\\forall x \\in \\mathbb{R}, x^2 \\le 0$",
+          "$\\exists x \\notin \\mathbb{R}, x^2 \\le 0$"
+        ],
+        "ans": 0,
+        "exp": "<b>Quy tắc phủ định mệnh đề chứa lượng từ:</b><br>- Phủ định của lượng từ \'với mọi\' $\\forall$ là lượng từ \'tồn tại\' $\\exists$.<br>- Phủ định của bất đẳng thức lớn hơn $>$ là nhỏ hơn hoặc bằng $\\le$.<br><br><b>Lời giải chi tiết:</b><br>Cho mệnh đề $P$: \"$\\forall x \\in X, A(x)$\".<br>Mệnh đề phủ định là $\\overline{P}$: \"$\\exists x \\in X, \\overline{A(x)}$\".<br>Ở đây $A(x): x^2 > 0 \\Rightarrow \\overline{A(x)}: x^2 \\le 0$.<br>Do đó: $\\overline{P}: \"\\exists x \\in \\mathbb{R}, x^2 \\le 0\"$.<br><i>(Thực tế với $x = 0 \\in \\mathbb{R}$, ta có $0^2 = 0 \\le 0$ nên mệnh đề phủ định này là mệnh đề đúng).</i><br><br><b>Kết luận:</b> Chọn đáp án <b>A</b>."
+      },
+      {
+        "q": "Cho hai tập hợp số $A = [-2; 3)$ và $B = (1; 5]$. Giao của hai tập hợp $A \\cap B$ là:",
+        "opts": [
+          "$[-2; 5]$",
+          "$(1; 3)$",
+          "$[1; 3)$",
+          "$(1; 3]$"
+        ],
+        "ans": 1,
+        "exp": "<b>Định nghĩa giao của hai tập hợp:</b><br>$$A \\cap B = \\{x \\in \\mathbb{R} \\mid x \\in A \\text{ và } x \\in B\\}$$<br><b>Lời giải chi tiết:</b><br>- Tập $A = [-2; 3) = \\{x \\in \\mathbb{R} \\mid -2 \\le x < 3\\}$.<br>- Tập $B = (1; 5] = \\{x \\in \\mathbb{R} \\mid 1 < x \\le 5\\}$.<br>Giao của hai khoảng là các giá trị đồng thời thỏa mãn $-2 \\le x < 3$ và $1 < x \\le 5$:<br>$$\\max(-2, 1) < x < \\min(3, 5) \\iff 1 < x < 3$$<br>Biểu diễn dưới dạng khoảng: $A \\cap B = (1; 3)$.<br><br><b>Kết luận:</b> Giao của hai tập hợp là khoảng $(1; 3)$. Chọn đáp án <b>B</b>."
+      },
+      {
+        "q": "Điểm nào sau đây thuộc miền nghiệm của bất phương trình bậc nhất hai ẩn $2x - y + 1 > 0$?",
+        "opts": [
+          "$(0; 2)$",
+          "$(1; 4)$",
+          "$(2; 1)$",
+          "$(-1; 0)$"
+        ],
+        "ans": 2,
+        "exp": "<b>Phương pháp kiểm tra điểm thuộc miền nghiệm:</b><br>Thay tọa độ $(x_0; y_0)$ của từng điểm vào vế trái $f(x, y) = 2x - y + 1$. Nếu $f(x_0, y_0) > 0$ thì điểm đó thuộc miền nghiệm.<br><br><b>Thử lần lượt từng phương án:</b><br>- Với điểm $(0; 2)$: $f(0, 2) = 2(0) - 2 + 1 = -1 < 0$ (Loại).<br>- Với điểm $(1; 4)$: $f(1, 4) = 2(1) - 4 + 1 = -1 < 0$ (Loại).<br>- Với điểm $(2; 1)$: $f(2, 1) = 2(2) - 1 + 1 = 4 > 0$ (Thỏa mãn bất phương trình).<br>- Với điểm $(-1; 0)$: $f(-1, 0) = 2(-1) - 0 + 1 = -1 < 0$ (Loại).<br><br><b>Kết luận:</b> Điểm $(2; 1)$ thuộc miền nghiệm. Chọn đáp án <b>C</b>."
+      },
+      {
+        "q": "Trong tam giác $ABC$ bất kỳ với các cạnh $a = BC, b = CA, c = AB$, công thức định lý Cosin nào sau đây là ĐÚNG?",
+        "opts": [
+          "$a^2 = b^2 + c^2 - 2bc \\cos A$",
+          "$a^2 = b^2 + c^2 + 2bc \\cos A$",
+          "$a^2 = b^2 + c^2 - 2bc \\sin A$",
+          "$a^2 = b^2 + c^2 - bc \\cos A$"
+        ],
+        "ans": 0,
+        "exp": "<b>Định lý Cosin trong tam giác:</b><br>Trong tam giác $ABC$ bất kỳ, bình phương một cạnh bằng tổng bình phương hai cạnh còn lại trừ đi hai lần tích của hai cạnh đó với cosin của góc xen giữa:<br>$$a^2 = b^2 + c^2 - 2bc \\cos A$$<br>$$b^2 = a^2 + c^2 - 2ac \\cos B$$<br>$$c^2 = a^2 + b^2 - 2ab \\cos C$$<br><b>Kết luận:</b> Khẳng định chuẩn xác là $a^2 = b^2 + c^2 - 2bc \\cos A$. Chọn đáp án <b>A</b>."
+      },
+      {
+        "q": "Vectơ có điểm đầu là $A$ và điểm cuối là $B$ được ký hiệu chuẩn là:",
+        "opts": [
+          "$AB$",
+          "$|\\vec{AB}|$",
+          "$\\vec{AB}$",
+          "$\\vec{BA}$"
+        ],
+        "ans": 2,
+        "exp": "<b>Quy ước ký hiệu vectơ trong hình học:</b><br>- Một đoạn thẳng có hướng được gọi là vectơ.<br>- Khi điểm đầu là $A$ và điểm cuối là $B$, mũi tên chỉ từ $A$ sang $B$, ký hiệu là $\\vec{AB}$.<br>- Phân biệt: $AB$ là độ dài đoạn thẳng, $|\\vec{AB}|$ là độ dài của vectơ, còn $\\vec{BA}$ là vectơ ngược hướng (điểm đầu $B$, điểm cuối $A$).<br><br><b>Kết luận:</b> Ký hiệu chuẩn là $\\vec{AB}$. Chọn đáp án <b>C</b>."
+      }
+    ]
+  },
+  {
+    "exam_code": "DGNL_2026_01",
+    "grade": "DGNL",
+    "subject": "DGNL_TONGHOP",
+    "title": "ĐGNL ĐHQG-HCM: Tư duy Định lượng & Suy luận Logic (Đề số 01)",
+    "description": "Cấu trúc chuẩn ĐHQG-HCM: Giải toán ứng dụng thực tế, toán chuyển động, tối ưu hóa phần trăm, logic suy luận và xác suất tổ hợp.",
+    "time_minutes": 35,
+    "questions": [
+      {
+        "q": "Một món hàng được giảm giá $20\\%$, sau đó người bán tiếp tục giảm thêm $10\\%$ trên giá đã giảm. Tổng phần trăm được giảm giá so với giá gốc ban đầu là bao nhiêu?",
+        "opts": [
+          "$28\\%$",
+          "$30\\%$",
+          "$72\\%$",
+          "$32\\%$"
+        ],
+        "ans": 0,
+        "exp": "<b>Phương pháp giải:</b> Tính giá trị món hàng sau từng đợt giảm giá liên tiếp.<br><br><b>Lời giải chi tiết:</b><br>Gọi giá niêm yết ban đầu của món hàng là $P_0$ (với $P_0 > 0$).<br>Sau lần giảm giá thứ nhất (giảm $20\\%$), giá món hàng còn lại:<br>$$P_1 = P_0 \\cdot (100\\% - 20\\%) = 0{,}8 \\cdot P_0$$<br>Sau lần giảm giá thứ hai (giảm tiếp $10\\%$ trên giá đã giảm $P_1$), giá thực tế người mua phải trả là:<br>$$P_2 = P_1 \\cdot (100\\% - 10\\%) = (0{,}8 \\cdot P_0) \\cdot 0{,}9 = 0{,}72 \\cdot P_0 = 72\\% \\cdot P_0$$<br>Mức giảm giá tổng cộng so với giá gốc ban đầu là:<br>$$\\Delta P = 100\\% - 72\\% = 28\\%$$<br><i>Lưu ý tránh bẫy: Tuyệt đối không lấy $20\\% + 10\\% = 30\\%$ vì đợt giảm thứ hai áp dụng trên giá đã hạ chứ không phải trên giá gốc ban đầu.</i><br><br><b>Kết luận:</b> Món hàng được giảm tổng cộng $28\\%$. Chọn đáp án <b>A</b>."
+      },
+      {
+        "q": "An đi xe đạp từ nhà đến trường. Nếu đi với vận tốc $12\\text{ km/h}$ thì An bị muộn $5\\text{ phút}$. Nếu đi với vận tốc $15\\text{ km/h}$ thì An đến sớm $5\\text{ phút}$. Quãng đường từ nhà An đến trường dài bao nhiêu?",
+        "opts": [
+          "$10\\text{ km}$",
+          "$12\\text{ km}$",
+          "$15\\text{ km}$",
+          "$8\\text{ km}$"
+        ],
+        "ans": 0,
+        "exp": "<b>Tóm tắt & Đổi đơn vị:</b><br>- Vận tốc lần 1: $v_1 = 12\\text{ km/h}$ (muộn $5\\text{ phút}$).<br>- Vận tốc lần 2: $v_2 = 15\\text{ km/h}$ (sớm $5\\text{ phút}$).<br>- Chênh lệch thời gian giữa hai lần đi:<br>$$\\Delta t = 5\\text{ phút} - (-5\\text{ phút}) = 10\\text{ phút} = \\frac{10}{60}\\text{ giờ} = \\frac{1}{6}\\text{ giờ}$$<br><b>Thiết lập phương trình chuyển động:</b><br>Gọi quãng đường từ nhà An đến trường là $s$ (đơn vị: $\\text{km}$, điều kiện $s > 0$).<br>- Thời gian đi với vận tốc $v_1$: $t_1 = \\frac{s}{12}\\text{ (giờ)}$.<br>- Thời gian đi với vận tốc $v_2$: $t_2 = \\frac{s}{15}\\text{ (giờ)}$.<br><br>Vì thời gian đi lần 1 nhiều hơn lần 2 là $\\frac{1}{6}\\text{ giờ}$, ta có phương trình:<br>$$t_1 - t_2 = \\frac{s}{12} - \\frac{s}{15} = \\frac{1}{6}$$<br>$$\\iff s \\cdot \\left(\\frac{1}{12} - \\frac{1}{15}\\right) = \\frac{1}{6} \\iff s \\cdot \\left(\\frac{5 - 4}{60}\\right) = \\frac{1}{6} \\iff \\frac{s}{60} = \\frac{1}{6}$$<br>$$\\Rightarrow s = \\frac{60}{6} = 10\\text{ (km)}$$<br><b>Kết luận:</b> Quãng đường từ nhà An đến trường dài đúng $10\\text{ km}$. Chọn đáp án <b>A</b>."
+      },
+      {
+        "q": "Khảo sát một khối lớp gồm $100$ học sinh: có $65$ bạn thích môn Toán, $50$ bạn thích môn Văn, và $25$ bạn thích cả hai môn Toán và Văn. Hỏi có bao nhiêu bạn không thích môn nào trong hai môn này?",
+        "opts": [
+          "$10\\text{ bạn}$",
+          "$15\\text{ bạn}$",
+          "$20\\text{ bạn}$",
+          "$5\\text{ bạn}$"
+        ],
+        "ans": 0,
+        "exp": "<b>Cơ sở lý thuyết:</b> Áp dụng Nguyên lý Bù trừ (Biểu đồ Ven) cho hai tập hợp hữu hạn:<br>$$|A \\cup B| = |A| + |B| - |A \\cap B|$$<br><b>Lời giải chi tiết:</b><br>- Gọi $T$ là tập hợp học sinh thích Toán $\\Rightarrow |T| = 65$.<br>- Gọi $V$ là tập hợp học sinh thích Văn $\\Rightarrow |V| = 50$.<br>- Tập hợp học sinh thích cả hai môn là $T \\cap V \\Rightarrow |T \\cap V| = 25$.<br><br>Số học sinh thích ít nhất một môn (Toán hoặc Văn) là:<br>$$|T \\cup V| = |T| + |V| - |T \\cap V| = 65 + 50 - 25 = 90\\text{ (học sinh)}$$<br>Tổng số học sinh được khảo sát là $100$ bạn. Do đó, số học sinh không thích môn nào trong hai môn là:<br>$$N = 100 - |T \\cup V| = 100 - 90 = 10\\text{ (học sinh)}$$<br><b>Kết luận:</b> Có $10$ học sinh không thích môn nào. Chọn đáp án <b>A</b>."
+      },
+      {
+        "q": "Cho mệnh đề logic: \"Nếu trời mưa thì đường trơn\". Trong các mệnh đề sau, mệnh đề nào tương đương logic với mệnh đề đã cho?",
+        "opts": [
+          "Nếu đường không trơn thì trời không mưa",
+          "Nếu trời không mưa thì đường không trơn",
+          "Nếu đường trơn thì trời mưa",
+          "Trời mưa và đường không trơn"
+        ],
+        "ans": 0,
+        "exp": "<b>Cơ sở logic học:</b><br>Xét mệnh đề kéo theo dạng $P \\Rightarrow Q$. Mệnh đề phản đảo của nó là $\\neg Q \\Rightarrow \\neg P$.<br>Theo bảng chân trị logic học mệnh đề, một mệnh đề kéo theo luôn <b>tương đương logic</b> với mệnh đề phản đảo của nó:<br>$$(P \\Rightarrow Q) \\equiv (\\neg Q \\Rightarrow \\neg P)$$<br><b>Phân tích cụ thể:</b><br>- Mệnh đề $P$: \"Trời mưa\" $\\Rightarrow \\neg P$: \"Trời không mưa\".<br>- Mệnh đề $Q$: \"Đường trơn\" $\\Rightarrow \\neg Q$: \"Đường không trơn\".<br>Do đó mệnh đề phản đảo $\\neg Q \\Rightarrow \\neg P$ là: <i>\"Nếu đường không trơn thì trời không mưa\"</i>.<br><br><i>Lưu ý: Mệnh đề đảo $Q \\Rightarrow P$ và mệnh đề nghịch $\\neg P \\Rightarrow \\neg Q$ không tương đương với mệnh đề ban đầu.</i><br><br><b>Kết luận:</b> Mệnh đề tương đương là \"Nếu đường không trơn thì trời không mưa\". Chọn đáp án <b>A</b>."
+      },
+      {
+        "q": "Một lớp học có $25$ học sinh nam và $15$ học sinh nữ. Chọn ngẫu nhiên $2$ học sinh đi dự đại hội. Xác suất để chọn được đúng $1$ học sinh nam và $1$ học sinh nữ là:",
+        "opts": [
+          "$\\frac{25}{52}$",
+          "$\\frac{1}{2}$",
+          "$\\frac{375}{780}$",
+          "$\\frac{25}{40}$"
+        ],
+        "ans": 0,
+        "exp": "<b>Phương pháp giải:</b> Áp dụng định nghĩa cổ điển của xác suất: $P(A) = \\frac{n(A)}{n(\\Omega)}$.<br><br><b>Lời giải chi tiết:</b><br><b>Bước 1: Tính số phần tử không gian mẫu $n(\\Omega)$</b><br>Tổng số học sinh trong lớp là: $n = 25 + 15 = 40\\text{ (học sinh)}$.<br>Số cách chọn ngẫu nhiên $2$ học sinh từ $40$ học sinh là:<br>$$n(\\Omega) = C_{40}^2 = \\frac{40 \\cdot 39}{2} = 780\\text{ (cách)}$$<br><b>Bước 2: Tính số kết quả thuận lợi cho biến cố $A$</b><br>Biến cố $A$: \"Chọn được 1 học sinh nam và 1 học sinh nữ\".<br>- Số cách chọn $1$ bạn nam từ $25$ bạn nam: $C_{25}^1 = 25\\text{ (cách)}$.<br>- Số cách chọn $1$ bạn nữ từ $15$ bạn nữ: $C_{15}^1 = 15\\text{ (cách)}$.<br>Theo quy tắc nhân, số cách chọn là:<br>$$n(A) = C_{25}^1 \\cdot C_{15}^1 = 25 \\cdot 15 = 375\\text{ (cách)}$$<br><b>Bước 3: Tính xác suất biến cố $A$</b><br>$$P(A) = \\frac{n(A)}{n(\\Omega)} = \\frac{375}{780} = \\frac{25}{52} \\approx 0{,}4808\\text{ (hay } 48{,}08\\%\\text{)}$$<br><b>Kết luận:</b> Xác suất cần tìm là $\\frac{25}{52}$. Chọn đáp án <b>A</b>."
+      }
+    ]
+  }
+]';
+    $exams = json_decode($jsonText, true);
+    if (!is_array($exams)) return;
 
     $stmt = $db->prepare("
-        INSERT INTO bdvh_exams (exam_code, grade, subject, title, description, time_minutes, questions_json)
+        INSERT OR REPLACE INTO bdvh_exams (exam_code, grade, subject, title, description, time_minutes, questions_json)
         VALUES (?, ?, ?, ?, ?, ?, ?)
     ");
     foreach ($exams as $ex) {
-        $stmt->execute($ex);
+        $stmt->execute([
+            $ex['exam_code'],
+            $ex['grade'],
+            $ex['subject'],
+            $ex['title'],
+            $ex['description'],
+            $ex['time_minutes'],
+            json_encode($ex['questions'], JSON_UNESCAPED_UNICODE)
+        ]);
     }
 }
 
@@ -896,7 +1124,7 @@ switch ($action) {
     // 7. Yêu cầu nạp MoMo bonus / Nâng cấp
     case 'request_bonus':
         if (!isset($_SESSION['bdvh_user_id'])) {
-            json_out(['status' => 'error', 'message' => 'Vui lòng đăng nhập.'], 401);
+            json_out(['status' => 'error', 'message' => 'Vui lòng đăng nhập hoặc nhập mã lớp.'], 401);
         }
         $userId = (int)$_SESSION['bdvh_user_id'];
         $stmt = $pdo->prepare("SELECT username, full_name FROM bdvh_users WHERE user_id = ?");
@@ -904,30 +1132,92 @@ switch ($action) {
         $user = $stmt->fetch();
 
         $amount = (int)($inputData['amount'] ?? 5000);
-        $memo = 'BDVH ' . $user['username'] . ' ' . ($amount / 1000) . 'K';
+        $cleanUname = preg_replace('/[^a-zA-Z0-9_]/', '', $user['username'] ?? 'hs');
+        $memo = 'BDVH ' . substr($cleanUname, 0, 15) . ' ' . ($amount / 1000) . 'K';
+
+        // Lấy cấu hình ngân hàng của Thầy Tuấn từ DB (hoặc mặc định)
+        $bankId = 'MB'; // Mặc định MB Bank hoặc VCB
+        $bankAccount = '0908123456';
+        $accountName = 'DINH QUOC TUAN';
+        $momoPhone = '0908123456';
+
+        try {
+            $stSet = $pdo->query("SELECT setting_key, setting_value FROM bdvh_settings");
+            if ($stSet) {
+                while ($r = $stSet->fetch()) {
+                    if ($r['setting_key'] === 'bank_id') $bankId = $r['setting_value'];
+                    if ($r['setting_key'] === 'bank_account') $bankAccount = $r['setting_value'];
+                    if ($r['setting_key'] === 'account_name') $accountName = $r['setting_value'];
+                    if ($r['setting_key'] === 'momo_phone') $momoPhone = $r['setting_value'];
+                }
+            }
+        } catch (Throwable $e) {}
 
         // Ghi transaction trạng thái PENDING
         $trialsToAdd = ($amount === 5000) ? 5 : (($amount === 10000) ? 12 : 30);
         $stmt = $pdo->prepare("
             INSERT INTO bdvh_transactions (user_id, amount, trials_added, payment_method, memo, status, created_at)
-            VALUES (?, ?, ?, 'MOMO', ?, 'PENDING', datetime('now','localtime'))
+            VALUES (?, ?, ?, 'VIETQR', ?, 'PENDING', datetime('now','localtime'))
         ");
         $stmt->execute([$userId, $amount, $trialsToAdd, $memo]);
 
+        // Tạo link VietQR chuẩn Napas247 quét được trên TẤT CẢ các app ngân hàng
+        $encodedAccName = urlencode($accountName);
+        $encodedMemo = urlencode($memo);
+        $vietQrUrl = "https://img.vietqr.io/image/{$bankId}-{$bankAccount}-compact2.png?amount={$amount}&addInfo={$encodedMemo}&accountName={$encodedAccName}";
+
+        // Mã MoMo
+        $momoQrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" . urlencode("2|99|{$momoPhone}|{$accountName}||0|0|{$amount}|{$memo}|transfer_myqr");
+
         json_out([
             'status' => 'success',
-            'momo_info' => [
-                'recipient' => 'ThS. Đinh Quốc Tuấn',
-                'phone' => '0908.xxx.xxx',
+            'payment_info' => [
+                'recipient_name' => $accountName,
+                'bank_id' => $bankId,
+                'bank_account' => $bankAccount,
+                'momo_phone' => $momoPhone,
                 'amount' => $amount,
+                'amount_formatted' => number_format($amount, 0, ',', '.') . ' VNĐ',
                 'memo' => $memo,
                 'trials_added' => $trialsToAdd,
-                'qr_url' => 'https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=' . urlencode("2|99|0908xxxxxx|Đinh Quốc Tuấn||0|0|{$amount}|{$memo}|transfer_myqr"),
-                'email_contact' => 'dqtuanhcmus@gmail.com',
-                'support_note' => 'Sau khi chuyển khoản 1-2 phút, hệ thống tự động cộng lượt hoặc gửi email về dqtuanhcmus@gmail.com để được Thầy Tuấn hỗ trợ trực tiếp.'
+                'vietqr_url' => $vietQrUrl,
+                'momo_url' => $momoQrUrl,
+                'support_email' => 'dqtuanhcmus@gmail.com'
             ]
         ]);
         break;
+
+    // Cập nhật cấu hình tài khoản nhận tiền (Dành cho Thầy Tuấn)
+    case 'save_payment_settings':
+        $bId = strtoupper(trim((string)($inputData['bank_id'] ?? '')));
+        $bAcc = trim((string)($inputData['bank_account'] ?? ''));
+        $accName = mb_strtoupper(trim((string)($inputData['account_name'] ?? 'DINH QUOC TUAN')));
+        $mPhone = trim((string)($inputData['momo_phone'] ?? ''));
+
+        if ($bId !== '' && $bAcc !== '') {
+            $st = $pdo->prepare("INSERT OR REPLACE INTO bdvh_settings (setting_key, setting_value) VALUES (?, ?)");
+            $st->execute(['bank_id', $bId]);
+            $st->execute(['bank_account', $bAcc]);
+            $st->execute(['account_name', $accName]);
+            $st->execute(['momo_phone', $mPhone]);
+            json_out(['status' => 'success', 'message' => 'Đã lưu cấu hình tài khoản ngân hàng thành công!']);
+        }
+        json_out(['status' => 'error', 'message' => 'Vui lòng điền đủ Tên ngân hàng và Số tài khoản.'], 400);
+        break;
+
+    case 'get_payment_settings':
+        $settings = ['bank_id' => 'MB', 'bank_account' => '', 'account_name' => 'DINH QUOC TUAN', 'momo_phone' => ''];
+        try {
+            $st = $pdo->query("SELECT setting_key, setting_value FROM bdvh_settings");
+            if ($st) {
+                while ($r = $st->fetch()) {
+                    $settings[$r['setting_key']] = $r['setting_value'];
+                }
+            }
+        } catch (Throwable $e) {}
+        json_out(['status' => 'success', 'settings' => $settings]);
+        break;
+
 
     default:
         json_out(['status' => 'error', 'message' => 'Hành động không hợp lệ: ' . htmlspecialchars($action)], 404);

@@ -8,7 +8,44 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Source+Serif+4:ital,opsz,wght@0,8..60,600;0,8..60,700;1,8..60,600&family=JetBrains+Mono:wght@700;800&display=swap" rel="stylesheet">
-  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.tailwindcss.com">
+    async function loadBankSettings() {
+      try {
+        const res = await fetch('api.php?action=get_payment_settings');
+        const data = await res.json();
+        if (data.status === 'success' && data.settings) {
+          const s = data.settings;
+          if (s.bank_id) document.getElementById('setBankId').value = s.bank_id;
+          if (s.bank_account) document.getElementById('setBankAccount').value = s.bank_account;
+          if (s.account_name) document.getElementById('setAccountName').value = s.account_name;
+          if (s.momo_phone) document.getElementById('setMomoPhone').value = s.momo_phone;
+        }
+      } catch (e) {
+        console.error('Lỗi nạp settings:', e);
+      }
+    }
+
+    async function saveBankSettings() {
+      const bank_id = document.getElementById('setBankId').value;
+      const bank_account = document.getElementById('setBankAccount').value.trim();
+      const account_name = document.getElementById('setAccountName').value.trim();
+      const momo_phone = document.getElementById('setMomoPhone').value.trim();
+      if (!bank_account) return alert('Vui lòng nhập Số tài khoản ngân hàng của Thầy.');
+
+      try {
+        const res = await fetch('api.php?action=save_payment_settings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ bank_id, bank_account, account_name, momo_phone })
+        });
+        const d = await res.json();
+        alert(d.message || d.status);
+      } catch (e) {
+        alert('Lỗi lưu: ' + e.message);
+      }
+    }
+
+  </script>
   <script>
     tailwind.config = {
       theme: {
@@ -25,6 +62,43 @@
         }
       }
     }
+  
+    async function loadBankSettings() {
+      try {
+        const res = await fetch('api.php?action=get_payment_settings');
+        const data = await res.json();
+        if (data.status === 'success' && data.settings) {
+          const s = data.settings;
+          if (s.bank_id) document.getElementById('setBankId').value = s.bank_id;
+          if (s.bank_account) document.getElementById('setBankAccount').value = s.bank_account;
+          if (s.account_name) document.getElementById('setAccountName').value = s.account_name;
+          if (s.momo_phone) document.getElementById('setMomoPhone').value = s.momo_phone;
+        }
+      } catch (e) {
+        console.error('Lỗi nạp settings:', e);
+      }
+    }
+
+    async function saveBankSettings() {
+      const bank_id = document.getElementById('setBankId').value;
+      const bank_account = document.getElementById('setBankAccount').value.trim();
+      const account_name = document.getElementById('setAccountName').value.trim();
+      const momo_phone = document.getElementById('setMomoPhone').value.trim();
+      if (!bank_account) return alert('Vui lòng nhập Số tài khoản ngân hàng của Thầy.');
+
+      try {
+        const res = await fetch('api.php?action=save_payment_settings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ bank_id, bank_account, account_name, momo_phone })
+        });
+        const d = await res.json();
+        alert(d.message || d.status);
+      } catch (e) {
+        alert('Lỗi lưu: ' + e.message);
+      }
+    }
+
   </script>
   <style>
     body { font-family: 'Be Vietnam Pro', sans-serif; background-color: #F6F7F3; color: #10212B; }
@@ -208,6 +282,51 @@
       </div>
     </div>
 
+  
+    <!-- KHU VỰC 4: CÀI ĐẶT TÀI KHOẢN NGÂN HÀNG & MOMO NHẬN BONUS -->
+    <div class="bg-white rounded-2xl p-6 border border-bac shadow-sm space-y-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-pink-50 text-pink-600 font-bold flex items-center justify-center">💳</div>
+          <div>
+            <h3 class="font-bold text-base text-muc">Tài Khoản Ngân Hàng & MoMo Nhận Bonus Ủng Hộ (VietQR)</h3>
+            <p class="text-xs text-gray-500">Học sinh quét mã QR này để ủng hộ 5k/10k qua mọi app ngân hàng (VCB, MB, Techcombank...) hoặc MoMo.</p>
+          </div>
+        </div>
+        <button onclick="saveBankSettings()" class="px-4 py-2 bg-luc hover:bg-emerald-800 text-white font-bold text-xs rounded-xl shadow transition">
+          Lưu Tài Khoản
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 pt-2">
+        <div>
+          <label class="block text-[11px] font-semibold text-gray-700 mb-1">Ngân hàng thụ hưởng:</label>
+          <select id="setBankId" class="w-full px-3 py-2 border border-bac rounded-xl text-xs bg-slate-50 font-bold text-lam">
+            <option value="MB">MB Bank (Quân Đội)</option>
+            <option value="VCB">Vietcombank</option>
+            <option value="TCB">Techcombank</option>
+            <option value="BIDV">BIDV</option>
+            <option value="VBA">Agribank</option>
+            <option value="TPB">TPBank</option>
+            <option value="VPB">VPBank</option>
+            <option value="ACB">ACB</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-[11px] font-semibold text-gray-700 mb-1">Số Tài Khoản Ngân Hàng:</label>
+          <input type="text" id="setBankAccount" placeholder="Ví dụ: 0908xxxxxx" class="w-full px-3 py-2 border border-bac rounded-xl text-xs font-mono font-bold">
+        </div>
+        <div>
+          <label class="block text-[11px] font-semibold text-gray-700 mb-1">Tên Chủ Tài Khoản:</label>
+          <input type="text" id="setAccountName" value="DINH QUOC TUAN" class="w-full px-3 py-2 border border-bac rounded-xl text-xs uppercase font-bold">
+        </div>
+        <div>
+          <label class="block text-[11px] font-semibold text-gray-700 mb-1">Số Điện Thoại Ví MoMo:</label>
+          <input type="text" id="setMomoPhone" placeholder="Ví dụ: 0908xxxxxx" class="w-full px-3 py-2 border border-bac rounded-xl text-xs font-mono">
+        </div>
+      </div>
+    </div>
+
   </main>
 
   <!-- MODAL MÁY CHIẾU TOÀN MÀN HÌNH -->
@@ -359,7 +478,45 @@
     document.addEventListener('DOMContentLoaded', () => {
       fetchTeacherCode();
       loadDashboard();
+      loadBankSettings();
     });
+  
+    async function loadBankSettings() {
+      try {
+        const res = await fetch('api.php?action=get_payment_settings');
+        const data = await res.json();
+        if (data.status === 'success' && data.settings) {
+          const s = data.settings;
+          if (s.bank_id) document.getElementById('setBankId').value = s.bank_id;
+          if (s.bank_account) document.getElementById('setBankAccount').value = s.bank_account;
+          if (s.account_name) document.getElementById('setAccountName').value = s.account_name;
+          if (s.momo_phone) document.getElementById('setMomoPhone').value = s.momo_phone;
+        }
+      } catch (e) {
+        console.error('Lỗi nạp settings:', e);
+      }
+    }
+
+    async function saveBankSettings() {
+      const bank_id = document.getElementById('setBankId').value;
+      const bank_account = document.getElementById('setBankAccount').value.trim();
+      const account_name = document.getElementById('setAccountName').value.trim();
+      const momo_phone = document.getElementById('setMomoPhone').value.trim();
+      if (!bank_account) return alert('Vui lòng nhập Số tài khoản ngân hàng của Thầy.');
+
+      try {
+        const res = await fetch('api.php?action=save_payment_settings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ bank_id, bank_account, account_name, momo_phone })
+        });
+        const d = await res.json();
+        alert(d.message || d.status);
+      } catch (e) {
+        alert('Lỗi lưu: ' + e.message);
+      }
+    }
+
   </script>
 </body>
 </html>
