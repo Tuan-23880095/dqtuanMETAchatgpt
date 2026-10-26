@@ -41,15 +41,15 @@
         "exp": "<b>Phương pháp giải:</b> Đưa hai vế về cùng cơ số $a$ dạng $a^x = a^n \\Rightarrow x = n$.<br><br><b>Lời giải chi tiết:</b><br>Ta phân tích số $27$ ra thừa số nguyên tố: $27 = 3 \\cdot 3 \\cdot 3 = 3^3$.<br>Khi đó phương trình trở thành:<br>$$3^x = 3^3 \\Rightarrow x = 3$$<br><b>Kết luận:</b> Số tự nhiên cần tìm là $x = 3$. Chọn đáp án <b>B</b>."
       },
       {
-        "q": "Trong các số sau, số nào chia hết cho cả $2$ và $5$?",
+        "q": "Trong các số sau, số nào chia hết cho cả 2 và 5?",
         "opts": [
-          "$124$",
-          "$235$",
-          "$450$",
-          "$502$"
+          "124",
+          "235",
+          "450",
+          "502"
         ],
         "ans": 2,
-        "exp": "<b>Dấu hiệu chia hết:</b><br>- Số có chữ số tận cùng là $0, 2, 4, 6, 8$ thì chia hết cho $2$.<br>- Số có chữ số tận cùng là $0$ hoặc $5$ thì chia hết cho $5$.<br>$\\Rightarrow$ Số chia hết cho cả $2$ và $5$ phải có <b>chữ số tận cùng là chữ số $0$</b>.<br><br><b>Xét các phương án:</b><br>- Số $124$ tận cùng là $4$ (chỉ chia hết cho $2$).<br>- Số $235$ tận cùng là $5$ (chỉ chia hết cho $5$).<br>- Số $450$ tận cùng là $0$ (chia hết cho cả $2$ và $5$).<br>- Số $502$ tận cùng là $2$ (chỉ chia hết cho $2$).<br><br><b>Kết luận:</b> Số $450$ thỏa mãn yêu cầu bài toán. Chọn đáp án <b>C</b>."
+        "exp": "<b>Dấu hiệu chia hết:</b><br>• Số có chữ số tận cùng là 0, 2, 4, 6, 8 thì chia hết cho 2.<br>• Số có chữ số tận cùng là 0 hoặc 5 thì chia hết cho 5.<br>⇒ Số chia hết cho cả 2 và 5 phải có <b>chữ số tận cùng là chữ số 0</b>.<br><br><b>Xét các phương án:</b><br>- Số 124 có chữ số tận cùng là 4 (chỉ chia hết cho 2).<br>- Số 235 có chữ số tận cùng là 5 (chỉ chia hết cho 5).<br>- Số 450 có chữ số tận cùng là 0 (chia hết cho cả 2 và 5).<br>- Số 502 có chữ số tận cùng là 2 (chỉ chia hết cho 2).<br><br><b>Kết luận:</b> Số 450 thỏa mãn yêu cầu bài toán. Chọn đáp án <b>C</b>."
       },
       {
         "q": "Thứ tự thực hiện đúng các dấu ngoặc trong một biểu thức toán học là:",

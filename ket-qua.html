@@ -355,7 +355,16 @@
             <div class="text-xs space-y-1.5 pl-10">
               <p><b>Lựa chọn của em:</b> <span class="${isRight ? 'text-luc font-bold' : 'text-son font-bold'}">${d.chosen >= 0 ? ['A', 'B', 'C', 'D'][d.chosen] + '. ' + esc(d.opts[d.chosen]) : 'Chưa chọn'}</span></p>
               ${!isRight ? `<p><b>Đáp án đúng:</b> <span class="text-luc font-bold">${['A', 'B', 'C', 'D'][d.correct_ans]}. ${esc(d.opts[d.correct_ans])}</span></p>` : ''}
-              ${d.explanation ? `<div class="bg-slate-50 p-3 rounded-xl border border-bac text-gray-600 mt-2"><b>Hướng dẫn giải:</b> ${esc(d.explanation)}</div>` : ''}
+              ${d.explanation ? `
+              <div class="bg-emerald-50/50 p-4 rounded-2xl border border-emerald-200/80 text-slate-800 mt-3 text-xs leading-relaxed shadow-sm">
+                <div class="font-bold text-luc uppercase tracking-wider text-[11px] mb-2 flex items-center gap-1.5 border-b border-emerald-200/60 pb-1.5">
+                  <i class="fas fa-graduation-cap text-sm"></i> Hướng Dẫn Giải Chi Tiết Chuẩn Sư Phạm:
+                </div>
+                <div class="explanation-content space-y-1.5">
+                  ${d.explanation}
+                </div>
+              </div>
+            ` : ''}
             </div>
           </div>
         `;
