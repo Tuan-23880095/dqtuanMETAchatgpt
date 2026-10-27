@@ -258,5 +258,344 @@
         "exp": "<b>Phương pháp giải:</b> Áp dụng định nghĩa cổ điển của xác suất: $P(A) = \\frac{n(A)}{n(\\Omega)}$.<br><br><b>Lời giải chi tiết:</b><br><b>Bước 1: Tính số phần tử không gian mẫu $n(\\Omega)$</b><br>Tổng số học sinh trong lớp là: $n = 25 + 15 = 40\\text{ (học sinh)}$.<br>Số cách chọn ngẫu nhiên $2$ học sinh từ $40$ học sinh là:<br>$$n(\\Omega) = C_{40}^2 = \\frac{40 \\cdot 39}{2} = 780\\text{ (cách)}$$<br><b>Bước 2: Tính số kết quả thuận lợi cho biến cố $A$</b><br>Biến cố $A$: \"Chọn được 1 học sinh nam và 1 học sinh nữ\".<br>- Số cách chọn $1$ bạn nam từ $25$ bạn nam: $C_{25}^1 = 25\\text{ (cách)}$.<br>- Số cách chọn $1$ bạn nữ từ $15$ bạn nữ: $C_{15}^1 = 15\\text{ (cách)}$.<br>Theo quy tắc nhân, số cách chọn là:<br>$$n(A) = C_{25}^1 \\cdot C_{15}^1 = 25 \\cdot 15 = 375\\text{ (cách)}$$<br><b>Bước 3: Tính xác suất biến cố $A$</b><br>$$P(A) = \\frac{n(A)}{n(\\Omega)} = \\frac{375}{780} = \\frac{25}{52} \\approx 0{,}4808\\text{ (hay } 48{,}08\\%\\text{)}$$<br><b>Kết luận:</b> Xác suất cần tìm là $\\frac{25}{52}$. Chọn đáp án <b>A</b>."
       }
     ]
+  },
+  {
+    "exam_code": "TOAN07_CK1_KNTT",
+    "grade": 7,
+    "subject": "Toán",
+    "title": "Toán 7 - Ôn tập Cuối kì I (Kết nối tri thức)",
+    "description": "Phạm vi: Số hữu tỉ, Số thực, Góc & Đường thẳng song song, Tam giác bằng nhau, Biểu đồ & Hình hộp",
+    "time_minutes": 60,
+    "questions": [
+      {
+        "q": "Khẳng định nào sau đây là <b>sai</b>?",
+        "opts": [
+          "$-3 \\in \\mathbb{Q}$",
+          "$0{,}75 \\in \\mathbb{Q}$",
+          "$\\sqrt{2} \\in \\mathbb{Q}$",
+          "$\\frac{1}{3} \\in \\mathbb{R}$"
+        ],
+        "ans": 2,
+        "exp": "<b>Giải thích:</b> $\\sqrt{2} \\approx 1{,}41421...$ là số thập phân vô hạn không tuần hoàn, thuộc tập số vô tỉ $\\mathbb{I}$, do đó $\\sqrt{2} \\notin \\mathbb{Q}$. Khẳng định sai là <b>C</b>."
+      },
+      {
+        "q": "Phân số nào sau đây viết được dưới dạng số thập phân hữu hạn?",
+        "opts": [
+          "$\\frac{7}{12}$",
+          "$\\frac{3}{40}$",
+          "$\\frac{5}{18}$",
+          "$\\frac{4}{15}$"
+        ],
+        "ans": 1,
+        "exp": "<b>Giải thích:</b> Phân số tối giản viết được dưới dạng số thập phân hữu hạn nếu mẫu chỉ chứa thừa số nguyên tố 2 và 5.<br>Mẫu số của $\\frac{3}{40}$ là $40 = 2^3 \\cdot 5$ (chỉ có ước nguyên tố 2 và 5) $\\Rightarrow \\frac{3}{40} = 0{,}075$ là số thập phân hữu hạn. Chọn <b>B</b>."
+      },
+      {
+        "q": "Giá trị của $\\left(-\\frac{2}{3}\\right)^3$ là",
+        "opts": [
+          "$\\frac{8}{27}$",
+          "$-\\frac{8}{9}$",
+          "$-\\frac{2}{9}$",
+          "$-\\frac{8}{27}$"
+        ],
+        "ans": 3,
+        "exp": "<b>Giải thích:</b> $\\left(-\\frac{2}{3}\\right)^3 = \\frac{(-2)^3}{3^3} = -\\frac{8}{27}$. Lũy thừa bậc lẻ của số âm mang dấu âm. Chọn <b>D</b>."
+      },
+      {
+        "q": "Viết kết quả phép tính $3^8 : 3^5$ dưới dạng một lũy thừa:",
+        "opts": [
+          "$3^{13}$",
+          "$3^3$",
+          "$1^3$",
+          "$3^{40}$"
+        ],
+        "ans": 1,
+        "exp": "<b>Giải thích:</b> Áp dụng công thức chia hai lũy thừa cùng cơ số: $x^m : x^n = x^{m-n}$. Ta có $3^8 : 3^5 = 3^{8-5} = 3^3$. Chọn <b>B</b>."
+      },
+      {
+        "q": "Giá trị của $|-2{,}5| + |1{,}5|$ là",
+        "opts": [
+          "$-1$",
+          "$1$",
+          "$4$",
+          "$-4$"
+        ],
+        "ans": 2,
+        "exp": "<b>Giải thích:</b> Vì $|-2{,}5| = 2{,}5$ và $|1{,}5| = 1{,}5$ nên $|-2{,}5| + |1{,}5| = 2{,}5 + 1{,}5 = 4$. Chọn <b>C</b>."
+      },
+      {
+        "q": "Cho $x + \\frac{1}{3} = -\\frac{1}{6}$. Giá trị của $x$ là",
+        "opts": [
+          "$-\\frac{1}{2}$",
+          "$\\frac{1}{2}$",
+          "$-\\frac{1}{6}$",
+          "$\\frac{1}{6}$"
+        ],
+        "ans": 0,
+        "exp": "<b>Giải thích:</b> Chuyển vế đổi dấu: $x = -\\frac{1}{6} - \\frac{1}{3} = -\\frac{1}{6} - \\frac{2}{6} = -\\frac{3}{6} = -\\frac{1}{2}$. Chọn <b>A</b>."
+      },
+      {
+        "q": "Căn bậc hai số học của $0{,}25$ là",
+        "opts": [
+          "$0{,}05$",
+          "$0{,}125$",
+          "$-0{,}5$",
+          "$0{,}5$"
+        ],
+        "ans": 3,
+        "exp": "<b>Giải thích:</b> Căn bậc hai số học của số không âm $a$ là số không âm $x$ sao cho $x^2 = a$. Vì $0{,}5 > 0$ và $0{,}5^2 = 0{,}25$ nên $\\sqrt{0{,}25} = 0{,}5$. Chọn <b>D</b>."
+      },
+      {
+        "q": "Làm tròn số $86{,}357$ đến hàng phần mười ta được",
+        "opts": [
+          "$86{,}3$",
+          "$86{,}36$",
+          "$86{,}4$",
+          "$86{,}0$"
+        ],
+        "ans": 2,
+        "exp": "<b>Giải thích:</b> Chữ số ngay sau hàng phần mười (sau số 3) là 5 ($\\ge 5$), theo quy tắc làm tròn ta cộng thêm 1 vào hàng phần mười: $86{,}357 \\approx 86{,}4$. Chọn <b>C</b>."
+      },
+      {
+        "q": "Hai đường thẳng cắt nhau tạo một góc $130^\\circ$. Góc kề bù với góc đó có số đo là",
+        "opts": [
+          "$50^\\circ$",
+          "$130^\\circ$",
+          "$40^\\circ$",
+          "$230^\\circ$"
+        ],
+        "ans": 0,
+        "exp": "<b>Giải thích:</b> Hai góc kề bù có tổng số đo bằng $180^\\circ$. Do đó góc cần tìm có số đo là $180^\\circ - 130^\\circ = 50^\\circ$. Chọn <b>A</b>."
+      },
+      {
+        "q": "Cho $a \\parallel b$, đường thẳng $c$ cắt $a, b$ tạo một cặp góc so le trong, một góc bằng $75^\\circ$. Góc còn lại bằng",
+        "opts": [
+          "$105^\\circ$",
+          "$75^\\circ$",
+          "$15^\\circ$",
+          "$90^\\circ$"
+        ],
+        "ans": 1,
+        "exp": "<b>Giải thích:</b> Theo tính chất của hai đường thẳng song song: Hai góc so le trong thì bằng nhau. Do đó góc còn lại bằng $75^\\circ$. Chọn <b>B</b>."
+      },
+      {
+        "q": "Tam giác $ABC$ vuông tại $A$, có $\\widehat{B} = 35^\\circ$. Số đo của góc $\\widehat{C}$ là",
+        "opts": [
+          "$145^\\circ$",
+          "$35^\\circ$",
+          "$65^\\circ$",
+          "$55^\\circ$"
+        ],
+        "ans": 3,
+        "exp": "<b>Giải thích:</b> Trong tam giác vuông, hai góc nhọn phụ nhau: $\\widehat{B} + \\widehat{C} = 90^\\circ \\Rightarrow \\widehat{C} = 90^\\circ - 35^\\circ = 55^\\circ$. Chọn <b>D</b>."
+      },
+      {
+        "q": "Hai tam giác $MNP$ và $DEF$ có $MN = DE,\\ NP = EF,\\ MP = DF$. Khi đó $\\triangle MNP = \\triangle DEF$ theo trường hợp",
+        "opts": [
+          "cạnh - cạnh - cạnh (c-c-c)",
+          "cạnh - góc - cạnh (c-g-c)",
+          "góc - cạnh - góc (g-c-g)",
+          "cạnh huyền - góc nhọn"
+        ],
+        "ans": 0,
+        "exp": "<b>Giải thích:</b> Ba cặp cạnh tương ứng bằng nhau nên hai tam giác bằng nhau theo trường hợp cạnh - cạnh - cạnh (c-c-c). Chọn <b>A</b>."
+      },
+      {
+        "q": "Cho $a = \\frac{3}{4}$ và $b = -\\frac{5}{6}$. Kết quả của phép tính $a - b$ là",
+        "opts": [
+          "$-\\frac{1}{12}$",
+          "$\\frac{19}{12}$",
+          "$-\\frac{5}{8}$",
+          "$-\\frac{9}{10}$"
+        ],
+        "ans": 1,
+        "exp": "<b>Giải thích:</b> $a - b = \\frac{3}{4} - \\left(-\\frac{5}{6}\\right) = \\frac{3}{4} + \\frac{5}{6} = \\frac{9}{12} + \\frac{10}{12} = \\frac{19}{12}$. Chọn <b>B</b>."
+      },
+      {
+        "q": "Tính hợp lí giá trị biểu thức: $B = \\frac{4}{9} \\cdot \\left(-\\frac{7}{13}\\right) + \\frac{4}{9} \\cdot \\left(-\\frac{6}{13}\\right) + \\frac{5}{9}$",
+        "opts": [
+          "$\\frac{1}{9}$",
+          "$-\\frac{1}{9}$",
+          "$1$",
+          "$\\frac{4}{9}$"
+        ],
+        "ans": 0,
+        "exp": "<b>Giải thích:</b> Đặt $\\frac{4}{9}$ làm thừa số chung:<br>$B = \\frac{4}{9} \\left[ -\\frac{7}{13} + \\left(-\\frac{6}{13}\\right) \\right] + \\frac{5}{9} = \\frac{4}{9} \\cdot (-1) + \\frac{5}{9} = -\\frac{4}{9} + \\frac{5}{9} = \\frac{1}{9}$. Chọn <b>A</b>."
+      },
+      {
+        "q": "Rút gọn rồi tính giá trị của biểu thức: $C = \\frac{8^4 \\cdot 27^2}{6^8}$",
+        "opts": [
+          "$\\frac{8}{9}$",
+          "$\\frac{16}{9}$",
+          "$\\frac{4}{3}$",
+          "$2$"
+        ],
+        "ans": 1,
+        "exp": "<b>Giải thích:</b> Phân tích ra lũy thừa cơ số nguyên tố $2$ và $3$:<br>$8^4 = (2^3)^4 = 2^{12}$; $27^2 = (3^3)^2 = 3^6$; $6^8 = (2 \\cdot 3)^8 = 2^8 \\cdot 3^8$.<br>Do đó: $C = \\frac{2^{12} \\cdot 3^6}{2^8 \\cdot 3^8} = \\frac{2^{12-8}}{3^{8-6}} = \\frac{2^4}{3^2} = \\frac{16}{9}$. Chọn <b>B</b>."
+      }
+    ]
+  },
+  {
+    "exam_code": "TOAN07_CK1_PHUAN",
+    "grade": 7,
+    "subject": "Toán",
+    "title": "Đề thi Cuối kì I - Toán 7 - THCS Phú An (TP.HCM)",
+    "description": "Đề thi chính thức HK1 THCS Phú An: Trắc nghiệm khách quan & Vận dụng đại số, hình học",
+    "time_minutes": 60,
+    "questions": [
+      {
+        "q": "Khẳng định nào sau đây là <b>sai</b>?",
+        "opts": [
+          "$\\frac{-3}{2} \\in \\mathbb{Q}$",
+          "$2\\frac{1}{4} \\in \\mathbb{Q}$",
+          "$1{,}25 \\notin \\mathbb{Q}$",
+          "$-5 \\in \\mathbb{Q}$"
+        ],
+        "ans": 2,
+        "exp": "<b>Giải thích:</b> Số $1{,}25 = \\frac{125}{100} = \\frac{5}{4}$ viết được dưới dạng phân số với tử mẫu nguyên nên $1{,}25 \\in \\mathbb{Q}$. Khẳng định $1{,}25 \\notin \\mathbb{Q}$ là sai. Chọn <b>C</b>."
+      },
+      {
+        "q": "Phân số nào sau đây có thể viết được dưới dạng số thập phân hữu hạn?",
+        "opts": [
+          "$\\frac{3}{14}$",
+          "$\\frac{5}{6}$",
+          "$\\frac{-4}{15}$",
+          "$\\frac{9}{24}$"
+        ],
+        "ans": 3,
+        "exp": "<b>Giải thích:</b> Rút gọn phân số $\\frac{9}{24} = \\frac{3}{8}$. Mẫu số $8 = 2^3$ chỉ có ước nguyên tố 2 nên viết được thành số thập phân hữu hạn ($0{,}375$). Chọn <b>D</b>."
+      },
+      {
+        "q": "Số đối của $\\frac{1}{2}$ là:",
+        "opts": [
+          "$-2$",
+          "$-\\frac{1}{2}$",
+          "$2$",
+          "$\\frac{1}{2}$"
+        ],
+        "ans": 1,
+        "exp": "<b>Giải thích:</b> Số đối của số hữu tỉ $a$ là $-a$. Do đó số đối của $\\frac{1}{2}$ là $-\\frac{1}{2}$. Chọn <b>B</b>."
+      },
+      {
+        "q": "Viết kết quả phép tính $\\left(-\\frac{1}{2}\\right)^5 \\cdot \\left(-\\frac{1}{2}\\right)^2$ dưới dạng một lũy thừa:",
+        "opts": [
+          "$\\left(-\\frac{1}{2}\\right)^{10}$",
+          "$\\left(-\\frac{1}{2}\\right)^3$",
+          "$\\left(-\\frac{1}{2}\\right)^7$",
+          "$\\left(\\frac{1}{2}\\right)^7$"
+        ],
+        "ans": 2,
+        "exp": "<b>Giải thích:</b> Nhân hai lũy thừa cùng cơ số: $\\left(-\\frac{1}{2}\\right)^5 \\cdot \\left(-\\frac{1}{2}\\right)^2 = \\left(-\\frac{1}{2}\\right)^{5+2} = \\left(-\\frac{1}{2}\\right)^7$. Chọn <b>C</b>."
+      },
+      {
+        "q": "Kết quả của phép tính $\\frac{1}{2} - 0{,}25 \\cdot \\frac{4}{3}$ là:",
+        "opts": [
+          "$\\frac{1}{6}$",
+          "$\\frac{1}{2}$",
+          "$\\frac{4}{3}$",
+          "$\\frac{9}{16}$"
+        ],
+        "ans": 0,
+        "exp": "<b>Giải thích:</b> Đổi $0{,}25 = \\frac{1}{4}$. Thực hiện phép nhân trước: $\\frac{1}{4} \\cdot \\frac{4}{3} = \\frac{1}{3}$.<br>Sau đó trừ: $\\frac{1}{2} - \\frac{1}{3} = \\frac{3}{6} - \\frac{2}{6} = \\frac{1}{6}$. Chọn <b>A</b>."
+      },
+      {
+        "q": "Cho $x - \\frac{1}{2} = -\\frac{3}{4}$. Giá trị của $x$ là:",
+        "opts": [
+          "$x = -\\frac{5}{4}$",
+          "$x = \\frac{1}{4}$",
+          "$x = -\\frac{1}{4}$",
+          "$x = \\frac{5}{4}$"
+        ],
+        "ans": 2,
+        "exp": "<b>Giải thích:</b> $x = -\\frac{3}{4} + \\frac{1}{2} = -\\frac{3}{4} + \\frac{2}{4} = -\\frac{1}{4}$. Chọn <b>C</b>."
+      },
+      {
+        "q": "Căn bậc hai số học của $36$ là:",
+        "opts": [
+          "$9$",
+          "$18$",
+          "$13$",
+          "$6$"
+        ],
+        "ans": 3,
+        "exp": "<b>Giải thích:</b> Vì $6 > 0$ và $6^2 = 36$ nên $\\sqrt{36} = 6$. Chọn <b>D</b>."
+      },
+      {
+        "q": "Làm tròn số $37{,}815$ với độ chính xác $0{,}5$ ta được kết quả là:",
+        "opts": [
+          "$37{,}82$",
+          "$37{,}9$",
+          "$38$",
+          "$37{,}8$"
+        ],
+        "ans": 2,
+        "exp": "<b>Giải thích:</b> Độ chính xác $d = 0{,}5$ thuộc hàng phần mười, theo quy tắc ta làm tròn số đến hàng đơn vị (hàng liền trước của hàng có độ chính xác $d$). Chữ số sau hàng đơn vị là 8 ($\\ge 5$) nên $37{,}815 \\approx 38$. Chọn <b>C</b>."
+      },
+      {
+        "q": "Hai đường thẳng cắt nhau tại $O$ tạo thành góc $\\widehat{xOn} = 60^\\circ$. Góc đối đỉnh $\\widehat{mOy}$ có số đo bằng bao nhiêu?",
+        "opts": [
+          "$80^\\circ$",
+          "$60^\\circ$",
+          "$180^\\circ$",
+          "$120^\\circ$"
+        ],
+        "ans": 1,
+        "exp": "<b>Giải thích:</b> Hai góc đối đỉnh thì có số đo bằng nhau. Do đó $\\widehat{mOy} = \\widehat{xOn} = 60^\\circ$. Chọn <b>B</b>."
+      },
+      {
+        "q": "Số mặt, số đỉnh, số cạnh của hình hộp chữ nhật lần lượt là:",
+        "opts": [
+          "4 mặt, 8 đỉnh, 12 cạnh",
+          "6 mặt, 8 đỉnh, 12 cạnh",
+          "6 mặt, 12 đỉnh, 8 cạnh",
+          "8 mặt, 6 đỉnh, 12 cạnh"
+        ],
+        "ans": 1,
+        "exp": "<b>Giải thích:</b> Hình hộp chữ nhật có đúng 6 mặt, 8 đỉnh và 12 cạnh. Chọn <b>B</b>."
+      },
+      {
+        "q": "Trong hình lập phương $ABCD.EFGH$, mặt đáy $ABCD$ là hình gì?",
+        "opts": [
+          "Hình vuông",
+          "Hình tam giác",
+          "Hình bình hành",
+          "Hình chữ nhật"
+        ],
+        "ans": 0,
+        "exp": "<b>Giải thích:</b> Hình lập phương là hình hộp có tất cả 6 mặt đều là các hình vuông bằng nhau. Do đó mặt đáy $ABCD$ là hình vuông. Chọn <b>A</b>."
+      },
+      {
+        "q": "Một hình hộp chữ nhật có kích thước dài $5\\text{ cm}$, rộng $2\\text{ cm}$, cao $3{,}5\\text{ cm}$. Diện tích xung quanh của hình hộp chữ nhật đó là:",
+        "opts": [
+          "$49\\text{ cm}^2$",
+          "$35\\text{ cm}^2$",
+          "$24{,}5\\text{ cm}^2$",
+          "$70\\text{ cm}^2$"
+        ],
+        "ans": 0,
+        "exp": "<b>Giải thích:</b> Công thức diện tích xung quanh: $S_{xq} = 2(a + b)h = 2 \\cdot (5 + 2) \\cdot 3{,}5 = 2 \\cdot 7 \\cdot 3{,}5 = 49\\text{ cm}^2$. Chọn <b>A</b>."
+      },
+      {
+        "q": "Nhân dịp tết trồng cây, ba lớp 7A, 7B, 7C trồng được số cây tỉ lệ với 6, 5, 7. Cả ba lớp trồng được 36 cây. Số cây của mỗi lớp 7A, 7B, 7C lần lượt là:",
+        "opts": [
+          "12 cây, 10 cây, 14 cây",
+          "10 cây, 12 cây, 14 cây",
+          "14 cây, 10 cây, 12 cây",
+          "12 cây, 14 cây, 10 cây"
+        ],
+        "ans": 0,
+        "exp": "<b>Giải thích:</b> Gọi số cây 3 lớp là $a, b, c$. Ta có $\\frac{a}{6} = \\frac{b}{5} = \\frac{c}{7} = \\frac{a+b+c}{6+5+7} = \\frac{36}{18} = 2$.<br>Suy ra: $a = 6 \\cdot 2 = 12$; $b = 5 \\cdot 2 = 10$; $c = 7 \\cdot 2 = 14$ cây. Chọn <b>A</b>."
+      },
+      {
+        "q": "Một bể bơi hình hộp chữ nhật dài $12\\text{ m}$, rộng $5\\text{ m}$, sâu $1{,}5\\text{ m}$. Người ta bơm nước cách miệng bể $20\\text{ cm}$. Thể tích nước được bơm vào bể là:",
+        "opts": [
+          "$90\\text{ m}^3$",
+          "$78\\text{ m}^3$",
+          "$80\\text{ m}^3$",
+          "$75\\text{ m}^3$"
+        ],
+        "ans": 1,
+        "exp": "<b>Giải thích:</b> Đổi $20\\text{ cm} = 0{,}2\\text{ m}$.<br>Chiều cao của cột nước là: $1{,}5 - 0{,}2 = 1{,}3\\text{ m}$.<br>Lượng nước bơm vào là: $V = 12 \\cdot 5 \\cdot 1{,}3 = 78\\text{ m}^3$. Chọn <b>B</b>."
+      }
+    ]
   }
 ]

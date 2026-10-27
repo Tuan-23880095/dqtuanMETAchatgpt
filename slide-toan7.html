@@ -1,0 +1,2580 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Bài Giảng Toán 7 – ThS. Đinh Quốc Tuấn</title>
+<link rel="icon" type="image/svg+xml" href="https://diemdanhsv.com/images/logo-sen.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Source+Serif+4:ital,opsz,wght@0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --luc-bode: #0F6B55;
+  --lam-hove: #1F4E79;
+  --giay: #F6F7F3;
+  --vang-sao: #D4AF37;
+  --muc: #1A202C;
+  --xam-vien: #E2E8F0;
+  --do-terra: #C53030;
+  --xanh-la: #2F855A;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background-color: #0d1a26;
+  color: var(--muc);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  user-select: none;
+}
+
+/* Header bar */
+header {
+  background: linear-gradient(135deg, #102A43 0%, #1F4E79 100%);
+  color: #fff;
+  padding: 10px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+  z-index: 100;
+  border-bottom: 2px solid var(--vang-sao);
+}
+
+.brand-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.logo-box {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+.logo-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.teacher-info h1 {
+  font-family: 'Source Serif 4', serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.3px;
+}
+.teacher-info p {
+  font-size: 0.78rem;
+  color: #CBD5E1;
+  font-weight: 500;
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.topic-select {
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.25);
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  outline: none;
+  cursor: pointer;
+}
+.topic-select option {
+  background: #1F4E79;
+  color: #fff;
+}
+
+.btn-ctrl {
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.3);
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn-ctrl:hover {
+  background: var(--luc-bode);
+  border-color: var(--luc-bode);
+}
+
+/* Slide viewport container */
+.slide-stage {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.slide-card {
+  background: #ffffff;
+  width: 100%;
+  max-width: 1180px;
+  height: 94%;
+  border-radius: 20px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.35);
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--xam-vien);
+  animation: fadeIn 0.25s ease-out;
+}
+.slide-card.active {
+  display: flex;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.985); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.slide-header {
+  padding: 16px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #EDF2F7;
+}
+
+.badge-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 30px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.badge-question {
+  background: #EBF8FF;
+  color: #2B6CB0;
+  border: 1px solid #BEE3F8;
+}
+.badge-answer {
+  background: #F0FFF4;
+  color: #22543D;
+  border: 1px solid #C6F6D5;
+}
+.badge-intro {
+  background: #FEFCBF;
+  color: #744210;
+  border: 1px solid #FAF089;
+}
+
+.slide-num-info {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #718096;
+}
+
+.slide-body {
+  flex: 1;
+  padding: 30px 40px;
+  overflow-y: auto;
+  font-size: 1.35rem;
+  line-height: 1.7;
+  color: #2D3748;
+}
+
+/* Question & Answer Styles */
+.q-title {
+  font-size: 1.55rem;
+  font-weight: 700;
+  color: var(--lam-hove);
+  margin-bottom: 24px;
+}
+
+.opts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 24px;
+}
+.opts-grid.single-col {
+  grid-template-columns: 1fr;
+}
+
+.opt-item {
+  background: #F7FAFC;
+  border: 2px solid #E2E8F0;
+  border-radius: 12px;
+  padding: 14px 20px;
+  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: all 0.2s;
+}
+.opt-label {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #EDF2F7;
+  color: var(--lam-hove);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+.opt-item.correct {
+  background: #F0FFF4;
+  border-color: #38A169;
+}
+.opt-item.correct .opt-label {
+  background: #38A169;
+  color: #fff;
+}
+
+.solution-box {
+  background: #F0FDF4;
+  border-left: 6px solid var(--luc-bode);
+  padding: 24px 28px;
+  border-radius: 12px;
+  font-size: 1.28rem;
+  line-height: 1.75;
+  box-shadow: 0 4px 12px rgba(15,107,85,0.06);
+}
+.sol-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--luc-bode);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Footer Navigation Bar */
+footer {
+  background: #102A43;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.nav-buttons {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.btn-nav {
+  background: var(--lam-hove);
+  color: #fff;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 10px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  transition: all 0.2s;
+}
+.btn-nav:hover {
+  background: var(--luc-bode);
+  transform: translateY(-2px);
+}
+.btn-nav:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.key-hint {
+  color: #A0AEC0;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+.key-hint kbd {
+  background: #2D3748;
+  color: #E2E8F0;
+  padding: 2px 7px;
+  border-radius: 4px;
+  border: 1px solid #4A5568;
+}
+
+/* Fullscreen mode */
+:fullscreen .slide-card {
+  max-width: 96vw;
+  height: 94vh;
+}
+:fullscreen .slide-body {
+  font-size: 1.55rem;
+}
+:fullscreen .q-title {
+  font-size: 1.85rem;
+}
+</style>
+
+<!-- MathJax 3 config -->
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']]
+  },
+  options: {
+    enableMenu: false
+  }
+};
+</script>
+<script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head>
+<body>
+
+<header>
+  <div class="brand-left">
+    <div class="logo-box">
+      <img src="https://diemdanhsv.com/images/logo-sen.svg" alt="Logo Sen Đinh Quốc Tuấn">
+    </div>
+    <div class="teacher-info">
+      <h1>LỚP TOÁN 7 – ThS. ĐINH QUỐC TUẤN</h1>
+      <p>Hệ Thống Khảo Thí & Phân Tích Tư Duy · bdvh.diemdanhsv.com</p>
+    </div>
+  </div>
+  
+  <div class="header-controls">
+    <select id="topicFilter" class="topic-select" onchange="filterTopic(this.value)">
+      <option value="all">Tất cả tài liệu (Toàn bộ)</option>
+      <option value="kntt">Chuyên đề 1: Ôn tập Cuối kì I (KNTT)</option>
+      <option value="phuan">Chuyên đề 2: Đề thi CK1 THCS Phú An</option>
+    </select>
+    <button class="btn-ctrl" onclick="toggleFullscreen()">⛶ Toàn màn hình</button>
+  </div>
+</header>
+
+<div class="slide-stage" id="stage">
+  
+<div class="slide-card active" data-topic="intro">
+  <div class="slide-header">
+    <span class="badge-tag badge-intro">⭐ BUỔI DẠY HỌC TRỰC TUYẾN 18H00</span>
+    <span class="slide-num-info">Toán Lớp 7</span>
+  </div>
+  <div class="slide-body" style="display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;">
+    <div style="background:#fff; border-radius:18px; padding:12px; box-shadow:0 8px 25px rgba(0,0,0,0.1); width:110px; height:110px; margin-bottom:20px;">
+      <img src="https://diemdanhsv.com/images/logo-sen.svg" style="width:100%; height:100%;">
+    </div>
+    <h2 style="font-family:'Source Serif 4', serif; font-size:2.4rem; color:var(--lam-hove); margin-bottom:12px;">CHUYÊN ĐỀ ÔN TẬP VÀ KIỂM TRA CUỐI HỌC KỲ I</h2>
+    <p style="font-size:1.35rem; color:var(--luc-bode); font-weight:700; margin-bottom:28px;">Giảng viên: ThS. Đinh Quốc Tuấn · BDVH.DIEMDANHSV.COM</p>
+    <div style="background:#F7FAFC; border:1px solid #E2E8F0; padding:20px 36px; border-radius:14px; max-width:850px; text-align:left; font-size:1.2rem; line-height:1.8;">
+      <p><b>Nội dung ôn luyện hôm nay gồm 2 chuyên đề trọng tâm:</b></p>
+      <p>1. <b>Chuyên đề 1:</b> Ôn tập tổng hợp Cuối kì I – Bộ sách Kết nối tri thức (Đại số & Hình học).</p>
+      <p>2. <b>Chuyên đề 2:</b> Đề thi khảo sát chính thức Cuối kì I – Trường THCS Phú An (TP.HCM).</p>
+      <p style="margin-top:10px; color:#4A5568; font-style:italic;">👉 Dùng phím <b>Mũi tên phải [→]</b> hoặc phím <b>Cách [Space]</b> để bắt đầu bài học.</p>
+    </div>
+  </div>
+</div>
+
+
+    <div class="slide-card" data-topic="kntt">
+      <div class="slide-header">
+        <span class="badge-tag badge-question">📝 ĐỀ BÀI · Ôn tập CK1 KNTT</span>
+        <span class="slide-num-info">Câu 1</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title"><b>Câu 1:</b> Khẳng định nào sau đây là <b>sai</b>?</div>
+        <div class="opts-grid">
+          
+        <div class="opt-item">
+          <div class="opt-label">A</div>
+          <div class="opt-text">$-3 \in \mathbb{Q}$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">B</div>
+          <div class="opt-text">$0{,}75 \in \mathbb{Q}$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">C</div>
+          <div class="opt-text">$\sqrt{2} \in \mathbb{Q}$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">D</div>
+          <div class="opt-text">$\frac{1}{3} \in \mathbb{R}$</div>
+        </div>
+        
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="kntt">
+      <div class="slide-header">
+        <span class="badge-tag badge-answer">💡 ĐÁP ÁN & HƯỚNG DẪN GIẢI · Ôn tập CK1 KNTT</span>
+        <span class="slide-num-info">Câu 1</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title" style="margin-bottom:16px;"><b>Câu 1:</b> Khẳng định nào sau đây là <b>sai</b>?</div>
+        <div class="opts-grid" style="margin-top:0; margin-bottom:24px;">
+          
+        <div class="opt-item ">
+          <div class="opt-label">A</div>
+          <div class="opt-text">$-3 \in \mathbb{Q}$</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">B</div>
+          <div class="opt-text">$0{,}75 \in \mathbb{Q}$</div>
+        </div>
+        
+        <div class="opt-item correct">
+          <div class="opt-label">C</div>
+          <div class="opt-text">$\sqrt{2} \in \mathbb{Q}$</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">D</div>
+          <div class="opt-text">$\frac{1}{3} \in \mathbb{R}$</div>
+        </div>
+        
+        </div>
+        <div class="solution-box">
+          <div class="sol-title">✔ Phương án đúng: C</div>
+          <div class="sol-content"><b>Giải thích:</b> $\sqrt{2} \approx 1{,}41421...$ là số thập phân vô hạn không tuần hoàn, thuộc tập số vô tỉ $\mathbb{I}$, do đó $\sqrt{2} \notin \mathbb{Q}$. Khẳng định sai là <b>C</b>.</div>
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="kntt">
+      <div class="slide-header">
+        <span class="badge-tag badge-question">📝 ĐỀ BÀI · Ôn tập CK1 KNTT</span>
+        <span class="slide-num-info">Câu 2</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title"><b>Câu 2:</b> Phân số nào sau đây viết được dưới dạng số thập phân hữu hạn?</div>
+        <div class="opts-grid">
+          
+        <div class="opt-item">
+          <div class="opt-label">A</div>
+          <div class="opt-text">$\frac{7}{12}$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">B</div>
+          <div class="opt-text">$\frac{3}{40}$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">C</div>
+          <div class="opt-text">$\frac{5}{18}$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">D</div>
+          <div class="opt-text">$\frac{4}{15}$</div>
+        </div>
+        
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="kntt">
+      <div class="slide-header">
+        <span class="badge-tag badge-answer">💡 ĐÁP ÁN & HƯỚNG DẪN GIẢI · Ôn tập CK1 KNTT</span>
+        <span class="slide-num-info">Câu 2</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title" style="margin-bottom:16px;"><b>Câu 2:</b> Phân số nào sau đây viết được dưới dạng số thập phân hữu hạn?</div>
+        <div class="opts-grid" style="margin-top:0; margin-bottom:24px;">
+          
+        <div class="opt-item ">
+          <div class="opt-label">A</div>
+          <div class="opt-text">$\frac{7}{12}$</div>
+        </div>
+        
+        <div class="opt-item correct">
+          <div class="opt-label">B</div>
+          <div class="opt-text">$\frac{3}{40}$</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">C</div>
+          <div class="opt-text">$\frac{5}{18}$</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">D</div>
+          <div class="opt-text">$\frac{4}{15}$</div>
+        </div>
+        
+        </div>
+        <div class="solution-box">
+          <div class="sol-title">✔ Phương án đúng: B</div>
+          <div class="sol-content"><b>Giải thích:</b> Phân số tối giản viết được dưới dạng số thập phân hữu hạn nếu mẫu chỉ chứa thừa số nguyên tố 2 và 5.<br>Mẫu số của $\frac{3}{40}$ là $40 = 2^3 \cdot 5$ (chỉ có ước nguyên tố 2 và 5) $\Rightarrow \frac{3}{40} = 0{,}075$ là số thập phân hữu hạn. Chọn <b>B</b>.</div>
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="kntt">
+      <div class="slide-header">
+        <span class="badge-tag badge-question">📝 ĐỀ BÀI · Ôn tập CK1 KNTT</span>
+        <span class="slide-num-info">Câu 3</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title"><b>Câu 3:</b> Giá trị của $\left(-\frac{2}{3}\right)^3$ là</div>
+        <div class="opts-grid">
+          
+        <div class="opt-item">
+          <div class="opt-label">A</div>
+          <div class="opt-text">$\frac{8}{27}$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">B</div>
+          <div class="opt-text">$-\frac{8}{9}$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">C</div>
+          <div class="opt-text">$-\frac{2}{9}$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">D</div>
+          <div class="opt-text">$-\frac{8}{27}$</div>
+        </div>
+        
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="kntt">
+      <div class="slide-header">
+        <span class="badge-tag badge-answer">💡 ĐÁP ÁN & HƯỚNG DẪN GIẢI · Ôn tập CK1 KNTT</span>
+        <span class="slide-num-info">Câu 3</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title" style="margin-bottom:16px;"><b>Câu 3:</b> Giá trị của $\left(-\frac{2}{3}\right)^3$ là</div>
+        <div class="opts-grid" style="margin-top:0; margin-bottom:24px;">
+          
+        <div class="opt-item ">
+          <div class="opt-label">A</div>
+          <div class="opt-text">$\frac{8}{27}$</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">B</div>
+          <div class="opt-text">$-\frac{8}{9}$</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">C</div>
+          <div class="opt-text">$-\frac{2}{9}$</div>
+        </div>
+        
+        <div class="opt-item correct">
+          <div class="opt-label">D</div>
+          <div class="opt-text">$-\frac{8}{27}$</div>
+        </div>
+        
+        </div>
+        <div class="solution-box">
+          <div class="sol-title">✔ Phương án đúng: D</div>
+          <div class="sol-content"><b>Giải thích:</b> $\left(-\frac{2}{3}\right)^3 = \frac{(-2)^3}{3^3} = -\frac{8}{27}$. Lũy thừa bậc lẻ của số âm mang dấu âm. Chọn <b>D</b>.</div>
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="kntt">
+      <div class="slide-header">
+        <span class="badge-tag badge-question">📝 ĐỀ BÀI · Ôn tập CK1 KNTT</span>
+        <span class="slide-num-info">Câu 4</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title"><b>Câu 4:</b> Viết kết quả phép tính $3^8 : 3^5$ dưới dạng một lũy thừa:</div>
+        <div class="opts-grid">
+          
+        <div class="opt-item">
+          <div class="opt-label">A</div>
+          <div class="opt-text">$3^{13}$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">B</div>
+          <div class="opt-text">$3^3$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">C</div>
+          <div class="opt-text">$1^3$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">D</div>
+          <div class="opt-text">$3^{40}$</div>
+        </div>
+        
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="kntt">
+      <div class="slide-header">
+        <span class="badge-tag badge-answer">💡 ĐÁP ÁN & HƯỚNG DẪN GIẢI · Ôn tập CK1 KNTT</span>
+        <span class="slide-num-info">Câu 4</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title" style="margin-bottom:16px;"><b>Câu 4:</b> Viết kết quả phép tính $3^8 : 3^5$ dưới dạng một lũy thừa:</div>
+        <div class="opts-grid" style="margin-top:0; margin-bottom:24px;">
+          
+        <div class="opt-item ">
+          <div class="opt-label">A</div>
+          <div class="opt-text">$3^{13}$</div>
+        </div>
+        
+        <div class="opt-item correct">
+          <div class="opt-label">B</div>
+          <div class="opt-text">$3^3$</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">C</div>
+          <div class="opt-text">$1^3$</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">D</div>
+          <div class="opt-text">$3^{40}$</div>
+        </div>
+        
+        </div>
+        <div class="solution-box">
+          <div class="sol-title">✔ Phương án đúng: B</div>
+          <div class="sol-content"><b>Giải thích:</b> Áp dụng công thức chia hai lũy thừa cùng cơ số: $x^m : x^n = x^{m-n}$. Ta có $3^8 : 3^5 = 3^{8-5} = 3^3$. Chọn <b>B</b>.</div>
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="kntt">
+      <div class="slide-header">
+        <span class="badge-tag badge-question">📝 ĐỀ BÀI · Ôn tập CK1 KNTT</span>
+        <span class="slide-num-info">Câu 5</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title"><b>Câu 5:</b> Giá trị của $|-2{,}5| + |1{,}5|$ là</div>
+        <div class="opts-grid">
+          
+        <div class="opt-item">
+          <div class="opt-label">A</div>
+          <div class="opt-text">$-1$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">B</div>
+          <div class="opt-text">$1$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">C</div>
+          <div class="opt-text">$4$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">D</div>
+          <div class="opt-text">$-4$</div>
+        </div>
+        
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="kntt">
+      <div class="slide-header">
+        <span class="badge-tag badge-answer">💡 ĐÁP ÁN & HƯỚNG DẪN GIẢI · Ôn tập CK1 KNTT</span>
+        <span class="slide-num-info">Câu 5</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title" style="margin-bottom:16px;"><b>Câu 5:</b> Giá trị của $|-2{,}5| + |1{,}5|$ là</div>
+        <div class="opts-grid" style="margin-top:0; margin-bottom:24px;">
+          
+        <div class="opt-item ">
+          <div class="opt-label">A</div>
+          <div class="opt-text">$-1$</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">B</div>
+          <div class="opt-text">$1$</div>
+        </div>
+        
+        <div class="opt-item correct">
+          <div class="opt-label">C</div>
+          <div class="opt-text">$4$</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">D</div>
+          <div class="opt-text">$-4$</div>
+        </div>
+        
+        </div>
+        <div class="solution-box">
+          <div class="sol-title">✔ Phương án đúng: C</div>
+          <div class="sol-content"><b>Giải thích:</b> Vì $|-2{,}5| = 2{,}5$ và $|1{,}5| = 1{,}5$ nên $|-2{,}5| + |1{,}5| = 2{,}5 + 1{,}5 = 4$. Chọn <b>C</b>.</div>
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="kntt">
+      <div class="slide-header">
+        <span class="badge-tag badge-question">📝 ĐỀ BÀI · Ôn tập CK1 KNTT</span>
+        <span class="slide-num-info">Câu 6</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title"><b>Câu 6:</b> Cho $x + \frac{1}{3} = -\frac{1}{6}$. Giá trị của $x$ là</div>
+        <div class="opts-grid">
+          
+        <div class="opt-item">
+          <div class="opt-label">A</div>
+          <div class="opt-text">$-\frac{1}{2}$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">B</div>
+          <div class="opt-text">$\frac{1}{2}$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">C</div>
+          <div class="opt-text">$-\frac{1}{6}$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">D</div>
+          <div class="opt-text">$\frac{1}{6}$</div>
+        </div>
+        
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="kntt">
+      <div class="slide-header">
+        <span class="badge-tag badge-answer">💡 ĐÁP ÁN & HƯỚNG DẪN GIẢI · Ôn tập CK1 KNTT</span>
+        <span class="slide-num-info">Câu 6</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title" style="margin-bottom:16px;"><b>Câu 6:</b> Cho $x + \frac{1}{3} = -\frac{1}{6}$. Giá trị của $x$ là</div>
+        <div class="opts-grid" style="margin-top:0; margin-bottom:24px;">
+          
+        <div class="opt-item correct">
+          <div class="opt-label">A</div>
+          <div class="opt-text">$-\frac{1}{2}$</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">B</div>
+          <div class="opt-text">$\frac{1}{2}$</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">C</div>
+          <div class="opt-text">$-\frac{1}{6}$</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">D</div>
+          <div class="opt-text">$\frac{1}{6}$</div>
+        </div>
+        
+        </div>
+        <div class="solution-box">
+          <div class="sol-title">✔ Phương án đúng: A</div>
+          <div class="sol-content"><b>Giải thích:</b> Chuyển vế đổi dấu: $x = -\frac{1}{6} - \frac{1}{3} = -\frac{1}{6} - \frac{2}{6} = -\frac{3}{6} = -\frac{1}{2}$. Chọn <b>A</b>.</div>
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="kntt">
+      <div class="slide-header">
+        <span class="badge-tag badge-question">📝 ĐỀ BÀI · Ôn tập CK1 KNTT</span>
+        <span class="slide-num-info">Câu 7</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title"><b>Câu 7:</b> Căn bậc hai số học của $0{,}25$ là</div>
+        <div class="opts-grid">
+          
+        <div class="opt-item">
+          <div class="opt-label">A</div>
+          <div class="opt-text">$0{,}05$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">B</div>
+          <div class="opt-text">$0{,}125$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">C</div>
+          <div class="opt-text">$-0{,}5$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">D</div>
+          <div class="opt-text">$0{,}5$</div>
+        </div>
+        
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="kntt">
+      <div class="slide-header">
+        <span class="badge-tag badge-answer">💡 ĐÁP ÁN & HƯỚNG DẪN GIẢI · Ôn tập CK1 KNTT</span>
+        <span class="slide-num-info">Câu 7</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title" style="margin-bottom:16px;"><b>Câu 7:</b> Căn bậc hai số học của $0{,}25$ là</div>
+        <div class="opts-grid" style="margin-top:0; margin-bottom:24px;">
+          
+        <div class="opt-item ">
+          <div class="opt-label">A</div>
+          <div class="opt-text">$0{,}05$</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">B</div>
+          <div class="opt-text">$0{,}125$</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">C</div>
+          <div class="opt-text">$-0{,}5$</div>
+        </div>
+        
+        <div class="opt-item correct">
+          <div class="opt-label">D</div>
+          <div class="opt-text">$0{,}5$</div>
+        </div>
+        
+        </div>
+        <div class="solution-box">
+          <div class="sol-title">✔ Phương án đúng: D</div>
+          <div class="sol-content"><b>Giải thích:</b> Căn bậc hai số học của số không âm $a$ là số không âm $x$ sao cho $x^2 = a$. Vì $0{,}5 > 0$ và $0{,}5^2 = 0{,}25$ nên $\sqrt{0{,}25} = 0{,}5$. Chọn <b>D</b>.</div>
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="kntt">
+      <div class="slide-header">
+        <span class="badge-tag badge-question">📝 ĐỀ BÀI · Ôn tập CK1 KNTT</span>
+        <span class="slide-num-info">Câu 8</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title"><b>Câu 8:</b> Làm tròn số $86{,}357$ đến hàng phần mười ta được</div>
+        <div class="opts-grid">
+          
+        <div class="opt-item">
+          <div class="opt-label">A</div>
+          <div class="opt-text">$86{,}3$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">B</div>
+          <div class="opt-text">$86{,}36$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">C</div>
+          <div class="opt-text">$86{,}4$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">D</div>
+          <div class="opt-text">$86{,}0$</div>
+        </div>
+        
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="kntt">
+      <div class="slide-header">
+        <span class="badge-tag badge-answer">💡 ĐÁP ÁN & HƯỚNG DẪN GIẢI · Ôn tập CK1 KNTT</span>
+        <span class="slide-num-info">Câu 8</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title" style="margin-bottom:16px;"><b>Câu 8:</b> Làm tròn số $86{,}357$ đến hàng phần mười ta được</div>
+        <div class="opts-grid" style="margin-top:0; margin-bottom:24px;">
+          
+        <div class="opt-item ">
+          <div class="opt-label">A</div>
+          <div class="opt-text">$86{,}3$</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">B</div>
+          <div class="opt-text">$86{,}36$</div>
+        </div>
+        
+        <div class="opt-item correct">
+          <div class="opt-label">C</div>
+          <div class="opt-text">$86{,}4$</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">D</div>
+          <div class="opt-text">$86{,}0$</div>
+        </div>
+        
+        </div>
+        <div class="solution-box">
+          <div class="sol-title">✔ Phương án đúng: C</div>
+          <div class="sol-content"><b>Giải thích:</b> Chữ số ngay sau hàng phần mười (sau số 3) là 5 ($\ge 5$), theo quy tắc làm tròn ta cộng thêm 1 vào hàng phần mười: $86{,}357 \approx 86{,}4$. Chọn <b>C</b>.</div>
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="kntt">
+      <div class="slide-header">
+        <span class="badge-tag badge-question">📝 ĐỀ BÀI · Ôn tập CK1 KNTT</span>
+        <span class="slide-num-info">Câu 9</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title"><b>Câu 9:</b> Hai đường thẳng cắt nhau tạo một góc $130^\circ$. Góc kề bù với góc đó có số đo là</div>
+        <div class="opts-grid">
+          
+        <div class="opt-item">
+          <div class="opt-label">A</div>
+          <div class="opt-text">$50^\circ$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">B</div>
+          <div class="opt-text">$130^\circ$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">C</div>
+          <div class="opt-text">$40^\circ$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">D</div>
+          <div class="opt-text">$230^\circ$</div>
+        </div>
+        
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="kntt">
+      <div class="slide-header">
+        <span class="badge-tag badge-answer">💡 ĐÁP ÁN & HƯỚNG DẪN GIẢI · Ôn tập CK1 KNTT</span>
+        <span class="slide-num-info">Câu 9</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title" style="margin-bottom:16px;"><b>Câu 9:</b> Hai đường thẳng cắt nhau tạo một góc $130^\circ$. Góc kề bù với góc đó có số đo là</div>
+        <div class="opts-grid" style="margin-top:0; margin-bottom:24px;">
+          
+        <div class="opt-item correct">
+          <div class="opt-label">A</div>
+          <div class="opt-text">$50^\circ$</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">B</div>
+          <div class="opt-text">$130^\circ$</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">C</div>
+          <div class="opt-text">$40^\circ$</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">D</div>
+          <div class="opt-text">$230^\circ$</div>
+        </div>
+        
+        </div>
+        <div class="solution-box">
+          <div class="sol-title">✔ Phương án đúng: A</div>
+          <div class="sol-content"><b>Giải thích:</b> Hai góc kề bù có tổng số đo bằng $180^\circ$. Do đó góc cần tìm có số đo là $180^\circ - 130^\circ = 50^\circ$. Chọn <b>A</b>.</div>
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="kntt">
+      <div class="slide-header">
+        <span class="badge-tag badge-question">📝 ĐỀ BÀI · Ôn tập CK1 KNTT</span>
+        <span class="slide-num-info">Câu 10</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title"><b>Câu 10:</b> Cho $a \parallel b$, đường thẳng $c$ cắt $a, b$ tạo một cặp góc so le trong, một góc bằng $75^\circ$. Góc còn lại bằng</div>
+        <div class="opts-grid">
+          
+        <div class="opt-item">
+          <div class="opt-label">A</div>
+          <div class="opt-text">$105^\circ$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">B</div>
+          <div class="opt-text">$75^\circ$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">C</div>
+          <div class="opt-text">$15^\circ$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">D</div>
+          <div class="opt-text">$90^\circ$</div>
+        </div>
+        
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="kntt">
+      <div class="slide-header">
+        <span class="badge-tag badge-answer">💡 ĐÁP ÁN & HƯỚNG DẪN GIẢI · Ôn tập CK1 KNTT</span>
+        <span class="slide-num-info">Câu 10</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title" style="margin-bottom:16px;"><b>Câu 10:</b> Cho $a \parallel b$, đường thẳng $c$ cắt $a, b$ tạo một cặp góc so le trong, một góc bằng $75^\circ$. Góc còn lại bằng</div>
+        <div class="opts-grid" style="margin-top:0; margin-bottom:24px;">
+          
+        <div class="opt-item ">
+          <div class="opt-label">A</div>
+          <div class="opt-text">$105^\circ$</div>
+        </div>
+        
+        <div class="opt-item correct">
+          <div class="opt-label">B</div>
+          <div class="opt-text">$75^\circ$</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">C</div>
+          <div class="opt-text">$15^\circ$</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">D</div>
+          <div class="opt-text">$90^\circ$</div>
+        </div>
+        
+        </div>
+        <div class="solution-box">
+          <div class="sol-title">✔ Phương án đúng: B</div>
+          <div class="sol-content"><b>Giải thích:</b> Theo tính chất của hai đường thẳng song song: Hai góc so le trong thì bằng nhau. Do đó góc còn lại bằng $75^\circ$. Chọn <b>B</b>.</div>
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="kntt">
+      <div class="slide-header">
+        <span class="badge-tag badge-question">📝 ĐỀ BÀI · Ôn tập CK1 KNTT</span>
+        <span class="slide-num-info">Câu 11</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title"><b>Câu 11:</b> Tam giác $ABC$ vuông tại $A$, có $\widehat{B} = 35^\circ$. Số đo của góc $\widehat{C}$ là</div>
+        <div class="opts-grid">
+          
+        <div class="opt-item">
+          <div class="opt-label">A</div>
+          <div class="opt-text">$145^\circ$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">B</div>
+          <div class="opt-text">$35^\circ$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">C</div>
+          <div class="opt-text">$65^\circ$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">D</div>
+          <div class="opt-text">$55^\circ$</div>
+        </div>
+        
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="kntt">
+      <div class="slide-header">
+        <span class="badge-tag badge-answer">💡 ĐÁP ÁN & HƯỚNG DẪN GIẢI · Ôn tập CK1 KNTT</span>
+        <span class="slide-num-info">Câu 11</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title" style="margin-bottom:16px;"><b>Câu 11:</b> Tam giác $ABC$ vuông tại $A$, có $\widehat{B} = 35^\circ$. Số đo của góc $\widehat{C}$ là</div>
+        <div class="opts-grid" style="margin-top:0; margin-bottom:24px;">
+          
+        <div class="opt-item ">
+          <div class="opt-label">A</div>
+          <div class="opt-text">$145^\circ$</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">B</div>
+          <div class="opt-text">$35^\circ$</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">C</div>
+          <div class="opt-text">$65^\circ$</div>
+        </div>
+        
+        <div class="opt-item correct">
+          <div class="opt-label">D</div>
+          <div class="opt-text">$55^\circ$</div>
+        </div>
+        
+        </div>
+        <div class="solution-box">
+          <div class="sol-title">✔ Phương án đúng: D</div>
+          <div class="sol-content"><b>Giải thích:</b> Trong tam giác vuông, hai góc nhọn phụ nhau: $\widehat{B} + \widehat{C} = 90^\circ \Rightarrow \widehat{C} = 90^\circ - 35^\circ = 55^\circ$. Chọn <b>D</b>.</div>
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="kntt">
+      <div class="slide-header">
+        <span class="badge-tag badge-question">📝 ĐỀ BÀI · Ôn tập CK1 KNTT</span>
+        <span class="slide-num-info">Câu 12</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title"><b>Câu 12:</b> Hai tam giác $MNP$ và $DEF$ có $MN = DE,\ NP = EF,\ MP = DF$. Khi đó $\triangle MNP = \triangle DEF$ theo trường hợp</div>
+        <div class="opts-grid">
+          
+        <div class="opt-item">
+          <div class="opt-label">A</div>
+          <div class="opt-text">cạnh - cạnh - cạnh (c-c-c)</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">B</div>
+          <div class="opt-text">cạnh - góc - cạnh (c-g-c)</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">C</div>
+          <div class="opt-text">góc - cạnh - góc (g-c-g)</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">D</div>
+          <div class="opt-text">cạnh huyền - góc nhọn</div>
+        </div>
+        
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="kntt">
+      <div class="slide-header">
+        <span class="badge-tag badge-answer">💡 ĐÁP ÁN & HƯỚNG DẪN GIẢI · Ôn tập CK1 KNTT</span>
+        <span class="slide-num-info">Câu 12</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title" style="margin-bottom:16px;"><b>Câu 12:</b> Hai tam giác $MNP$ và $DEF$ có $MN = DE,\ NP = EF,\ MP = DF$. Khi đó $\triangle MNP = \triangle DEF$ theo trường hợp</div>
+        <div class="opts-grid" style="margin-top:0; margin-bottom:24px;">
+          
+        <div class="opt-item correct">
+          <div class="opt-label">A</div>
+          <div class="opt-text">cạnh - cạnh - cạnh (c-c-c)</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">B</div>
+          <div class="opt-text">cạnh - góc - cạnh (c-g-c)</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">C</div>
+          <div class="opt-text">góc - cạnh - góc (g-c-g)</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">D</div>
+          <div class="opt-text">cạnh huyền - góc nhọn</div>
+        </div>
+        
+        </div>
+        <div class="solution-box">
+          <div class="sol-title">✔ Phương án đúng: A</div>
+          <div class="sol-content"><b>Giải thích:</b> Ba cặp cạnh tương ứng bằng nhau nên hai tam giác bằng nhau theo trường hợp cạnh - cạnh - cạnh (c-c-c). Chọn <b>A</b>.</div>
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="kntt">
+      <div class="slide-header">
+        <span class="badge-tag badge-question">📝 ĐỀ BÀI · Ôn tập CK1 KNTT</span>
+        <span class="slide-num-info">Câu 13</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title"><b>Câu 13:</b> Cho $a = \frac{3}{4}$ và $b = -\frac{5}{6}$. Kết quả của phép tính $a - b$ là</div>
+        <div class="opts-grid">
+          
+        <div class="opt-item">
+          <div class="opt-label">A</div>
+          <div class="opt-text">$-\frac{1}{12}$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">B</div>
+          <div class="opt-text">$\frac{19}{12}$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">C</div>
+          <div class="opt-text">$-\frac{5}{8}$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">D</div>
+          <div class="opt-text">$-\frac{9}{10}$</div>
+        </div>
+        
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="kntt">
+      <div class="slide-header">
+        <span class="badge-tag badge-answer">💡 ĐÁP ÁN & HƯỚNG DẪN GIẢI · Ôn tập CK1 KNTT</span>
+        <span class="slide-num-info">Câu 13</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title" style="margin-bottom:16px;"><b>Câu 13:</b> Cho $a = \frac{3}{4}$ và $b = -\frac{5}{6}$. Kết quả của phép tính $a - b$ là</div>
+        <div class="opts-grid" style="margin-top:0; margin-bottom:24px;">
+          
+        <div class="opt-item ">
+          <div class="opt-label">A</div>
+          <div class="opt-text">$-\frac{1}{12}$</div>
+        </div>
+        
+        <div class="opt-item correct">
+          <div class="opt-label">B</div>
+          <div class="opt-text">$\frac{19}{12}$</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">C</div>
+          <div class="opt-text">$-\frac{5}{8}$</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">D</div>
+          <div class="opt-text">$-\frac{9}{10}$</div>
+        </div>
+        
+        </div>
+        <div class="solution-box">
+          <div class="sol-title">✔ Phương án đúng: B</div>
+          <div class="sol-content"><b>Giải thích:</b> $a - b = \frac{3}{4} - \left(-\frac{5}{6}\right) = \frac{3}{4} + \frac{5}{6} = \frac{9}{12} + \frac{10}{12} = \frac{19}{12}$. Chọn <b>B</b>.</div>
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="kntt">
+      <div class="slide-header">
+        <span class="badge-tag badge-question">📝 ĐỀ BÀI · Ôn tập CK1 KNTT</span>
+        <span class="slide-num-info">Câu 14</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title"><b>Câu 14:</b> Tính hợp lí giá trị biểu thức: $B = \frac{4}{9} \cdot \left(-\frac{7}{13}\right) + \frac{4}{9} \cdot \left(-\frac{6}{13}\right) + \frac{5}{9}$</div>
+        <div class="opts-grid">
+          
+        <div class="opt-item">
+          <div class="opt-label">A</div>
+          <div class="opt-text">$\frac{1}{9}$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">B</div>
+          <div class="opt-text">$-\frac{1}{9}$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">C</div>
+          <div class="opt-text">$1$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">D</div>
+          <div class="opt-text">$\frac{4}{9}$</div>
+        </div>
+        
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="kntt">
+      <div class="slide-header">
+        <span class="badge-tag badge-answer">💡 ĐÁP ÁN & HƯỚNG DẪN GIẢI · Ôn tập CK1 KNTT</span>
+        <span class="slide-num-info">Câu 14</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title" style="margin-bottom:16px;"><b>Câu 14:</b> Tính hợp lí giá trị biểu thức: $B = \frac{4}{9} \cdot \left(-\frac{7}{13}\right) + \frac{4}{9} \cdot \left(-\frac{6}{13}\right) + \frac{5}{9}$</div>
+        <div class="opts-grid" style="margin-top:0; margin-bottom:24px;">
+          
+        <div class="opt-item correct">
+          <div class="opt-label">A</div>
+          <div class="opt-text">$\frac{1}{9}$</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">B</div>
+          <div class="opt-text">$-\frac{1}{9}$</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">C</div>
+          <div class="opt-text">$1$</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">D</div>
+          <div class="opt-text">$\frac{4}{9}$</div>
+        </div>
+        
+        </div>
+        <div class="solution-box">
+          <div class="sol-title">✔ Phương án đúng: A</div>
+          <div class="sol-content"><b>Giải thích:</b> Đặt $\frac{4}{9}$ làm thừa số chung:<br>$B = \frac{4}{9} \left[ -\frac{7}{13} + \left(-\frac{6}{13}\right) \right] + \frac{5}{9} = \frac{4}{9} \cdot (-1) + \frac{5}{9} = -\frac{4}{9} + \frac{5}{9} = \frac{1}{9}$. Chọn <b>A</b>.</div>
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="kntt">
+      <div class="slide-header">
+        <span class="badge-tag badge-question">📝 ĐỀ BÀI · Ôn tập CK1 KNTT</span>
+        <span class="slide-num-info">Câu 15</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title"><b>Câu 15:</b> Rút gọn rồi tính giá trị của biểu thức: $C = \frac{8^4 \cdot 27^2}{6^8}$</div>
+        <div class="opts-grid">
+          
+        <div class="opt-item">
+          <div class="opt-label">A</div>
+          <div class="opt-text">$\frac{8}{9}$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">B</div>
+          <div class="opt-text">$\frac{16}{9}$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">C</div>
+          <div class="opt-text">$\frac{4}{3}$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">D</div>
+          <div class="opt-text">$2$</div>
+        </div>
+        
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="kntt">
+      <div class="slide-header">
+        <span class="badge-tag badge-answer">💡 ĐÁP ÁN & HƯỚNG DẪN GIẢI · Ôn tập CK1 KNTT</span>
+        <span class="slide-num-info">Câu 15</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title" style="margin-bottom:16px;"><b>Câu 15:</b> Rút gọn rồi tính giá trị của biểu thức: $C = \frac{8^4 \cdot 27^2}{6^8}$</div>
+        <div class="opts-grid" style="margin-top:0; margin-bottom:24px;">
+          
+        <div class="opt-item ">
+          <div class="opt-label">A</div>
+          <div class="opt-text">$\frac{8}{9}$</div>
+        </div>
+        
+        <div class="opt-item correct">
+          <div class="opt-label">B</div>
+          <div class="opt-text">$\frac{16}{9}$</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">C</div>
+          <div class="opt-text">$\frac{4}{3}$</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">D</div>
+          <div class="opt-text">$2$</div>
+        </div>
+        
+        </div>
+        <div class="solution-box">
+          <div class="sol-title">✔ Phương án đúng: B</div>
+          <div class="sol-content"><b>Giải thích:</b> Phân tích ra lũy thừa cơ số nguyên tố $2$ và $3$:<br>$8^4 = (2^3)^4 = 2^{12}$; $27^2 = (3^3)^2 = 3^6$; $6^8 = (2 \cdot 3)^8 = 2^8 \cdot 3^8$.<br>Do đó: $C = \frac{2^{12} \cdot 3^6}{2^8 \cdot 3^8} = \frac{2^{12-8}}{3^{8-6}} = \frac{2^4}{3^2} = \frac{16}{9}$. Chọn <b>B</b>.</div>
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="phuan">
+      <div class="slide-header">
+        <span class="badge-tag badge-question">📝 ĐỀ BÀI · THCS Phú An</span>
+        <span class="slide-num-info">Câu 1</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title"><b>Câu 1:</b> Khẳng định nào sau đây là <b>sai</b>?</div>
+        <div class="opts-grid">
+          
+        <div class="opt-item">
+          <div class="opt-label">A</div>
+          <div class="opt-text">$\frac{-3}{2} \in \mathbb{Q}$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">B</div>
+          <div class="opt-text">$2\frac{1}{4} \in \mathbb{Q}$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">C</div>
+          <div class="opt-text">$1{,}25 \notin \mathbb{Q}$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">D</div>
+          <div class="opt-text">$-5 \in \mathbb{Q}$</div>
+        </div>
+        
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="phuan">
+      <div class="slide-header">
+        <span class="badge-tag badge-answer">💡 ĐÁP ÁN & HƯỚNG DẪN GIẢI · THCS Phú An</span>
+        <span class="slide-num-info">Câu 1</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title" style="margin-bottom:16px;"><b>Câu 1:</b> Khẳng định nào sau đây là <b>sai</b>?</div>
+        <div class="opts-grid" style="margin-top:0; margin-bottom:24px;">
+          
+        <div class="opt-item ">
+          <div class="opt-label">A</div>
+          <div class="opt-text">$\frac{-3}{2} \in \mathbb{Q}$</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">B</div>
+          <div class="opt-text">$2\frac{1}{4} \in \mathbb{Q}$</div>
+        </div>
+        
+        <div class="opt-item correct">
+          <div class="opt-label">C</div>
+          <div class="opt-text">$1{,}25 \notin \mathbb{Q}$</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">D</div>
+          <div class="opt-text">$-5 \in \mathbb{Q}$</div>
+        </div>
+        
+        </div>
+        <div class="solution-box">
+          <div class="sol-title">✔ Phương án đúng: C</div>
+          <div class="sol-content"><b>Giải thích:</b> Số $1{,}25 = \frac{125}{100} = \frac{5}{4}$ viết được dưới dạng phân số với tử mẫu nguyên nên $1{,}25 \in \mathbb{Q}$. Khẳng định $1{,}25 \notin \mathbb{Q}$ là sai. Chọn <b>C</b>.</div>
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="phuan">
+      <div class="slide-header">
+        <span class="badge-tag badge-question">📝 ĐỀ BÀI · THCS Phú An</span>
+        <span class="slide-num-info">Câu 2</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title"><b>Câu 2:</b> Phân số nào sau đây có thể viết được dưới dạng số thập phân hữu hạn?</div>
+        <div class="opts-grid">
+          
+        <div class="opt-item">
+          <div class="opt-label">A</div>
+          <div class="opt-text">$\frac{3}{14}$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">B</div>
+          <div class="opt-text">$\frac{5}{6}$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">C</div>
+          <div class="opt-text">$\frac{-4}{15}$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">D</div>
+          <div class="opt-text">$\frac{9}{24}$</div>
+        </div>
+        
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="phuan">
+      <div class="slide-header">
+        <span class="badge-tag badge-answer">💡 ĐÁP ÁN & HƯỚNG DẪN GIẢI · THCS Phú An</span>
+        <span class="slide-num-info">Câu 2</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title" style="margin-bottom:16px;"><b>Câu 2:</b> Phân số nào sau đây có thể viết được dưới dạng số thập phân hữu hạn?</div>
+        <div class="opts-grid" style="margin-top:0; margin-bottom:24px;">
+          
+        <div class="opt-item ">
+          <div class="opt-label">A</div>
+          <div class="opt-text">$\frac{3}{14}$</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">B</div>
+          <div class="opt-text">$\frac{5}{6}$</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">C</div>
+          <div class="opt-text">$\frac{-4}{15}$</div>
+        </div>
+        
+        <div class="opt-item correct">
+          <div class="opt-label">D</div>
+          <div class="opt-text">$\frac{9}{24}$</div>
+        </div>
+        
+        </div>
+        <div class="solution-box">
+          <div class="sol-title">✔ Phương án đúng: D</div>
+          <div class="sol-content"><b>Giải thích:</b> Rút gọn phân số $\frac{9}{24} = \frac{3}{8}$. Mẫu số $8 = 2^3$ chỉ có ước nguyên tố 2 nên viết được thành số thập phân hữu hạn ($0{,}375$). Chọn <b>D</b>.</div>
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="phuan">
+      <div class="slide-header">
+        <span class="badge-tag badge-question">📝 ĐỀ BÀI · THCS Phú An</span>
+        <span class="slide-num-info">Câu 3</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title"><b>Câu 3:</b> Số đối của $\frac{1}{2}$ là:</div>
+        <div class="opts-grid">
+          
+        <div class="opt-item">
+          <div class="opt-label">A</div>
+          <div class="opt-text">$-2$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">B</div>
+          <div class="opt-text">$-\frac{1}{2}$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">C</div>
+          <div class="opt-text">$2$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">D</div>
+          <div class="opt-text">$\frac{1}{2}$</div>
+        </div>
+        
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="phuan">
+      <div class="slide-header">
+        <span class="badge-tag badge-answer">💡 ĐÁP ÁN & HƯỚNG DẪN GIẢI · THCS Phú An</span>
+        <span class="slide-num-info">Câu 3</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title" style="margin-bottom:16px;"><b>Câu 3:</b> Số đối của $\frac{1}{2}$ là:</div>
+        <div class="opts-grid" style="margin-top:0; margin-bottom:24px;">
+          
+        <div class="opt-item ">
+          <div class="opt-label">A</div>
+          <div class="opt-text">$-2$</div>
+        </div>
+        
+        <div class="opt-item correct">
+          <div class="opt-label">B</div>
+          <div class="opt-text">$-\frac{1}{2}$</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">C</div>
+          <div class="opt-text">$2$</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">D</div>
+          <div class="opt-text">$\frac{1}{2}$</div>
+        </div>
+        
+        </div>
+        <div class="solution-box">
+          <div class="sol-title">✔ Phương án đúng: B</div>
+          <div class="sol-content"><b>Giải thích:</b> Số đối của số hữu tỉ $a$ là $-a$. Do đó số đối của $\frac{1}{2}$ là $-\frac{1}{2}$. Chọn <b>B</b>.</div>
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="phuan">
+      <div class="slide-header">
+        <span class="badge-tag badge-question">📝 ĐỀ BÀI · THCS Phú An</span>
+        <span class="slide-num-info">Câu 4</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title"><b>Câu 4:</b> Viết kết quả phép tính $\left(-\frac{1}{2}\right)^5 \cdot \left(-\frac{1}{2}\right)^2$ dưới dạng một lũy thừa:</div>
+        <div class="opts-grid">
+          
+        <div class="opt-item">
+          <div class="opt-label">A</div>
+          <div class="opt-text">$\left(-\frac{1}{2}\right)^{10}$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">B</div>
+          <div class="opt-text">$\left(-\frac{1}{2}\right)^3$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">C</div>
+          <div class="opt-text">$\left(-\frac{1}{2}\right)^7$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">D</div>
+          <div class="opt-text">$\left(\frac{1}{2}\right)^7$</div>
+        </div>
+        
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="phuan">
+      <div class="slide-header">
+        <span class="badge-tag badge-answer">💡 ĐÁP ÁN & HƯỚNG DẪN GIẢI · THCS Phú An</span>
+        <span class="slide-num-info">Câu 4</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title" style="margin-bottom:16px;"><b>Câu 4:</b> Viết kết quả phép tính $\left(-\frac{1}{2}\right)^5 \cdot \left(-\frac{1}{2}\right)^2$ dưới dạng một lũy thừa:</div>
+        <div class="opts-grid" style="margin-top:0; margin-bottom:24px;">
+          
+        <div class="opt-item ">
+          <div class="opt-label">A</div>
+          <div class="opt-text">$\left(-\frac{1}{2}\right)^{10}$</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">B</div>
+          <div class="opt-text">$\left(-\frac{1}{2}\right)^3$</div>
+        </div>
+        
+        <div class="opt-item correct">
+          <div class="opt-label">C</div>
+          <div class="opt-text">$\left(-\frac{1}{2}\right)^7$</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">D</div>
+          <div class="opt-text">$\left(\frac{1}{2}\right)^7$</div>
+        </div>
+        
+        </div>
+        <div class="solution-box">
+          <div class="sol-title">✔ Phương án đúng: C</div>
+          <div class="sol-content"><b>Giải thích:</b> Nhân hai lũy thừa cùng cơ số: $\left(-\frac{1}{2}\right)^5 \cdot \left(-\frac{1}{2}\right)^2 = \left(-\frac{1}{2}\right)^{5+2} = \left(-\frac{1}{2}\right)^7$. Chọn <b>C</b>.</div>
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="phuan">
+      <div class="slide-header">
+        <span class="badge-tag badge-question">📝 ĐỀ BÀI · THCS Phú An</span>
+        <span class="slide-num-info">Câu 5</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title"><b>Câu 5:</b> Kết quả của phép tính $\frac{1}{2} - 0{,}25 \cdot \frac{4}{3}$ là:</div>
+        <div class="opts-grid">
+          
+        <div class="opt-item">
+          <div class="opt-label">A</div>
+          <div class="opt-text">$\frac{1}{6}$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">B</div>
+          <div class="opt-text">$\frac{1}{2}$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">C</div>
+          <div class="opt-text">$\frac{4}{3}$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">D</div>
+          <div class="opt-text">$\frac{9}{16}$</div>
+        </div>
+        
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="phuan">
+      <div class="slide-header">
+        <span class="badge-tag badge-answer">💡 ĐÁP ÁN & HƯỚNG DẪN GIẢI · THCS Phú An</span>
+        <span class="slide-num-info">Câu 5</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title" style="margin-bottom:16px;"><b>Câu 5:</b> Kết quả của phép tính $\frac{1}{2} - 0{,}25 \cdot \frac{4}{3}$ là:</div>
+        <div class="opts-grid" style="margin-top:0; margin-bottom:24px;">
+          
+        <div class="opt-item correct">
+          <div class="opt-label">A</div>
+          <div class="opt-text">$\frac{1}{6}$</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">B</div>
+          <div class="opt-text">$\frac{1}{2}$</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">C</div>
+          <div class="opt-text">$\frac{4}{3}$</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">D</div>
+          <div class="opt-text">$\frac{9}{16}$</div>
+        </div>
+        
+        </div>
+        <div class="solution-box">
+          <div class="sol-title">✔ Phương án đúng: A</div>
+          <div class="sol-content"><b>Giải thích:</b> Đổi $0{,}25 = \frac{1}{4}$. Thực hiện phép nhân trước: $\frac{1}{4} \cdot \frac{4}{3} = \frac{1}{3}$.<br>Sau đó trừ: $\frac{1}{2} - \frac{1}{3} = \frac{3}{6} - \frac{2}{6} = \frac{1}{6}$. Chọn <b>A</b>.</div>
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="phuan">
+      <div class="slide-header">
+        <span class="badge-tag badge-question">📝 ĐỀ BÀI · THCS Phú An</span>
+        <span class="slide-num-info">Câu 6</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title"><b>Câu 6:</b> Cho $x - \frac{1}{2} = -\frac{3}{4}$. Giá trị của $x$ là:</div>
+        <div class="opts-grid">
+          
+        <div class="opt-item">
+          <div class="opt-label">A</div>
+          <div class="opt-text">$x = -\frac{5}{4}$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">B</div>
+          <div class="opt-text">$x = \frac{1}{4}$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">C</div>
+          <div class="opt-text">$x = -\frac{1}{4}$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">D</div>
+          <div class="opt-text">$x = \frac{5}{4}$</div>
+        </div>
+        
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="phuan">
+      <div class="slide-header">
+        <span class="badge-tag badge-answer">💡 ĐÁP ÁN & HƯỚNG DẪN GIẢI · THCS Phú An</span>
+        <span class="slide-num-info">Câu 6</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title" style="margin-bottom:16px;"><b>Câu 6:</b> Cho $x - \frac{1}{2} = -\frac{3}{4}$. Giá trị của $x$ là:</div>
+        <div class="opts-grid" style="margin-top:0; margin-bottom:24px;">
+          
+        <div class="opt-item ">
+          <div class="opt-label">A</div>
+          <div class="opt-text">$x = -\frac{5}{4}$</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">B</div>
+          <div class="opt-text">$x = \frac{1}{4}$</div>
+        </div>
+        
+        <div class="opt-item correct">
+          <div class="opt-label">C</div>
+          <div class="opt-text">$x = -\frac{1}{4}$</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">D</div>
+          <div class="opt-text">$x = \frac{5}{4}$</div>
+        </div>
+        
+        </div>
+        <div class="solution-box">
+          <div class="sol-title">✔ Phương án đúng: C</div>
+          <div class="sol-content"><b>Giải thích:</b> $x = -\frac{3}{4} + \frac{1}{2} = -\frac{3}{4} + \frac{2}{4} = -\frac{1}{4}$. Chọn <b>C</b>.</div>
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="phuan">
+      <div class="slide-header">
+        <span class="badge-tag badge-question">📝 ĐỀ BÀI · THCS Phú An</span>
+        <span class="slide-num-info">Câu 7</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title"><b>Câu 7:</b> Căn bậc hai số học của $36$ là:</div>
+        <div class="opts-grid">
+          
+        <div class="opt-item">
+          <div class="opt-label">A</div>
+          <div class="opt-text">$9$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">B</div>
+          <div class="opt-text">$18$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">C</div>
+          <div class="opt-text">$13$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">D</div>
+          <div class="opt-text">$6$</div>
+        </div>
+        
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="phuan">
+      <div class="slide-header">
+        <span class="badge-tag badge-answer">💡 ĐÁP ÁN & HƯỚNG DẪN GIẢI · THCS Phú An</span>
+        <span class="slide-num-info">Câu 7</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title" style="margin-bottom:16px;"><b>Câu 7:</b> Căn bậc hai số học của $36$ là:</div>
+        <div class="opts-grid" style="margin-top:0; margin-bottom:24px;">
+          
+        <div class="opt-item ">
+          <div class="opt-label">A</div>
+          <div class="opt-text">$9$</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">B</div>
+          <div class="opt-text">$18$</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">C</div>
+          <div class="opt-text">$13$</div>
+        </div>
+        
+        <div class="opt-item correct">
+          <div class="opt-label">D</div>
+          <div class="opt-text">$6$</div>
+        </div>
+        
+        </div>
+        <div class="solution-box">
+          <div class="sol-title">✔ Phương án đúng: D</div>
+          <div class="sol-content"><b>Giải thích:</b> Vì $6 > 0$ và $6^2 = 36$ nên $\sqrt{36} = 6$. Chọn <b>D</b>.</div>
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="phuan">
+      <div class="slide-header">
+        <span class="badge-tag badge-question">📝 ĐỀ BÀI · THCS Phú An</span>
+        <span class="slide-num-info">Câu 8</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title"><b>Câu 8:</b> Làm tròn số $37{,}815$ với độ chính xác $0{,}5$ ta được kết quả là:</div>
+        <div class="opts-grid">
+          
+        <div class="opt-item">
+          <div class="opt-label">A</div>
+          <div class="opt-text">$37{,}82$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">B</div>
+          <div class="opt-text">$37{,}9$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">C</div>
+          <div class="opt-text">$38$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">D</div>
+          <div class="opt-text">$37{,}8$</div>
+        </div>
+        
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="phuan">
+      <div class="slide-header">
+        <span class="badge-tag badge-answer">💡 ĐÁP ÁN & HƯỚNG DẪN GIẢI · THCS Phú An</span>
+        <span class="slide-num-info">Câu 8</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title" style="margin-bottom:16px;"><b>Câu 8:</b> Làm tròn số $37{,}815$ với độ chính xác $0{,}5$ ta được kết quả là:</div>
+        <div class="opts-grid" style="margin-top:0; margin-bottom:24px;">
+          
+        <div class="opt-item ">
+          <div class="opt-label">A</div>
+          <div class="opt-text">$37{,}82$</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">B</div>
+          <div class="opt-text">$37{,}9$</div>
+        </div>
+        
+        <div class="opt-item correct">
+          <div class="opt-label">C</div>
+          <div class="opt-text">$38$</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">D</div>
+          <div class="opt-text">$37{,}8$</div>
+        </div>
+        
+        </div>
+        <div class="solution-box">
+          <div class="sol-title">✔ Phương án đúng: C</div>
+          <div class="sol-content"><b>Giải thích:</b> Độ chính xác $d = 0{,}5$ thuộc hàng phần mười, theo quy tắc ta làm tròn số đến hàng đơn vị (hàng liền trước của hàng có độ chính xác $d$). Chữ số sau hàng đơn vị là 8 ($\ge 5$) nên $37{,}815 \approx 38$. Chọn <b>C</b>.</div>
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="phuan">
+      <div class="slide-header">
+        <span class="badge-tag badge-question">📝 ĐỀ BÀI · THCS Phú An</span>
+        <span class="slide-num-info">Câu 9</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title"><b>Câu 9:</b> Hai đường thẳng cắt nhau tại $O$ tạo thành góc $\widehat{xOn} = 60^\circ$. Góc đối đỉnh $\widehat{mOy}$ có số đo bằng bao nhiêu?</div>
+        <div class="opts-grid">
+          
+        <div class="opt-item">
+          <div class="opt-label">A</div>
+          <div class="opt-text">$80^\circ$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">B</div>
+          <div class="opt-text">$60^\circ$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">C</div>
+          <div class="opt-text">$180^\circ$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">D</div>
+          <div class="opt-text">$120^\circ$</div>
+        </div>
+        
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="phuan">
+      <div class="slide-header">
+        <span class="badge-tag badge-answer">💡 ĐÁP ÁN & HƯỚNG DẪN GIẢI · THCS Phú An</span>
+        <span class="slide-num-info">Câu 9</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title" style="margin-bottom:16px;"><b>Câu 9:</b> Hai đường thẳng cắt nhau tại $O$ tạo thành góc $\widehat{xOn} = 60^\circ$. Góc đối đỉnh $\widehat{mOy}$ có số đo bằng bao nhiêu?</div>
+        <div class="opts-grid" style="margin-top:0; margin-bottom:24px;">
+          
+        <div class="opt-item ">
+          <div class="opt-label">A</div>
+          <div class="opt-text">$80^\circ$</div>
+        </div>
+        
+        <div class="opt-item correct">
+          <div class="opt-label">B</div>
+          <div class="opt-text">$60^\circ$</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">C</div>
+          <div class="opt-text">$180^\circ$</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">D</div>
+          <div class="opt-text">$120^\circ$</div>
+        </div>
+        
+        </div>
+        <div class="solution-box">
+          <div class="sol-title">✔ Phương án đúng: B</div>
+          <div class="sol-content"><b>Giải thích:</b> Hai góc đối đỉnh thì có số đo bằng nhau. Do đó $\widehat{mOy} = \widehat{xOn} = 60^\circ$. Chọn <b>B</b>.</div>
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="phuan">
+      <div class="slide-header">
+        <span class="badge-tag badge-question">📝 ĐỀ BÀI · THCS Phú An</span>
+        <span class="slide-num-info">Câu 10</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title"><b>Câu 10:</b> Số mặt, số đỉnh, số cạnh của hình hộp chữ nhật lần lượt là:</div>
+        <div class="opts-grid">
+          
+        <div class="opt-item">
+          <div class="opt-label">A</div>
+          <div class="opt-text">4 mặt, 8 đỉnh, 12 cạnh</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">B</div>
+          <div class="opt-text">6 mặt, 8 đỉnh, 12 cạnh</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">C</div>
+          <div class="opt-text">6 mặt, 12 đỉnh, 8 cạnh</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">D</div>
+          <div class="opt-text">8 mặt, 6 đỉnh, 12 cạnh</div>
+        </div>
+        
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="phuan">
+      <div class="slide-header">
+        <span class="badge-tag badge-answer">💡 ĐÁP ÁN & HƯỚNG DẪN GIẢI · THCS Phú An</span>
+        <span class="slide-num-info">Câu 10</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title" style="margin-bottom:16px;"><b>Câu 10:</b> Số mặt, số đỉnh, số cạnh của hình hộp chữ nhật lần lượt là:</div>
+        <div class="opts-grid" style="margin-top:0; margin-bottom:24px;">
+          
+        <div class="opt-item ">
+          <div class="opt-label">A</div>
+          <div class="opt-text">4 mặt, 8 đỉnh, 12 cạnh</div>
+        </div>
+        
+        <div class="opt-item correct">
+          <div class="opt-label">B</div>
+          <div class="opt-text">6 mặt, 8 đỉnh, 12 cạnh</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">C</div>
+          <div class="opt-text">6 mặt, 12 đỉnh, 8 cạnh</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">D</div>
+          <div class="opt-text">8 mặt, 6 đỉnh, 12 cạnh</div>
+        </div>
+        
+        </div>
+        <div class="solution-box">
+          <div class="sol-title">✔ Phương án đúng: B</div>
+          <div class="sol-content"><b>Giải thích:</b> Hình hộp chữ nhật có đúng 6 mặt, 8 đỉnh và 12 cạnh. Chọn <b>B</b>.</div>
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="phuan">
+      <div class="slide-header">
+        <span class="badge-tag badge-question">📝 ĐỀ BÀI · THCS Phú An</span>
+        <span class="slide-num-info">Câu 11</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title"><b>Câu 11:</b> Trong hình lập phương $ABCD.EFGH$, mặt đáy $ABCD$ là hình gì?</div>
+        <div class="opts-grid">
+          
+        <div class="opt-item">
+          <div class="opt-label">A</div>
+          <div class="opt-text">Hình vuông</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">B</div>
+          <div class="opt-text">Hình tam giác</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">C</div>
+          <div class="opt-text">Hình bình hành</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">D</div>
+          <div class="opt-text">Hình chữ nhật</div>
+        </div>
+        
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="phuan">
+      <div class="slide-header">
+        <span class="badge-tag badge-answer">💡 ĐÁP ÁN & HƯỚNG DẪN GIẢI · THCS Phú An</span>
+        <span class="slide-num-info">Câu 11</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title" style="margin-bottom:16px;"><b>Câu 11:</b> Trong hình lập phương $ABCD.EFGH$, mặt đáy $ABCD$ là hình gì?</div>
+        <div class="opts-grid" style="margin-top:0; margin-bottom:24px;">
+          
+        <div class="opt-item correct">
+          <div class="opt-label">A</div>
+          <div class="opt-text">Hình vuông</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">B</div>
+          <div class="opt-text">Hình tam giác</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">C</div>
+          <div class="opt-text">Hình bình hành</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">D</div>
+          <div class="opt-text">Hình chữ nhật</div>
+        </div>
+        
+        </div>
+        <div class="solution-box">
+          <div class="sol-title">✔ Phương án đúng: A</div>
+          <div class="sol-content"><b>Giải thích:</b> Hình lập phương là hình hộp có tất cả 6 mặt đều là các hình vuông bằng nhau. Do đó mặt đáy $ABCD$ là hình vuông. Chọn <b>A</b>.</div>
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="phuan">
+      <div class="slide-header">
+        <span class="badge-tag badge-question">📝 ĐỀ BÀI · THCS Phú An</span>
+        <span class="slide-num-info">Câu 12</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title"><b>Câu 12:</b> Một hình hộp chữ nhật có kích thước dài $5\text{ cm}$, rộng $2\text{ cm}$, cao $3{,}5\text{ cm}$. Diện tích xung quanh của hình hộp chữ nhật đó là:</div>
+        <div class="opts-grid">
+          
+        <div class="opt-item">
+          <div class="opt-label">A</div>
+          <div class="opt-text">$49\text{ cm}^2$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">B</div>
+          <div class="opt-text">$35\text{ cm}^2$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">C</div>
+          <div class="opt-text">$24{,}5\text{ cm}^2$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">D</div>
+          <div class="opt-text">$70\text{ cm}^2$</div>
+        </div>
+        
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="phuan">
+      <div class="slide-header">
+        <span class="badge-tag badge-answer">💡 ĐÁP ÁN & HƯỚNG DẪN GIẢI · THCS Phú An</span>
+        <span class="slide-num-info">Câu 12</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title" style="margin-bottom:16px;"><b>Câu 12:</b> Một hình hộp chữ nhật có kích thước dài $5\text{ cm}$, rộng $2\text{ cm}$, cao $3{,}5\text{ cm}$. Diện tích xung quanh của hình hộp chữ nhật đó là:</div>
+        <div class="opts-grid" style="margin-top:0; margin-bottom:24px;">
+          
+        <div class="opt-item correct">
+          <div class="opt-label">A</div>
+          <div class="opt-text">$49\text{ cm}^2$</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">B</div>
+          <div class="opt-text">$35\text{ cm}^2$</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">C</div>
+          <div class="opt-text">$24{,}5\text{ cm}^2$</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">D</div>
+          <div class="opt-text">$70\text{ cm}^2$</div>
+        </div>
+        
+        </div>
+        <div class="solution-box">
+          <div class="sol-title">✔ Phương án đúng: A</div>
+          <div class="sol-content"><b>Giải thích:</b> Công thức diện tích xung quanh: $S_{xq} = 2(a + b)h = 2 \cdot (5 + 2) \cdot 3{,}5 = 2 \cdot 7 \cdot 3{,}5 = 49\text{ cm}^2$. Chọn <b>A</b>.</div>
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="phuan">
+      <div class="slide-header">
+        <span class="badge-tag badge-question">📝 ĐỀ BÀI · THCS Phú An</span>
+        <span class="slide-num-info">Câu 13</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title"><b>Câu 13:</b> Nhân dịp tết trồng cây, ba lớp 7A, 7B, 7C trồng được số cây tỉ lệ với 6, 5, 7. Cả ba lớp trồng được 36 cây. Số cây của mỗi lớp 7A, 7B, 7C lần lượt là:</div>
+        <div class="opts-grid">
+          
+        <div class="opt-item">
+          <div class="opt-label">A</div>
+          <div class="opt-text">12 cây, 10 cây, 14 cây</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">B</div>
+          <div class="opt-text">10 cây, 12 cây, 14 cây</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">C</div>
+          <div class="opt-text">14 cây, 10 cây, 12 cây</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">D</div>
+          <div class="opt-text">12 cây, 14 cây, 10 cây</div>
+        </div>
+        
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="phuan">
+      <div class="slide-header">
+        <span class="badge-tag badge-answer">💡 ĐÁP ÁN & HƯỚNG DẪN GIẢI · THCS Phú An</span>
+        <span class="slide-num-info">Câu 13</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title" style="margin-bottom:16px;"><b>Câu 13:</b> Nhân dịp tết trồng cây, ba lớp 7A, 7B, 7C trồng được số cây tỉ lệ với 6, 5, 7. Cả ba lớp trồng được 36 cây. Số cây của mỗi lớp 7A, 7B, 7C lần lượt là:</div>
+        <div class="opts-grid" style="margin-top:0; margin-bottom:24px;">
+          
+        <div class="opt-item correct">
+          <div class="opt-label">A</div>
+          <div class="opt-text">12 cây, 10 cây, 14 cây</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">B</div>
+          <div class="opt-text">10 cây, 12 cây, 14 cây</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">C</div>
+          <div class="opt-text">14 cây, 10 cây, 12 cây</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">D</div>
+          <div class="opt-text">12 cây, 14 cây, 10 cây</div>
+        </div>
+        
+        </div>
+        <div class="solution-box">
+          <div class="sol-title">✔ Phương án đúng: A</div>
+          <div class="sol-content"><b>Giải thích:</b> Gọi số cây 3 lớp là $a, b, c$. Ta có $\frac{a}{6} = \frac{b}{5} = \frac{c}{7} = \frac{a+b+c}{6+5+7} = \frac{36}{18} = 2$.<br>Suy ra: $a = 6 \cdot 2 = 12$; $b = 5 \cdot 2 = 10$; $c = 7 \cdot 2 = 14$ cây. Chọn <b>A</b>.</div>
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="phuan">
+      <div class="slide-header">
+        <span class="badge-tag badge-question">📝 ĐỀ BÀI · THCS Phú An</span>
+        <span class="slide-num-info">Câu 14</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title"><b>Câu 14:</b> Một bể bơi hình hộp chữ nhật dài $12\text{ m}$, rộng $5\text{ m}$, sâu $1{,}5\text{ m}$. Người ta bơm nước cách miệng bể $20\text{ cm}$. Thể tích nước được bơm vào bể là:</div>
+        <div class="opts-grid">
+          
+        <div class="opt-item">
+          <div class="opt-label">A</div>
+          <div class="opt-text">$90\text{ m}^3$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">B</div>
+          <div class="opt-text">$78\text{ m}^3$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">C</div>
+          <div class="opt-text">$80\text{ m}^3$</div>
+        </div>
+        
+        <div class="opt-item">
+          <div class="opt-label">D</div>
+          <div class="opt-text">$75\text{ m}^3$</div>
+        </div>
+        
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="slide-card" data-topic="phuan">
+      <div class="slide-header">
+        <span class="badge-tag badge-answer">💡 ĐÁP ÁN & HƯỚNG DẪN GIẢI · THCS Phú An</span>
+        <span class="slide-num-info">Câu 14</span>
+      </div>
+      <div class="slide-body">
+        <div class="q-title" style="margin-bottom:16px;"><b>Câu 14:</b> Một bể bơi hình hộp chữ nhật dài $12\text{ m}$, rộng $5\text{ m}$, sâu $1{,}5\text{ m}$. Người ta bơm nước cách miệng bể $20\text{ cm}$. Thể tích nước được bơm vào bể là:</div>
+        <div class="opts-grid" style="margin-top:0; margin-bottom:24px;">
+          
+        <div class="opt-item ">
+          <div class="opt-label">A</div>
+          <div class="opt-text">$90\text{ m}^3$</div>
+        </div>
+        
+        <div class="opt-item correct">
+          <div class="opt-label">B</div>
+          <div class="opt-text">$78\text{ m}^3$</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">C</div>
+          <div class="opt-text">$80\text{ m}^3$</div>
+        </div>
+        
+        <div class="opt-item ">
+          <div class="opt-label">D</div>
+          <div class="opt-text">$75\text{ m}^3$</div>
+        </div>
+        
+        </div>
+        <div class="solution-box">
+          <div class="sol-title">✔ Phương án đúng: B</div>
+          <div class="sol-content"><b>Giải thích:</b> Đổi $20\text{ cm} = 0{,}2\text{ m}$.<br>Chiều cao của cột nước là: $1{,}5 - 0{,}2 = 1{,}3\text{ m}$.<br>Lượng nước bơm vào là: $V = 12 \cdot 5 \cdot 1{,}3 = 78\text{ m}^3$. Chọn <b>B</b>.</div>
+        </div>
+      </div>
+    </div>
+    
+</div>
+
+<footer>
+  <div class="key-hint">
+    Điều khiển: <kbd>←</kbd> Trước | <kbd>→</kbd> hoặc <kbd>Space</kbd> Tiếp theo | <kbd>F11</kbd> Chiếu máy chiếu
+  </div>
+  
+  <div class="nav-buttons">
+    <button class="btn-nav" id="btnPrev" onclick="prevSlide()">◀ Slide trước</button>
+    <span id="slideCounter" style="color:#fff; font-weight:700; font-size:1.05rem; min-width:80px; text-align:center;">1 / 1</span>
+    <button class="btn-nav" id="btnNext" onclick="nextSlide()">Slide kế tiếp ▶</button>
+  </div>
+</footer>
+
+<script>
+let currentSlideIndex = 0;
+let visibleSlides = [];
+
+function updateSlideView() {
+  const allSlides = document.querySelectorAll('.slide-card');
+  visibleSlides = Array.from(allSlides).filter(s => s.dataset.visible !== 'false');
+  
+  if (visibleSlides.length === 0) return;
+  if (currentSlideIndex >= visibleSlides.length) currentSlideIndex = visibleSlides.length - 1;
+  if (currentSlideIndex < 0) currentSlideIndex = 0;
+  
+  allSlides.forEach(s => s.classList.remove('active'));
+  visibleSlides[currentSlideIndex].classList.add('active');
+  
+  document.getElementById('slideCounter').innerText = `${currentSlideIndex + 1} / ${visibleSlides.length}`;
+  document.getElementById('btnPrev').disabled = (currentSlideIndex === 0);
+  document.getElementById('btnNext').disabled = (currentSlideIndex === visibleSlides.length - 1);
+  
+  // Re-typeset MathJax nếu cần
+  if (window.MathJax && window.MathJax.typesetPromise) {
+    window.MathJax.typesetPromise([visibleSlides[currentSlideIndex]]);
+  }
+}
+
+function nextSlide() {
+  if (currentSlideIndex < visibleSlides.length - 1) {
+    currentSlideIndex++;
+    updateSlideView();
+  }
+}
+
+function prevSlide() {
+  if (currentSlideIndex > 0) {
+    currentSlideIndex--;
+    updateSlideView();
+  }
+}
+
+function filterTopic(topic) {
+  const allSlides = document.querySelectorAll('.slide-card');
+  allSlides.forEach(s => {
+    if (topic === 'all' || s.dataset.topic === 'intro' || s.dataset.topic === topic) {
+      s.dataset.visible = 'true';
+    } else {
+      s.dataset.visible = 'false';
+    }
+  });
+  currentSlideIndex = 0;
+  updateSlideView();
+}
+
+function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch(err => {});
+  } else {
+    document.exitFullscreen();
+  }
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+    e.preventDefault();
+    nextSlide();
+  } else if (e.key === 'ArrowLeft' || e.key === 'Backspace' || e.key === 'PageUp') {
+    e.preventDefault();
+    prevSlide();
+  }
+});
+
+window.addEventListener('DOMContentLoaded', () => {
+  filterTopic('all');
+});
+</script>
+</body>
+</html>
