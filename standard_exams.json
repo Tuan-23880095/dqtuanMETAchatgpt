@@ -261,7 +261,7 @@
   },
   {
     "exam_code": "TOAN07_CK1_KNTT",
-    "grade": 7,
+    "grade": "L07",
     "subject": "Toán",
     "title": "Toán 7 - Ôn tập Cuối kì I (Kết nối tri thức)",
     "description": "Phạm vi: Số hữu tỉ, Số thực, Góc & Đường thẳng song song, Tam giác bằng nhau, Biểu đồ & Hình hộp",
@@ -436,7 +436,7 @@
   },
   {
     "exam_code": "TOAN07_CK1_PHUAN",
-    "grade": 7,
+    "grade": "L07",
     "subject": "Toán",
     "title": "Đề thi Cuối kì I - Toán 7 - THCS Phú An (TP.HCM)",
     "description": "Đề thi chính thức HK1 THCS Phú An: Trắc nghiệm khách quan & Vận dụng đại số, hình học",
